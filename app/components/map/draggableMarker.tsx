@@ -1,31 +1,36 @@
 'use client';
 
 import { Marker, Popup } from "react-leaflet"
-import { useState, useRef, useMemo, useCallback } from "react"
+import { useState, useRef, useMemo, useCallback } from "react";
 
-export default function DraggableMarker(props: {initialPosition: {
-    lat: number;
-    lng: number;
-}}) {
-  const [position, setPosition] = useState(props.initialPosition)
-  const markerRef = useRef<L.Marker>(null)
-  const eventHandlers = useMemo(
-    () => ({
-      dragend() {
-        const marker = markerRef.current
-        if (marker != null) {
-          setPosition(marker.getLatLng())
-        }
-      },
-    }),
-    [],
-  )
+export interface DraggableMarkerProps {
+    initialPosition: {
+        lat: number;
+        lng: number;
+    }
+    onMarkerUpdate: (newPosition: { lat: number; lng: number }) => void;
+}
+
+export default function DraggableMarker(props: DraggableMarkerProps) {
+    const { initialPosition, onMarkerUpdate } = props;
+    const markerRef = useRef<L.Marker>(null);
+    const eventHandlers = useMemo(
+        () => ({
+            drag() {
+                const marker = markerRef.current;
+                if (marker != null) {
+                    onMarkerUpdate(marker.getLatLng());
+                }
+            },
+        }),
+        [],
+    );
 
   return (
     <Marker
       draggable={true}
       eventHandlers={eventHandlers}
-      position={position}
+      position={initialPosition}
       ref={markerRef}>
     </Marker>
   )
