@@ -11,14 +11,16 @@ import L, { map } from "leaflet";
 
 export default function Map() {
     const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
+    const [mousePosition, setMousePosition] = useState<{ lat: number; lng: number } | null>(null);
 
     const [spline, setSpline] = useState<any>(null);
     useEffect(() => {
-        if(markers.length >= 2) {
-            const line = lineString(markers.map(coord => [coord.lng, coord.lat]));
+        const points = markers.concat(mousePosition ? [mousePosition] : []);
+        if(points.length >= 2) {
+            const line = lineString(points.map(coord => [coord.lng, coord.lat]));
             setSpline(bezierSpline(line));
         }
-    }, [markers]);
+    }, [markers, mousePosition]);
 
     function markerUpdate(index: number, newPosition: { lat: number; lng: number }) {
         setMarkers((markers) => markers.map((marker, i) => i === index ? newPosition : marker));
@@ -45,6 +47,7 @@ export default function Map() {
                     }}
                 />
             )}
+            <TrackMousePosition setPosition={setMousePosition} />
             {spline && <GeoJSON key={JSON.stringify(spline)} data={spline} style={{ color: 'blue' }} />}
         </MapContainer>
     )
@@ -54,6 +57,15 @@ function AddMarkerOnClick(props: { setMarkers: React.Dispatch<React.SetStateActi
     useMapEvents({
         click(e) {
             props.setMarkers((markers) => [...markers, e.latlng]);
+        },
+    });
+    return null;
+}
+
+function TrackMousePosition(props: { setPosition: React.Dispatch<React.SetStateAction<{ lat: number; lng: number; } | null>> }) {
+    const map = useMapEvents({
+        mousemove(e) {
+            props.setPosition(e.latlng);
         },
     });
     return null;
