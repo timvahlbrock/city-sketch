@@ -9,13 +9,17 @@ import DraggableMarker from "./draggableMarker";
 import { bezierSpline, lineString } from "@turf/turf";
 import L, { map } from "leaflet";
 
-export default function Map() {
+export interface MapProps {
+    isAdding: boolean;
+}
+
+export default function Map(props: MapProps) {
     const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
     const [mousePosition, setMousePosition] = useState<{ lat: number; lng: number } | null>(null);
 
     const [spline, setSpline] = useState<any>(null);
     useEffect(() => {
-        const points = markers.concat(mousePosition ? [mousePosition] : []);
+        const points = markers.concat(mousePosition && props.isAdding ? [mousePosition] : []);
         if(points.length >= 2) {
             const line = lineString(points.map(coord => [coord.lng, coord.lat]));
             setSpline(bezierSpline(line));
@@ -37,9 +41,10 @@ export default function Map() {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <AddMarkerOnClick setMarkers={setMarkers} />
+            {props.isAdding && <AddMarkerOnClick setMarkers={setMarkers} />}
             {markers.map((position, idx) =>
                 <DraggableMarker
+                    isDraggable={!props.isAdding}
                     key={idx}
                     initialPosition={position}
                     onMarkerUpdate={(newPosition) => {

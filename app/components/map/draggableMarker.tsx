@@ -4,6 +4,7 @@ import { Marker, Popup } from "react-leaflet"
 import { useState, useRef, useMemo, useCallback } from "react";
 
 export interface DraggableMarkerProps {
+    isDraggable: boolean;
     initialPosition: {
         lat: number;
         lng: number;
@@ -28,7 +29,7 @@ export default function DraggableMarker(props: DraggableMarkerProps) {
 
   return (
     <Marker
-      draggable={true}
+      draggable={props.isDraggable}
       eventHandlers={eventHandlers}
       position={initialPosition}
       ref={markerRef}>
