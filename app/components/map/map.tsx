@@ -4,27 +4,28 @@ import { MapContainer, Marker, Popup, TileLayer, useMapEvents, GeoJSON } from "r
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css'; 
 import 'leaflet-defaulticon-compatibility';
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import DraggableMarker from "./draggableMarker";
 import { bezierSpline, lineString } from "@turf/turf";
-import L, { map } from "leaflet";
 
 export interface MapProps {
     isAdding: boolean;
 }
 
 export default function Map(props: MapProps) {
-    const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
+    const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([
+        { lat: 51.83692, lng: 6.61 },
+        { lat: 51.83792, lng: 6.62 },
+        { lat: 51.83, lng: 6.63895 },
+    ]);
     const [mousePosition, setMousePosition] = useState<{ lat: number; lng: number } | null>(null);
 
-    const [spline, setSpline] = useState<any>(null);
-    useEffect(() => {
-        const points = markers.concat(mousePosition && props.isAdding ? [mousePosition] : []);
-        if(points.length >= 2) {
-            const line = lineString(points.map(coord => [coord.lng, coord.lat]));
-            setSpline(bezierSpline(line));
-        }
-    }, [markers, mousePosition]);
+    let spline = null;
+    const points = markers.concat(mousePosition && props.isAdding ? [mousePosition] : []);
+    if(points.length >= 2) {
+        const line = lineString(points.map(coord => [coord.lng, coord.lat]));
+        spline = bezierSpline(line);
+    }
 
     function markerUpdate(index: number, newPosition: { lat: number; lng: number }) {
         setMarkers((markers) => markers.map((marker, i) => i === index ? newPosition : marker));
