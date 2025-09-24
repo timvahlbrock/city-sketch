@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 import {LatLng} from "leaflet";
-import {getUpdatedMarkers} from "@/app/components/map/getUpdatedMarkers";
+import {getUpdatedMarkers} from "./getUpdatedMarkers";
 import {bezierSpline, lineString} from "@turf/turf";
 
 describe("getUpdatedMarkers", () => {
