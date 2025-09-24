@@ -1,7 +1,8 @@
 'use client';
 
-import { Marker, Popup } from "react-leaflet"
-import { useState, useRef, useMemo, useCallback } from "react";
+import {Marker} from "react-leaflet"
+import {useMemo, useRef} from "react";
+import {LatLng} from "leaflet";
 
 export interface DraggableMarkerProps {
     isDraggable: boolean;
@@ -9,7 +10,7 @@ export interface DraggableMarkerProps {
         lat: number;
         lng: number;
     }
-    onMarkerUpdate: (newPosition: { lat: number; lng: number }) => void;
+    onMarkerUpdate: (newPosition: LatLng) => void;
 }
 
 export default function DraggableMarker(props: DraggableMarkerProps) {

@@ -1,85 +1,43 @@
 import {useState} from "react";
-import {Feature, LineString} from "geojson";
 import {bezierSpline, lineString} from "@turf/turf";
-import {GeoJSON, useMapEvents} from "react-leaflet";
+import {Polyline, useMapEvents} from "react-leaflet";
 import {EventHandlers} from "@mui/utils";
-import L, {LineUtil} from "leaflet";
+import {LatLng, LeafletMouseEvent} from "leaflet";
 import DraggableMarker from "@/app/components/map/draggableMarker";
-import pointToSegmentDistance = LineUtil.pointToSegmentDistance;
+import {getUpdatedMarkers} from "@/app/components/map/getUpdatedMarkers";
 
 export interface DraggableLineProps {
     isAdding: boolean;
 }
 export function DraggableLine({isAdding}: DraggableLineProps) {
-    const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([
-        { lat: 51.83692, lng: 6.61 },
-        { lat: 51.83792, lng: 6.62 },
-        { lat: 51.83, lng: 6.63895 },
+    const [markers, setMarkers] = useState<LatLng[]>([
+        new LatLng(51.83692, 6.61),
+        new LatLng(51.83792, 6.62),
+        new LatLng(51.83, 6.63895),
     ]);
-    const [mousePosition, setMousePosition] = useState<{ lat: number; lng: number } | null>(null);
+    const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
+    console.dir(markers.map(m => m.toString()));
 
-    let spline: Feature<LineString> | null = null;
+    let spline: LatLng[] = [];
     const points = markers.concat(mousePosition && isAdding ? [mousePosition] : []);
     if(points.length >= 2) {
         const line = lineString(points.map(coord => [coord.lng, coord.lat]));
-        spline = bezierSpline(line);
+        spline = bezierSpline(line).geometry.coordinates.map(coordinate => new LatLng(coordinate[1], coordinate[0]));
     }
 
-    function markerUpdate(index: number, newPosition: { lat: number; lng: number }) {
+    function markerUpdate(index: number, newPosition: LatLng) {
         setMarkers((markers) => markers.map((marker, i) => i === index ? newPosition : marker));
     }
 
-    if(!spline) {
-        return null;
-    }
-
     const eventHandlers: EventHandlers = {
-        click: (e) => {
+        click: (e: LeafletMouseEvent) => {
+            alert(e.latlng)
             if(!spline) {
                 alert("No spline available");
                 return;
             }
 
-            let closestIndex = -1;
-            let closestDistance = Infinity;
-
-            for(let i = 0; i < spline.geometry.coordinates.length - 1; i++) {
-                const coord = spline.geometry.coordinates[i];
-                const distance = Math.sqrt(Math.pow(coord[0] - e.latlng.lng, 2) + Math.pow(coord[1] - e.latlng.lat, 2));
-                if(distance < closestDistance) {
-                    closestDistance = distance;
-                    closestIndex = i;
-                }
-            }
-
-            if(closestIndex === -1) {
-                alert("Could not find clicked point in spline");
-                return;
-            }
-
-            let precedingMarkerIndex = -1;
-            let minDistance = Infinity;
-            for(let i = 0; i < markers.length; i++) {
-                const marker = markers[i];
-                const distance = pointToSegmentDistance(L.point(marker.lng, marker.lat), L.point(spline.geometry.coordinates[closestIndex][0], spline.geometry.coordinates[closestIndex][1]), L.point(spline.geometry.coordinates[closestIndex + 1][0], spline.geometry.coordinates[closestIndex + 1][1]));
-                if(distance < minDistance) {
-                    minDistance = distance;
-                    precedingMarkerIndex = i;
-                }
-            }
-
-
-            if(precedingMarkerIndex === -1) {
-                alert("Could not find preceding marker");
-                return;
-            }
-
-            const newMarker = { lat: e.latlng.lat, lng: e.latlng.lng };
-            setMarkers((markers) => {
-                const newMarkers = [...markers];
-                newMarkers.splice(precedingMarkerIndex + 1, 0, newMarker);
-                return newMarkers;
-            });
+            setMarkers(getUpdatedMarkers(markers, spline, e.latlng));
         }
     }
 
@@ -96,11 +54,11 @@ export function DraggableLine({isAdding}: DraggableLineProps) {
                 }}
             />
         )}
-        <GeoJSON key={JSON.stringify(spline)} data={spline} style={{ color: 'blue' }} eventHandlers={eventHandlers} />
+        <Polyline positions={spline} pathOptions={{ color: 'blue' }} eventHandlers={eventHandlers}></Polyline>;
     </>;
 }
 
-function TrackMousePosition(props: { setPosition: React.Dispatch<React.SetStateAction<{ lat: number; lng: number; } | null>> }) {
+function TrackMousePosition(props: { setPosition: React.Dispatch<React.SetStateAction<LatLng | null>> }) {
     useMapEvents({
         mousemove(e) {
             props.setPosition(e.latlng);
@@ -109,7 +67,7 @@ function TrackMousePosition(props: { setPosition: React.Dispatch<React.SetStateA
     return null;
 }
 
-function AddMarkerOnClick(props: { setMarkers: React.Dispatch<React.SetStateAction<{ lat: number; lng: number; }[]>> }) {
+function AddMarkerOnClick(props: { setMarkers: React.Dispatch<React.SetStateAction<LatLng[]>> }) {
     useMapEvents({
         click(e) {
             props.setMarkers((markers) => [...markers, e.latlng]);
