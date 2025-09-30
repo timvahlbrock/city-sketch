@@ -1,6 +1,6 @@
 'use client';
 
-import {MapContainer, TileLayer} from "react-leaflet";
+import {MapContainer, Marker, Polyline, TileLayer} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
 import 'leaflet-defaulticon-compatibility';
@@ -24,6 +24,10 @@ export default function Map(props: MapProps) {
             />
 
             <DraggableLine isAdding={props.isAdding}/>
+            <Polyline positions={[
+                [51.825, 6.61],
+                [51.825, 6.60],
+            ]} />
         </MapContainer>
     )
 }
