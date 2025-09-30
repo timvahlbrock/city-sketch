@@ -1,19 +1,20 @@
 import {LatLng} from "leaflet";
+import {SplinePoint} from "@/app/components/map/leafletSpline";
 
 export function getUpdatedMarkers(
     markers: LatLng[],
-    spline: [number, number, number][],
+    spline: SplinePoint[],
     clickedPosition: LatLng
 ): LatLng[] {
     let closestIndex = getIndexOfLinePointClosestTo(spline.map(entry => {
-    return new LatLng(entry[1], entry[0]);
+        return entry.latLng
     }), clickedPosition);
     if (closestIndex === -1) {
         alert("Could not find clicked point in spline");
         return markers;
     }
 
-    let precedingMarkerIndex = getPrecedingMarkerIndex(markers, spline, closestIndex);
+    let precedingMarkerIndex = getPrecedingMarkerIndex(spline, closestIndex);
     if (precedingMarkerIndex === -1) {
         alert("Could not find preceding marker");
         return markers;
@@ -40,6 +41,6 @@ export function getIndexOfLinePointClosestTo(polyline: LatLng[], pointNearLine: 
     return closestIndex;
 }
 
-export function getPrecedingMarkerIndex(baseLine: LatLng[], spline: [number,number,number][], closestIndex: number) {
-    return spline[closestIndex][2];
+export function getPrecedingMarkerIndex(spline: SplinePoint[], closestIndex: number) {
+    return spline[closestIndex].basePointIndex
 }

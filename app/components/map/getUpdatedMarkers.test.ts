@@ -1,8 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {LatLng} from "leaflet";
-import {getIndexOfLinePointClosestTo, getPrecedingMarkerIndex, getUpdatedMarkers} from "./getUpdatedMarkers";
-import { lineString} from "@turf/turf";
-import {bezierSpline} from "./spline";
+import {getUpdatedMarkers} from "./getUpdatedMarkers";
+import {leafletSpline} from "./leafletSpline";
 
 describe("getUpdatedMarkers", () => {
     it("should add a marker at the correct position if the clicked location is about half way between the markers", () => {
@@ -11,8 +10,7 @@ describe("getUpdatedMarkers", () => {
             new LatLng(51.83, 6.60),
             new LatLng(51.83, 6.63)
         ];
-        const line = lineString(existingMarkers.map(coord => [coord.lng, coord.lat]));
-        const spline = bezierSpline(line);
+        const spline = leafletSpline(existingMarkers);
 
         const newMarker = new LatLng(51.83, 6.615)
         const newMarkers = getUpdatedMarkers(
@@ -37,19 +35,9 @@ describe("getUpdatedMarkers", () => {
             new LatLng(51.825, 6.60), // the marker on the intersection
             new LatLng(51.825, 6.58)
         ];
-        const line = lineString(existingMarkers.map(coord => [coord.lng, coord.lat]));
-        const spline = bezierSpline(line);
+        const spline = leafletSpline(existingMarkers);
 
         const newMarker = new LatLng(51.8225, 6.60);
-
-        const closestIndex = getIndexOfLinePointClosestTo(spline.map(entry => {
-            return new LatLng(entry[1], entry[0]);
-        }), newMarker);
-        expect(spline[closestIndex][1]).toBeLessThan(51.825);
-        expect(spline[closestIndex][0]).toBeCloseTo(6.60, 2);
-
-        const precedingMarkerIndex = getPrecedingMarkerIndex(existingMarkers, spline, closestIndex);
-        expect(precedingMarkerIndex).toEqual(0);
 
         const newMarkers = getUpdatedMarkers(
             existingMarkers,

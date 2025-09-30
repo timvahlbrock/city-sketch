@@ -1,13 +1,10 @@
 import {useState} from "react";
-import {lineString} from "@turf/turf";
 import {Polyline, useMapEvents} from "react-leaflet";
 import {EventHandlers} from "@mui/utils";
 import {LatLng, LeafletMouseEvent} from "leaflet";
 import DraggableMarker from "@/app/components/map/draggableMarker";
 import {getUpdatedMarkers} from "@/app/components/map/getUpdatedMarkers";
-import {Fab} from "@mui/material";
-import { AccessAlarm } from "@mui/icons-material";
-import bezierSpline from "@/app/components/map/spline";
+import leafletSpline, {SplinePoint} from "@/app/components/map/leafletSpline";
 
 export interface DraggableLineProps {
     isAdding: boolean;
@@ -25,11 +22,10 @@ export function DraggableLine({isAdding}: DraggableLineProps) {
     const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
     console.dir(markers.map(m => m.toString()));
 
-    let spline: [number, number,number][] = [];
+    let spline: SplinePoint[] = [];
     const points = markers.concat(mousePosition && isAdding ? [mousePosition] : []);
     if(points.length >= 2) {
-        const line = lineString(points.map(coord => [coord.lng, coord.lat]));
-        spline = bezierSpline(line);
+        spline = leafletSpline(points);
     }
 
     function markerUpdate(index: number, newPosition: LatLng) {
@@ -55,17 +51,7 @@ export function DraggableLine({isAdding}: DraggableLineProps) {
                 }}
             />
         )}
-        <Fab
-            onClick={() => eventHandlers.click({latlng: new LatLng(51.8225, 6.60)})}
-            color={"secondary"}
-            style={{
-                position: 'absolute',
-                bottom: "2rem",
-                right: "1rem",
-            }}>
-            <AccessAlarm />
-        </Fab>
-        <Polyline positions={spline.map(entry => new LatLng(entry[1], entry[0]))} pathOptions={{ color: 'blue' }} eventHandlers={eventHandlers}></Polyline>;
+        <Polyline positions={spline.map(entry => entry.latLng)} pathOptions={{ color: 'blue' }} eventHandlers={eventHandlers}></Polyline>;
     </>;
 }
 
