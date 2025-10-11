@@ -43,7 +43,7 @@ export function DraggableLine({initialMarkers, isAdding}: DraggableLineProps) {
                 }}
             />
         )}
-        <Polyline positions={spline.map(entry => entry.latLng)} pathOptions={{ color: 'blue' }} eventHandlers={eventHandlers}></Polyline>;
+        <Polyline positions={spline.map(entry => entry.latLng)} pathOptions={{ color: 'blue', weight: 5 }} eventHandlers={eventHandlers}></Polyline>;
     </>;
 }
 
