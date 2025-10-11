@@ -7,20 +7,12 @@ import {getUpdatedMarkers} from "@/app/components/map/getUpdatedMarkers";
 import leafletSpline, {SplinePoint} from "@/app/components/map/leafletSpline";
 
 export interface DraggableLineProps {
+    initialMarkers: LatLng[];
     isAdding: boolean;
 }
-export function DraggableLine({isAdding}: DraggableLineProps) {
-    const [markers, setMarkers] = useState<LatLng[]>([
-        new LatLng(51.82, 6.60),
-        new LatLng(51.83, 6.60),
-        new LatLng(51.85, 6.60),
-        new LatLng(51.83, 6.61),
-        new LatLng(51.825, 6.61),
-        new LatLng(51.825, 6.60), // the marker on the intersection
-        new LatLng(51.825, 6.58)
-    ]);
+export function DraggableLine({initialMarkers, isAdding}: DraggableLineProps) {
+    const [markers, setMarkers] = useState<LatLng[]>(initialMarkers);
     const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
-    console.dir(markers.map(m => m.toString()));
 
     let spline: SplinePoint[] = [];
     const points = markers.concat(mousePosition && isAdding ? [mousePosition] : []);
