@@ -4,7 +4,7 @@ import {MapContainer, TileLayer} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
 import 'leaflet-defaulticon-compatibility';
-import ExistingBusNetwork from "@/app/components/map/existingBusNetwork";
+import ExistingBusNetwork from "@/app/components/map/existingBusNetwork/existingBusNetwork";
 import useRemoteGeoJson from "@/app/hooks/useRemoteGeoJson";
 
 export interface MapProps {
