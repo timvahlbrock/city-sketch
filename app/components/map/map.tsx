@@ -1,36 +1,19 @@
 'use client';
 
-import {MapContainer, Polyline, TileLayer} from "react-leaflet";
+import {MapContainer, TileLayer} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
 import 'leaflet-defaulticon-compatibility';
-import {FeatureCollection} from "geojson";
-import {useEffect, useState} from "react";
+import ExistingBusNetwork from "@/app/components/map/existingBusNetwork";
+import useRemoteGeoJson from "@/app/hooks/useRemoteGeoJson";
 
 export interface MapProps {
     isAdding: boolean;
 }
 
-function useBusData() {
-    const [busData, setBusData] = useState<FeatureCollection | null>(null);
-
-    useEffect(() => {
-        fetch('/data/busses-borken.geojson')
-            .then(response => response.json())
-            .then(data => setBusData(data))
-            .catch(error => console.error('Error fetching bus data:', error));
-    }, []);
-
-    return busData;
-}
-
 export default function Map(props: MapProps) {
-    const busData = useBusData();
+    const busData = useRemoteGeoJson('/data/bocholt-busse.geojson');
 
-    const filteredFeatures = (busData?.features ?? [])
-        .filter(feature => feature.properties)
-        .filter(feature => feature.properties!.type === "route")
-        .filter(feature => feature.properties!.ref?.startsWith("C"));
 
     return (
         <MapContainer
@@ -58,24 +41,7 @@ export default function Map(props: MapProps) {
             {/*    }*/}
             {/*    isAdding={props.isAdding}*/}
             {/*    />*/}
-            {filteredFeatures
-                .map(feature => {
-                if(feature.geometry.type == "LineString") {
-                    const coordinates = feature.geometry.coordinates.map(coord => [coord[1], coord[0]] as [number, number]);
-                    return <Polyline
-                        key={feature.properties?.id}
-                        positions={coordinates}
-                        pathOptions={{ color: 'black', weight: 3 }} />;
-                } else if(feature.geometry.type == "MultiLineString") {
-                    return feature.geometry.coordinates.map((lineCoords, index) => {
-                        const coordinates = lineCoords.map(coord => [coord[1], coord[0]] as [number, number]);
-                        return <Polyline
-                                    key={`${feature.properties?.id}-${index}`}
-                                    positions={coordinates}
-                                    pathOptions={{ color: 'black', weight: 3 }} />;
-                    });
-                }
-            })}
+            {busData && <ExistingBusNetwork network={busData} />}
         </MapContainer>
     )
 }
