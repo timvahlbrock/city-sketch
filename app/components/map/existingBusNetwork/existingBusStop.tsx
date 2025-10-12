@@ -1,10 +1,10 @@
-import {Marker, Popup} from "react-leaflet";
-import {Feature} from "geojson";
+import {Marker} from "react-leaflet";
 import {icon} from "leaflet";
 import ExistingBusStopPopup from "@/app/components/map/existingBusNetwork/existingBusStopPopup";
+import {FeatureWithProperties} from "@/app/components/map/featureWithProperties";
 
 interface ExistingBusStopProps {
-    existingStop: Feature
+    existingStop: FeatureWithProperties
 }
 
 const markerIcon = icon({

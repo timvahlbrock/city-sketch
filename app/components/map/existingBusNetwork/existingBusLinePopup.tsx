@@ -1,8 +1,8 @@
 import {Popup} from "react-leaflet";
-import {Feature} from "geojson";
+import {FeatureWithProperties} from "@/app/components/map/featureWithProperties";
 
 interface ExistingBusLinePopupProps {
-    existingLine: Feature;
+    existingLine: FeatureWithProperties;
 }
 
 export default function ExistingBusLinePopup({existingLine}: ExistingBusLinePopupProps) {
@@ -13,6 +13,10 @@ export default function ExistingBusLinePopup({existingLine}: ExistingBusLinePopu
         <span className={"font-bold"}>Ende:</span> {existingLine.properties!.to}<br />
         <span className={"font-bold"}>Betreiber:</span> {existingLine.properties!.operator}<br />
         <br/>
-        <a className={"text-blue-500 underline"} href={`https://www.openstreetmap.org/${existingLine.properties!["@id"]}`} target={"_blank"} rel={"noreferrer"}>Auf OpenStreetMap ansehen</a>
+        <a
+            className={"text-blue-500 underline"}
+            href={`https://www.openstreetmap.org/${existingLine.properties!["@id"]}`}
+            target={"_blank"} rel={"noreferrer"}
+        >Auf OpenStreetMap ansehen</a>
     </Popup>;
 }

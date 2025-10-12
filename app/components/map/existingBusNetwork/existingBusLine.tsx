@@ -1,9 +1,10 @@
-import {Polyline, Popup} from "react-leaflet";
-import {Feature, Position} from "geojson";
+import {Polyline} from "react-leaflet";
+import {Position} from "geojson";
 import ExistingBusLinePopup from "@/app/components/map/existingBusNetwork/existingBusLinePopup";
+import {FeatureWithProperties} from "@/app/components/map/featureWithProperties";
 
 interface BusLineProps {
-    existingLine: Feature;
+    existingLine: FeatureWithProperties;
 }
 
 export function ExistingBusLine({existingLine}: BusLineProps) {
