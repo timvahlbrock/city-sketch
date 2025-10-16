@@ -1,4 +1,4 @@
-import {Feature, FeatureCollection} from "geojson";
+import {FeatureCollection} from "geojson";
 import {ExistingBusLine} from "@/app/components/map/existingBusNetwork/existingBusLine";
 import ExistingBusStop from "@/app/components/map/existingBusNetwork/existingBusStop";
 import {isFeatureWithProperties} from "@/app/components/map/featureWithProperties";
