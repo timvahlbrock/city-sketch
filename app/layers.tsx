@@ -29,7 +29,7 @@ export function useLayers() {
                 new LatLng(51.825, 6.6), // the marker on the intersection
                 new LatLng(51.825, 6.58),
               ]}
-              isAdding={true}
+              isAdding={false}
             />
           ),
         },
