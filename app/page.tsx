@@ -1,9 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, Checkbox, CheckboxChangeEvent, Splitter } from "antd";
 import { useLayers } from "@/app/layers";
+import { Map as LeafletMap } from "leaflet";
 
 const DynamicMap = dynamic(() => import("./components/map/map"), {
   ssr: false,
@@ -36,11 +37,20 @@ export default function Home() {
     .filter((layer) => selectedLayers.includes(layer.id))
     .map((layer) => layer.element);
 
+  const mapRef = useRef<LeafletMap | null>(null);
+
   return (
     <>
-      <Splitter layout={dividerOrientation} className={"h-full"}>
+      <Splitter
+        layout={dividerOrientation}
+        className={"h-full"}
+        onResize={() => mapRef.current?.invalidateSize({ pan: true })}
+      >
         <Splitter.Panel defaultSize={"70%"}>
-          <DynamicMap isAdding={false}>{activeLayers}</DynamicMap>;
+          <DynamicMap ref={mapRef} isAdding={false}>
+            {activeLayers}
+          </DynamicMap>
+          ;
         </Splitter.Panel>
         <Splitter.Panel className={"bg-white"}>
           <Card className={"w-full"} title={"Layer"}>
