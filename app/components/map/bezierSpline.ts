@@ -29,6 +29,13 @@ interface Point {
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+interface SplineOptions {
+    duration?: number;
+    points?: Point[];
+    sharpness?: number;
+}
+
 class Spline {
     public duration: number;
     public points: Point[];
@@ -38,7 +45,7 @@ class Spline {
     public length: number;
     public delay: number;
 
-    constructor(options?: any) {
+    constructor(options: SplineOptions) {
         this.points = options.points || [];
         this.duration = options.duration || 10000;
         this.sharpness = options.sharpness || 0.85;

@@ -31,7 +31,7 @@ export default function DraggableMarker(props: DraggableMarkerProps) {
                 }
             },
         }),
-        [],
+        [onMarkerUpdate, markerRef],
     );
 
   return (

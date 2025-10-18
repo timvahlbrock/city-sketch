@@ -9,7 +9,7 @@ export default function useRemoteGeoJson(url: string) {
             .then(response => response.json())
             .then(data => setGeoJson(data))
             .catch(error => console.error('Error fetching bus data:', error));
-    }, []);
+    }, [url]);
 
     return geoJson;
 }

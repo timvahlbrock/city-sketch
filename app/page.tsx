@@ -8,8 +8,6 @@ import {useLayers} from "@/app/layers";
 const DynamicMap = dynamic(() => import('./components/map/map'), {ssr: false});
 
 export default function Home() {
-    const [isAdding, setIsAdding] = useState(false)
-
     const dividerOrientation = window.innerWidth > window.innerHeight ? "horizontal" : "vertical";
     const layers = useLayers();
 
@@ -19,7 +17,7 @@ export default function Home() {
         if(layers.loaded) {
             setSelectedLayers(layers.data.map(layer => layer.id));
         }
-    }, [layers.loaded]);
+    }, [layers.loaded, layers.data]);
 
     const onLayerCheckChanged = (e: CheckboxChangeEvent, layerId: string) => {
         if (e.target.checked) {
@@ -37,7 +35,7 @@ export default function Home() {
         <Splitter layout={dividerOrientation} className={"h-full"}>
             <Splitter.Panel defaultSize={"70%"}>
                 <DynamicMap
-                    isAdding={isAdding}>
+                    isAdding={false}>
                     {activeLayers}
                 </DynamicMap>;
             </Splitter.Panel>

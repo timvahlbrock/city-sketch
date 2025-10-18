@@ -6,7 +6,7 @@ export function getUpdatedMarkers(
     spline: SplinePoint[],
     clickedPosition: LatLng
 ): LatLng[] {
-    let closestIndex = getIndexOfLinePointClosestTo(spline.map(entry => {
+    const closestIndex = getIndexOfLinePointClosestTo(spline.map(entry => {
         return entry.latLng
     }), clickedPosition);
     if (closestIndex === -1) {
@@ -14,7 +14,7 @@ export function getUpdatedMarkers(
         return markers;
     }
 
-    let precedingMarkerIndex = getPrecedingMarkerIndex(spline, closestIndex);
+    const precedingMarkerIndex = getPrecedingMarkerIndex(spline, closestIndex);
     if (precedingMarkerIndex === -1) {
         alert("Could not find preceding marker");
         return markers;
