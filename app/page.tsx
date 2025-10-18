@@ -47,7 +47,7 @@ export default function Home() {
             <AddIcon/>
         </Fab>
         <Splitter layout={dividerOrientation} className={"h-full"}>
-            <Splitter.Panel>
+            <Splitter.Panel defaultSize={"70%"}>
                 <DynamicMap
                     isAdding={isAdding}>
                     {activeLayers}
