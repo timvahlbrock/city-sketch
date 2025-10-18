@@ -1,10 +1,8 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import {Fab} from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
 import {useEffect, useState} from "react";
-import {Card, Checkbox, CheckboxChangeEvent, Space, Splitter} from "antd";
+import {Card, Checkbox, CheckboxChangeEvent, Splitter} from "antd";
 import {useLayers} from "@/app/layers";
 
 const DynamicMap = dynamic(() => import('./components/map/map'), {ssr: false});
@@ -36,16 +34,6 @@ export default function Home() {
         .map(layer => layer.element);
 
     return <>
-        <Fab
-            onClick={() => setIsAdding(!isAdding)}
-            color={isAdding ? "secondary" : "primary"}
-            style={{
-                position: 'absolute',
-                bottom: "1rem",
-                right: "1rem",
-            }}>
-            <AddIcon/>
-        </Fab>
         <Splitter layout={dividerOrientation} className={"h-full"}>
             <Splitter.Panel defaultSize={"70%"}>
                 <DynamicMap

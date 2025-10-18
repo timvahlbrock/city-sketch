@@ -1,7 +1,6 @@
 import {useState} from "react";
 import {Polyline, useMapEvents} from "react-leaflet";
-import {EventHandlers} from "@mui/utils";
-import {LatLng, LeafletMouseEvent} from "leaflet";
+import {LatLng, type LeafletEventHandlerFnMap, LeafletMouseEvent} from "leaflet";
 import DraggableMarker from "@/app/components/map/draggableMarker";
 import {getUpdatedMarkers} from "@/app/components/map/getUpdatedMarkers";
 import leafletSpline, {SplinePoint} from "@/app/components/map/leafletSpline";
@@ -24,7 +23,7 @@ export function DraggableLine({initialMarkers, isAdding}: DraggableLineProps) {
         setMarkers((markers) => markers.map((marker, i) => i === index ? newPosition : marker));
     }
 
-    const eventHandlers: EventHandlers = {
+    const eventHandlers: LeafletEventHandlerFnMap = {
         click: (e: LeafletMouseEvent) => {
             setMarkers(getUpdatedMarkers(markers, spline, e.latlng));
         }
