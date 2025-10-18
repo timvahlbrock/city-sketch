@@ -1,6 +1,6 @@
 interface Point {
-    x: number;
-    y: number;
+  x: number;
+  y: number;
 }
 
 /**
@@ -31,119 +31,122 @@ interface Point {
  */
 
 interface SplineOptions {
-    duration?: number;
-    points?: Point[];
-    sharpness?: number;
+  duration?: number;
+  points?: Point[];
+  sharpness?: number;
 }
 
 class Spline {
-    public duration: number;
-    public points: Point[];
-    public sharpness: number;
-    public centers: Point[];
-    public controls: Array<[Point, Point]>;
-    public length: number;
-    public delay: number;
+  public duration: number;
+  public points: Point[];
+  public sharpness: number;
+  public centers: Point[];
+  public controls: Array<[Point, Point]>;
+  public length: number;
+  public delay: number;
 
-    constructor(options: SplineOptions) {
-        this.points = options.points || [];
-        this.duration = options.duration || 10000;
-        this.sharpness = options.sharpness || 0.85;
-        this.centers = [];
-        this.controls = [];
-        this.length = this.points.length;
-        this.delay = 0;
+  constructor(options: SplineOptions) {
+    this.points = options.points || [];
+    this.duration = options.duration || 10000;
+    this.sharpness = options.sharpness || 0.85;
+    this.centers = [];
+    this.controls = [];
+    this.length = this.points.length;
+    this.delay = 0;
 
-        for (let i = 0; i < this.length - 1; i++) {
-            const p1 = this.points[i];
-            const p2 = this.points[i + 1];
-            this.centers.push({
-                x: (p1.x + p2.x) / 2,
-                y: (p1.y + p2.y) / 2,
-            });
-        }
-        this.controls.push([this.points[0], this.points[0]]);
-        for (let i = 0; i < this.centers.length - 1; i++) {
-            const dx =
-                this.points[i + 1].x - (this.centers[i].x + this.centers[i + 1].x) / 2;
-            const dy =
-                this.points[i + 1].y - (this.centers[i].y + this.centers[i + 1].y) / 2;
-            this.controls.push([
-                {
-                    x:
-                        (1.0 - this.sharpness) * this.points[i + 1].x +
-                        this.sharpness * (this.centers[i].x + dx),
-                    y:
-                        (1.0 - this.sharpness) * this.points[i + 1].y +
-                        this.sharpness * (this.centers[i].y + dy),
-                },
-                {
-                    x:
-                        (1.0 - this.sharpness) * this.points[i + 1].x +
-                        this.sharpness * (this.centers[i + 1].x + dx),
-                    y:
-                        (1.0 - this.sharpness) * this.points[i + 1].y +
-                        this.sharpness * (this.centers[i + 1].y + dy),
-                },
-            ]);
-        }
-        this.controls.push([
-            this.points[this.length - 1],
-            this.points[this.length - 1],
-        ]);
-        return this;
+    for (let i = 0; i < this.length - 1; i++) {
+      const p1 = this.points[i];
+      const p2 = this.points[i + 1];
+      this.centers.push({
+        x: (p1.x + p2.x) / 2,
+        y: (p1.y + p2.y) / 2,
+      });
+    }
+    this.controls.push([this.points[0], this.points[0]]);
+    for (let i = 0; i < this.centers.length - 1; i++) {
+      const dx =
+        this.points[i + 1].x - (this.centers[i].x + this.centers[i + 1].x) / 2;
+      const dy =
+        this.points[i + 1].y - (this.centers[i].y + this.centers[i + 1].y) / 2;
+      this.controls.push([
+        {
+          x:
+            (1.0 - this.sharpness) * this.points[i + 1].x +
+            this.sharpness * (this.centers[i].x + dx),
+          y:
+            (1.0 - this.sharpness) * this.points[i + 1].y +
+            this.sharpness * (this.centers[i].y + dy),
+        },
+        {
+          x:
+            (1.0 - this.sharpness) * this.points[i + 1].x +
+            this.sharpness * (this.centers[i + 1].x + dx),
+          y:
+            (1.0 - this.sharpness) * this.points[i + 1].y +
+            this.sharpness * (this.centers[i + 1].y + dy),
+        },
+      ]);
+    }
+    this.controls.push([
+      this.points[this.length - 1],
+      this.points[this.length - 1],
+    ]);
+    return this;
+  }
+
+  /**
+   * Gets the position of the point, given time.
+   *
+   * WARNING: The speed is not constant. The time it takes between control points is constant.
+   *
+   * For constant speed, use Spline.steps[i];
+   */
+  public pos(time: number): [Point, number] {
+    let t = time - this.delay;
+    if (t < 0) {
+      t = 0;
+    }
+    if (t > this.duration) {
+      t = this.duration - 1;
+    }
+    // t = t-this.delay;
+    const t2 = t / this.duration;
+    if (t2 >= 1) {
+      return [this.points[this.length - 1], this.length - 1];
     }
 
-    /**
-     * Gets the position of the point, given time.
-     *
-     * WARNING: The speed is not constant. The time it takes between control points is constant.
-     *
-     * For constant speed, use Spline.steps[i];
-     */
-    public pos(time: number): [Point, number] {
-        let t = time - this.delay;
-        if (t < 0) {
-            t = 0;
-        }
-        if (t > this.duration) {
-            t = this.duration - 1;
-        }
-        // t = t-this.delay;
-        const t2 = t / this.duration;
-        if (t2 >= 1) {
-            return [this.points[this.length - 1], this.length - 1];
-        }
-
-        const n = Math.floor((this.points.length - 1) * t2);
-        const t1 = (this.length - 1) * t2 - n;
-        return [bezier(
-            t1,
-            this.points[n],
-            this.controls[n][1],
-            this.controls[n + 1][0],
-            this.points[n + 1]
-        ), n];
-    }
+    const n = Math.floor((this.points.length - 1) * t2);
+    const t1 = (this.length - 1) * t2 - n;
+    return [
+      bezier(
+        t1,
+        this.points[n],
+        this.controls[n][1],
+        this.controls[n + 1][0],
+        this.points[n + 1],
+      ),
+      n,
+    ];
+  }
 }
 
 function bezier(t: number, p1: Point, c1: Point, c2: Point, p2: Point) {
-    const b = B(t);
-    const pos = {
-        x: p2.x * b[0] + c2.x * b[1] + c1.x * b[2] + p1.x * b[3],
-        y: p2.y * b[0] + c2.y * b[1] + c1.y * b[2] + p1.y * b[3],
-    };
-    return pos;
+  const b = B(t);
+  const pos = {
+    x: p2.x * b[0] + c2.x * b[1] + c1.x * b[2] + p1.x * b[3],
+    y: p2.y * b[0] + c2.y * b[1] + c1.y * b[2] + p1.y * b[3],
+  };
+  return pos;
 }
 function B(t: number) {
-    const t2 = t * t;
-    const t3 = t2 * t;
-    return [
-        t3,
-        3 * t2 * (1 - t),
-        3 * t * (1 - t) * (1 - t),
-        (1 - t) * (1 - t) * (1 - t),
-    ];
+  const t2 = t * t;
+  const t3 = t2 * t;
+  return [
+    t3,
+    3 * t2 * (1 - t),
+    3 * t * (1 - t) * (1 - t),
+    (1 - t) * (1 - t) * (1 - t),
+  ];
 }
 
 export { Spline, type Point };

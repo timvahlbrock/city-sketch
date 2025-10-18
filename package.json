@@ -7,6 +7,8 @@
     "build": "next build --turbopack",
     "lint:ci": "eslint app --ext .js,.jsx,.ts,.tsx",
     "lint": "npm run lint:ci -- --fix",
+    "format:ci": "prettier --check .",
+    "format": "prettier --write .",
     "start": "next start"
   },
   "dependencies": {
@@ -29,6 +31,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9.38.0",
     "eslint-config-next": "^15.5.2",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "3.6.2",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^3.2.4"

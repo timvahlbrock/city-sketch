@@ -1,15 +1,15 @@
-import {useEffect, useState} from "react";
-import {FeatureCollection} from "geojson";
+import { useEffect, useState } from "react";
+import { FeatureCollection } from "geojson";
 
 export default function useRemoteGeoJson(url: string) {
-    const [geoJson, setGeoJson] = useState<FeatureCollection | null>(null);
+  const [geoJson, setGeoJson] = useState<FeatureCollection | null>(null);
 
-    useEffect(() => {
-        fetch(url)
-            .then(response => response.json())
-            .then(data => setGeoJson(data))
-            .catch(error => console.error('Error fetching bus data:', error));
-    }, [url]);
+  useEffect(() => {
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => setGeoJson(data))
+      .catch((error) => console.error("Error fetching bus data:", error));
+  }, [url]);
 
-    return geoJson;
+  return geoJson;
 }
