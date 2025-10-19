@@ -12,10 +12,7 @@ export interface Layer {
 
 export async function getLayers(): Promise<Layer[]> {
   const busData = await fs
-    .readFile(
-      process.cwd() + "/public/data/existing-bus-network.geojson",
-      "utf-8",
-    )
+    .readFile(process.cwd() + "/public/data/bocholt-busse.geojson", "utf-8")
     .then((data) => JSON.parse(data))
     .catch(() => null);
   return [
@@ -29,11 +26,7 @@ export async function getLayers(): Promise<Layer[]> {
     {
       id: "custom-line",
       label: "Eigene Linie",
-      element: (
-        <Suspense fallback={null} key={"ring-line"}>
-          <EditableLine dataId={"ring-line"} />
-        </Suspense>
-      ),
+      element: <EditableLine dataId={"ring-line"} />,
     },
   ];
 }
