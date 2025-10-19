@@ -1,40 +1,39 @@
-import useRemoteGeoJson from "@/app/hooks/useRemoteGeoJson";
+"use server";
 import ExistingBusNetwork from "@/app/components/map/existingBusNetwork/existingBusNetwork";
 import EditableLine from "@/app/components/map/EditableLine";
-import { Suspense } from "react";
+import { ReactNode, Suspense } from "react";
+import * as fs from "node:fs/promises";
 
-export function useLayers() {
-  const busData = useRemoteGeoJson("/data/bocholt-busse.geojson");
+export interface Layer {
+  id: string;
+  label: string;
+  element: ReactNode;
+}
 
-  if (busData) {
-    return {
-      loaded: true,
-      data: [
-        {
-          id: "existing-bus-network",
-          label: "Bestehendes Busnetz",
-          element: (
-            <ExistingBusNetwork
-              key={"existing-bus-network"}
-              network={busData}
-            />
-          ),
-        },
-        {
-          id: "custom-line",
-          label: "Eigene Linie",
-          element: (
-            <Suspense fallback={null} key={"ring-line"}>
-              <EditableLine dataId={"ring-line"} />
-            </Suspense>
-          ),
-        },
-      ],
-    };
-  }
-
-  return {
-    loaded: false,
-    data: [],
-  };
+export async function getLayers(): Promise<Layer[]> {
+  const busData = await fs
+    .readFile(
+      process.cwd() + "/public/data/existing-bus-network.geojson",
+      "utf-8",
+    )
+    .then((data) => JSON.parse(data))
+    .catch(() => null);
+  return [
+    {
+      id: "existing-bus-network",
+      label: "Bestehendes Busnetz",
+      element: (
+        <ExistingBusNetwork key={"existing-bus-network"} network={busData} />
+      ),
+    },
+    {
+      id: "custom-line",
+      label: "Eigene Linie",
+      element: (
+        <Suspense fallback={null} key={"ring-line"}>
+          <EditableLine dataId={"ring-line"} />
+        </Suspense>
+      ),
+    },
+  ];
 }

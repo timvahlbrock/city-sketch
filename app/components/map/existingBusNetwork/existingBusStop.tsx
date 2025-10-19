@@ -1,3 +1,4 @@
+"use client";
 import { Marker } from "react-leaflet";
 import { icon } from "leaflet";
 import ExistingBusStopPopup from "@/app/components/map/existingBusNetwork/existingBusStopPopup";

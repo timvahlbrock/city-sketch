@@ -1,19 +1,24 @@
-import { FeatureCollection } from "geojson";
+"use server";
 import DraggableLine from "@/app/components/map/DraggableLine";
-import useRemoteGeoJson from "@/app/hooks/useRemoteGeoJson";
+import path from "path";
+import * as fs from "node:fs/promises";
+import { FeatureCollection } from "geojson";
 
 export interface EditableLineProps {
   dataId: string;
 }
 
-export default function EditableLine({ dataId }: EditableLineProps) {
-  const data = useRemoteGeoJson<FeatureCollection | null>(
-    `/data/${dataId}.geojson`,
+export default async function EditableLine({ dataId }: EditableLineProps) {
+  const filePath = path.resolve(
+    process.cwd(),
+    "public",
+    "data",
+    `${dataId}.geojson`,
   );
+  const raw = await fs.readFile(filePath, "utf-8");
+  const data = JSON.parse(raw) as FeatureCollection;
 
-  if (!data) {
-    return null;
-  }
-
-  return <DraggableLine initialMarkers={data} isAdding={false} />;
+  return (
+    <DraggableLine initialMarkers={data} isAdding={false} dataId={dataId} />
+  );
 }

@@ -1,3 +1,4 @@
+"use client";
 import { Polyline } from "react-leaflet";
 import { Position } from "geojson";
 import ExistingBusLinePopup from "@/app/components/map/existingBusNetwork/existingBusLinePopup";

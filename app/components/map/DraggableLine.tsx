@@ -1,5 +1,5 @@
 "use client";
-import { use, useState } from "react";
+import { useState } from "react";
 import { Polyline, useMapEvents } from "react-leaflet";
 import {
   LatLng,
@@ -7,17 +7,26 @@ import {
   LeafletMouseEvent,
 } from "leaflet";
 import DraggableMarker from "@/app/components/map/draggableMarker";
-import { getUpdatedMarkers } from "@/app/components/map/getUpdatedMarkers";
+import {
+  getIndexOfLinePointClosestTo,
+  getPrecedingMarkerIndex,
+} from "@/app/components/map/getUpdatedMarkers";
 import leafletSpline, { SplinePoint } from "@/app/components/map/leafletSpline";
 import { FeatureCollection, LineString } from "geojson";
+import {
+  pushMarkerAdded,
+  pushMarkerMoved,
+} from "@/app/components/map/serverActions";
 
 export interface DraggableLineProps {
   initialMarkers: FeatureCollection;
   isAdding: boolean;
+  dataId: string;
 }
 export default function DraggableLine({
   initialMarkers,
   isAdding,
+  dataId,
 }: DraggableLineProps) {
   const resolvedMarkers =
     (initialMarkers.features[0].geometry as LineString)?.coordinates.map(
@@ -35,6 +44,10 @@ export default function DraggableLine({
   }
 
   function markerUpdate(index: number, newPosition: LatLng) {
+    pushMarkerMoved(dataId, index, {
+      lat: newPosition.lat,
+      lng: newPosition.lng,
+    });
     setMarkers((markers) =>
       markers.map((marker, i) => (i === index ? newPosition : marker)),
     );
@@ -42,7 +55,34 @@ export default function DraggableLine({
 
   const eventHandlers: LeafletEventHandlerFnMap = {
     click: (e: LeafletMouseEvent) => {
-      setMarkers(getUpdatedMarkers(markers, spline, e.latlng));
+      const closestIndex = getIndexOfLinePointClosestTo(
+        spline.map((entry) => {
+          return entry.latLng;
+        }),
+        e.latlng,
+      );
+      if (closestIndex === -1) {
+        alert("Could not find clicked point in spline");
+        return markers;
+      }
+
+      const precedingMarkerIndex = getPrecedingMarkerIndex(
+        spline,
+        closestIndex,
+      );
+      if (precedingMarkerIndex === -1) {
+        alert("Could not find preceding marker");
+        return markers;
+      }
+
+      pushMarkerAdded(dataId, precedingMarkerIndex + 1, {
+        lat: e.latlng.lat,
+        lng: e.latlng.lng,
+      });
+
+      const newMarkers = [...markers];
+      newMarkers.splice(precedingMarkerIndex + 1, 0, e.latlng);
+      setMarkers(newMarkers);
     },
   };
 
