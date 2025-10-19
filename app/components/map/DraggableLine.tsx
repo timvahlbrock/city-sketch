@@ -1,4 +1,5 @@
-import { useState } from "react";
+"use client";
+import { use, useState } from "react";
 import { Polyline, useMapEvents } from "react-leaflet";
 import {
   LatLng,
@@ -8,16 +9,21 @@ import {
 import DraggableMarker from "@/app/components/map/draggableMarker";
 import { getUpdatedMarkers } from "@/app/components/map/getUpdatedMarkers";
 import leafletSpline, { SplinePoint } from "@/app/components/map/leafletSpline";
+import { FeatureCollection, LineString } from "geojson";
 
 export interface DraggableLineProps {
-  initialMarkers: LatLng[];
+  initialMarkers: FeatureCollection;
   isAdding: boolean;
 }
-export function DraggableLine({
+export default function DraggableLine({
   initialMarkers,
   isAdding,
 }: DraggableLineProps) {
-  const [markers, setMarkers] = useState<LatLng[]>(initialMarkers);
+  const resolvedMarkers =
+    (initialMarkers.features[0].geometry as LineString)?.coordinates.map(
+      (coord: number[]) => new LatLng(coord[1], coord[0]),
+    ) ?? [];
+  const [markers, setMarkers] = useState<LatLng[]>(resolvedMarkers);
   const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
 
   let spline: SplinePoint[] = [];

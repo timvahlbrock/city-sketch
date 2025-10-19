@@ -62,7 +62,7 @@ export default function Home() {
                 layer.label + " " + selectedLayers.includes(layer.id),
               );
               return (
-                <>
+                <span key={layer.id}>
                   <Checkbox
                     checked={selectedLayers.includes(layer.id)}
                     key={layer.id}
@@ -71,7 +71,7 @@ export default function Home() {
                     {layer.label}
                   </Checkbox>
                   <br />
-                </>
+                </span>
               );
             })}
           </Card>

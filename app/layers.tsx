@@ -1,17 +1,10 @@
 import useRemoteGeoJson from "@/app/hooks/useRemoteGeoJson";
 import ExistingBusNetwork from "@/app/components/map/existingBusNetwork/existingBusNetwork";
-import { DraggableLine } from "@/app/components/map/DraggableLine";
-import { LatLng } from "leaflet";
-import { LineString } from "geojson";
+import EditableLine from "@/app/components/map/EditableLine";
+import { Suspense } from "react";
 
 export function useLayers() {
   const busData = useRemoteGeoJson("/data/bocholt-busse.geojson");
-  const ringLine = useRemoteGeoJson("/data/ring-line.geojson");
-
-  const coordinates =
-    (ringLine?.features[0].geometry as LineString)?.coordinates.map(
-      (coord: number[]) => new LatLng(coord[1], coord[0]),
-    ) ?? [];
 
   if (busData) {
     return {
@@ -20,13 +13,20 @@ export function useLayers() {
         {
           id: "existing-bus-network",
           label: "Bestehendes Busnetz",
-          element: <ExistingBusNetwork network={busData} />,
+          element: (
+            <ExistingBusNetwork
+              key={"existing-bus-network"}
+              network={busData}
+            />
+          ),
         },
         {
           id: "custom-line",
           label: "Eigene Linie",
           element: (
-            <DraggableLine initialMarkers={coordinates} isAdding={false} />
+            <Suspense fallback={null} key={"ring-line"}>
+              <EditableLine dataId={"ring-line"} />
+            </Suspense>
           ),
         },
       ],
