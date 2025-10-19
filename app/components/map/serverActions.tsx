@@ -6,7 +6,7 @@ export async function pushMarkerMoved(
   index: number,
   position: { lat: number; lng: number },
 ) {
-  const filePath = `${process.cwd()}/public/data/${dataId}.geojson`;
+  const filePath = `${process.cwd()}/data/${dataId}.geojson`;
   try {
     const raw = await fs.readFile(filePath, "utf-8");
     const json = JSON.parse(raw);
@@ -30,7 +30,7 @@ export async function pushMarkerAdded(
   index: number,
   position: { lat: number; lng: number },
 ) {
-  const filePath = `${process.cwd()}/public/data/${dataId}.geojson`;
+  const filePath = `${process.cwd()}/data/${dataId}.geojson`;
   try {
     const raw = await fs.readFile(filePath, "utf-8");
     const json = JSON.parse(raw);

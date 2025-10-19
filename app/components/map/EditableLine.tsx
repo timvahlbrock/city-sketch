@@ -9,12 +9,7 @@ export interface EditableLineProps {
 }
 
 export default async function EditableLine({ dataId }: EditableLineProps) {
-  const filePath = path.resolve(
-    process.cwd(),
-    "public",
-    "data",
-    `${dataId}.geojson`,
-  );
+  const filePath = path.resolve(process.cwd(), "data", `${dataId}.geojson`);
   const raw = await fs.readFile(filePath, "utf-8");
   const data = JSON.parse(raw) as FeatureCollection;
 

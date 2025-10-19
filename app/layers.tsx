@@ -1,7 +1,7 @@
 "use server";
 import ExistingBusNetwork from "@/app/components/map/existingBusNetwork/existingBusNetwork";
 import EditableLine from "@/app/components/map/EditableLine";
-import { ReactNode, Suspense } from "react";
+import { ReactNode } from "react";
 import * as fs from "node:fs/promises";
 
 export interface Layer {
@@ -12,7 +12,7 @@ export interface Layer {
 
 export async function getLayers(): Promise<Layer[]> {
   const busData = await fs
-    .readFile(process.cwd() + "/public/data/bocholt-busse.geojson", "utf-8")
+    .readFile(process.cwd() + "/data/bocholt-busse.geojson", "utf-8")
     .then((data) => JSON.parse(data))
     .catch(() => null);
   return [
