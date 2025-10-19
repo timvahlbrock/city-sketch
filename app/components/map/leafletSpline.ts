@@ -1,12 +1,12 @@
 import { Spline } from "./bezierSpline";
-import { LatLng } from "leaflet";
+import { LatLngLiteral } from "leaflet";
 
 export interface SplinePoint {
-  latLng: LatLng;
+  latLng: LatLngLiteral;
   basePointIndex: number;
 }
 
-function leafletSpline(line: LatLng[]): SplinePoint[] {
+function leafletSpline(line: LatLngLiteral[]): SplinePoint[] {
   const coords: SplinePoint[] = [];
   const points = line.map((pt) => {
     return { x: pt.lng, y: pt.lat };
@@ -19,7 +19,7 @@ function leafletSpline(line: LatLng[]): SplinePoint[] {
     const pos = spline.pos(time);
     if (time % 2 === 0) {
       coords.push({
-        latLng: new LatLng(pos[0].y, pos[0].x),
+        latLng: { lat: pos[0].y, lng: pos[0].x },
         basePointIndex: pos[1],
       });
     }
