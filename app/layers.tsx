@@ -2,9 +2,16 @@ import useRemoteGeoJson from "@/app/hooks/useRemoteGeoJson";
 import ExistingBusNetwork from "@/app/components/map/existingBusNetwork/existingBusNetwork";
 import { DraggableLine } from "@/app/components/map/DraggableLine";
 import { LatLng } from "leaflet";
+import { LineString } from "geojson";
 
 export function useLayers() {
   const busData = useRemoteGeoJson("/data/bocholt-busse.geojson");
+  const ringLine = useRemoteGeoJson("/data/ring-line.geojson");
+
+  const coordinates =
+    (ringLine?.features[0].geometry as LineString)?.coordinates.map(
+      (coord: number[]) => new LatLng(coord[1], coord[0]),
+    ) ?? [];
 
   if (busData) {
     return {
@@ -19,18 +26,7 @@ export function useLayers() {
           id: "custom-line",
           label: "Eigene Linie",
           element: (
-            <DraggableLine
-              initialMarkers={[
-                new LatLng(51.82, 6.6),
-                new LatLng(51.83, 6.6),
-                new LatLng(51.85, 6.6),
-                new LatLng(51.83, 6.61),
-                new LatLng(51.825, 6.61),
-                new LatLng(51.825, 6.6), // the marker on the intersection
-                new LatLng(51.825, 6.58),
-              ]}
-              isAdding={false}
-            />
+            <DraggableLine initialMarkers={coordinates} isAdding={false} />
           ),
         },
       ],

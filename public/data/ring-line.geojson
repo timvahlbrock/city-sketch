@@ -1,0 +1,23 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ring Line"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [6.6, 51.82],
+          [6.6, 51.83],
+          [6.6, 51.85],
+          [6.61, 51.83],
+          [6.61, 51.825],
+          [6.6, 51.825],
+          [6.58, 51.825]
+        ]
+      }
+    }
+  ]
+}
