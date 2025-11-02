@@ -12,7 +12,7 @@ export default function ExistingBusNetwork({ network }: Props) {
     .filter(isFeatureWithProperties)
     .filter((feature) => feature.properties.type == "route")
     .filter((feature) => feature.properties.route == "bus");
-  debugger;
+
   const stops = (network?.features ?? [])
     .filter(isFeatureWithProperties)
     .filter((feature) => feature.properties.public_transport == "stop_position")
