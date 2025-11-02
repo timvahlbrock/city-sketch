@@ -14,6 +14,8 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.78.0",
     "antd": "^5.27.5",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
@@ -33,6 +35,7 @@
     "eslint-config-next": "^15.5.2",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "3.6.2",
+    "supabase": "^2.54.11",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^3.2.4"
