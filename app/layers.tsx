@@ -1,8 +1,8 @@
 "use server";
-import ExistingBusNetwork from "@/app/components/map/existingBusNetwork/existingBusNetwork";
-import EditableLine from "@/app/components/map/EditableLine";
 import { ReactNode } from "react";
-import * as fs from "node:fs/promises";
+import { createClient } from "@/app/utils";
+import DraggableLine from "@/app/components/map/DraggableLine";
+import { Database } from "@/app/database.types";
 
 export interface Layer {
   id: string;
@@ -11,22 +11,37 @@ export interface Layer {
 }
 
 export async function getLayers(): Promise<Layer[]> {
-  const busData = await fs
-    .readFile(process.cwd() + "/data/bocholt-busse.geojson", "utf-8")
-    .then((data) => JSON.parse(data))
-    .catch(() => null);
-  return [
-    {
-      id: "existing-bus-network",
-      label: "Bestehendes Busnetz",
+  const client = await createClient();
+
+  const sections = await client
+    .from("sections")
+    .select(`id, nodes(latitude, longitude) ordered:rank`);
+
+  const data = sections.data as Array<
+    Database["public"]["Tables"]["sections"]["Row"] & {
+      nodes: Array<Database["public"]["Tables"]["nodes"]["Row"]>;
+    }
+  > | null;
+
+  if (!data) {
+    return [];
+  }
+
+  return data.map((section) => {
+    return {
+      id: section.id + "",
+      label: "Section " + section.id,
       element: (
-        <ExistingBusNetwork key={"existing-bus-network"} network={busData} />
+        <DraggableLine
+          isAdding={false}
+          key={section.id}
+          initialMarkers={section.nodes.map((node) => ({
+            lat: node.latitude,
+            lng: node.longitude,
+          }))}
+          dataId={section.id + ""}
+        />
       ),
-    },
-    {
-      id: "custom-line",
-      label: "Eigene Linie",
-      element: <EditableLine dataId={"ring-line"} />,
-    },
-  ];
+    };
+  });
 }

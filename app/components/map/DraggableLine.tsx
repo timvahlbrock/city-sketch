@@ -1,14 +1,14 @@
 "use client";
 import { useState } from "react";
 import { useMapEvents } from "react-leaflet";
-import { LatLng } from "leaflet";
+import { LatLng } from "@/app/components/map/latLng";
 import DraggableMarker from "@/app/components/map/draggableMarker";
 import { FeatureCollection, LineString } from "geojson";
 import { pushMarkerMoved } from "@/app/components/map/serverActions";
 import SplinePolyline from "@/app/components/map/SplinePolyline";
 
 export interface DraggableLineProps {
-  initialMarkers: FeatureCollection;
+  initialMarkers: LatLng[];
   isAdding: boolean;
   dataId: string;
 }
@@ -17,11 +17,7 @@ export default function DraggableLine({
   isAdding,
   dataId,
 }: DraggableLineProps) {
-  const resolvedMarkers =
-    (initialMarkers.features[0].geometry as LineString)?.coordinates.map(
-      (coord: number[]) => new LatLng(coord[1], coord[0]),
-    ) ?? [];
-  const [markers, setMarkers] = useState<LatLng[]>(resolvedMarkers);
+  const [markers, setMarkers] = useState<LatLng[]>(initialMarkers);
   const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
 
   const points = markers.concat(
@@ -57,7 +53,7 @@ export default function DraggableLine({
 }
 
 function TrackMousePosition(props: {
-  setPosition: React.Dispatch<React.SetStateAction<LatLng | null>>;
+  setPosition: (markers: LatLng | null) => void;
 }) {
   useMapEvents({
     mousemove(e) {
@@ -68,7 +64,7 @@ function TrackMousePosition(props: {
 }
 
 function AddMarkerOnClick(props: {
-  setMarkers: React.Dispatch<React.SetStateAction<LatLng[]>>;
+  setMarkers: (setter: (markers: LatLng[]) => LatLng[]) => void;
 }) {
   useMapEvents({
     click(e) {
