@@ -1,14 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, MouseEvent } from "react";
-import {
-  Button,
-  Card,
-  Checkbox,
-  CheckboxChangeEvent,
-  Splitter,
-  Radio,
-} from "antd";
+import { useEffect, useRef, useState } from "react";
+import { Button, Card, Radio, Splitter } from "antd";
 import { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
 import { Layer } from "@/app/layers";
@@ -34,22 +27,6 @@ export default function Home({ layers }: HomeProps) {
       window.innerWidth > window.innerHeight ? "horizontal" : "vertical",
     );
   }, []);
-
-  const [selectedLayers, setSelectedLayers] = useState<string[]>(
-    layers.map((layer) => layer.id),
-  );
-
-  const onLayerCheckChanged = (e: CheckboxChangeEvent, layerId: string) => {
-    if (e.target.checked) {
-      setSelectedLayers([...selectedLayers, layerId]);
-    } else {
-      setSelectedLayers(selectedLayers.filter((id) => id !== layerId));
-    }
-  };
-
-  const activeLayers = layers
-    .filter((layer) => selectedLayers.includes(layer.id))
-    .map((layer) => layer.element);
 
   const mapRef = useRef<LeafletMap | null>(null);
 
