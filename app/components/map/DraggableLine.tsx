@@ -3,45 +3,71 @@ import { useState } from "react";
 import { useMapEvents } from "react-leaflet";
 import { LatLng } from "@/app/components/map/latLng";
 import DraggableMarker from "@/app/components/map/draggableMarker";
-import { FeatureCollection, LineString } from "geojson";
-import { pushMarkerMoved } from "@/app/components/map/serverActions";
+import {
+  pushMarkerAdded,
+  pushMarkerMoved,
+} from "@/app/components/map/serverActions";
 import SplinePolyline from "@/app/components/map/SplinePolyline";
+import { Database } from "@/app/database.types";
+
+type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
 export interface DraggableLineProps {
-  initialMarkers: LatLng[];
+  nodes: Node[];
   isAdding: boolean;
-  dataId: string;
+  dataId: number;
 }
 export default function DraggableLine({
-  initialMarkers,
+  nodes,
   isAdding,
   dataId,
 }: DraggableLineProps) {
-  const [markers, setMarkers] = useState<LatLng[]>(initialMarkers);
+  const [markers, setMarkers] = useState<Node[]>(nodes);
   const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
 
-  const points = markers.concat(
-    mousePosition && isAdding ? [mousePosition] : [],
-  );
+  const points = markers
+    .map((marker) => ({
+      lat: marker.latitude,
+      lng: marker.longitude,
+    }))
+    .concat(mousePosition && isAdding ? [mousePosition] : []);
 
   function markerUpdate(index: number, newPosition: LatLng) {
-    pushMarkerMoved(dataId, index, {
+    const node = markers[index];
+    pushMarkerMoved(node.id, {
       lat: newPosition.lat,
       lng: newPosition.lng,
     });
     setMarkers((markers) =>
-      markers.map((marker, i) => (i === index ? newPosition : marker)),
+      markers.map((marker, i) =>
+        i === index
+          ? {
+              id: node.id,
+              latitude: newPosition.lat,
+              longitude: newPosition.lng,
+            }
+          : marker,
+      ),
     );
   }
+
+  async function markerAdd(newPosition: LatLng) {
+    const newNode = await pushMarkerAdded(dataId, newPosition);
+    setMarkers([...markers, newNode]);
+  }
+
   return (
     <>
       <TrackMousePosition setPosition={setMousePosition} />
-      {isAdding && <AddMarkerOnClick setMarkers={setMarkers} />}
+      {isAdding && <AddMarkerOnClick addMarker={markerAdd} />}
       {markers.map((position, idx) => (
         <DraggableMarker
           isDraggable={!isAdding}
           key={idx}
-          initialPosition={position}
+          initialPosition={{
+            lat: position.latitude,
+            lng: position.longitude,
+          }}
           onMarkerUpdate={(newPosition) => {
             markerUpdate(idx, newPosition);
           }}
@@ -63,12 +89,10 @@ function TrackMousePosition(props: {
   return null;
 }
 
-function AddMarkerOnClick(props: {
-  setMarkers: (setter: (markers: LatLng[]) => LatLng[]) => void;
-}) {
+function AddMarkerOnClick(props: { addMarker: (marker: LatLng) => void }) {
   useMapEvents({
     click(e) {
-      props.setMarkers((markers) => [...markers, e.latlng]);
+      props.addMarker(e.latlng);
     },
   });
   return null;

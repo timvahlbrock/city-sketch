@@ -15,7 +15,7 @@ export async function getLayers(): Promise<Layer[]> {
 
   const sections = await client
     .from("sections")
-    .select(`id, nodes(latitude, longitude) ordered:rank`);
+    .select(`id, nodes(id, latitude, longitude) ordered:rank`);
 
   const data = sections.data as Array<
     Database["public"]["Tables"]["sections"]["Row"] & {
@@ -33,13 +33,10 @@ export async function getLayers(): Promise<Layer[]> {
       label: "Section " + section.id,
       element: (
         <DraggableLine
-          isAdding={false}
+          isAdding={true}
           key={section.id}
-          initialMarkers={section.nodes.map((node) => ({
-            lat: node.latitude,
-            lng: node.longitude,
-          }))}
-          dataId={section.id + ""}
+          nodes={section.nodes}
+          dataId={section.id}
         />
       ),
     };

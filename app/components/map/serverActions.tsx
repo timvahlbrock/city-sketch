@@ -1,66 +1,60 @@
-"use server";
-import * as fs from "node:fs/promises";
-import { createClient } from "@/app/utils";
-
-async function read(dataId: string) {
-  const filePath = `${process.cwd()}/data/${dataId}.geojson`;
-  const raw = await fs.readFile(filePath, "utf-8");
-  const json = JSON.parse(raw);
-  return json;
-}
-
-async function write(dataId: string, json: any) {
-  const filePath = `${process.cwd()}/data/${dataId}.geojson`;
-  await fs.writeFile(filePath, JSON.stringify(json, null, 2), "utf-8");
-}
-
-function getCoordsArray(json: any): number[][] {
-  const coords = json.features?.[0]?.geometry?.coordinates;
-  if (!Array.isArray(coords)) throw new Error("invalid geojson");
-  return coords;
-}
+import { createClient } from "@supabase/supabase-js";
 
 export async function pushMarkerMoved(
-  dataId: string,
-  index: number,
+  nodeId: number,
   position: { lat: number; lng: number },
 ) {
-  try {
-    const json = await read(dataId);
-    const coords = getCoordsArray(json);
+  const client = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+  );
 
-    const idx = Number(index);
-    if (Number.isNaN(idx) || idx < 0 || idx >= coords.length)
-      throw new Error("invalid index");
-
-    coords[idx] = [Number(position.lng), Number(position.lat)];
-    await write(dataId, json);
-  } catch (err) {
-    console.error("pushMarkerMoved error:", err);
-    throw err;
-  }
+  await client.from("nodes").update({
+    id: nodeId,
+    latitude: position.lat,
+    longitude: position.lng,
+  });
 }
 
 export async function pushMarkerAdded(
-  dataId: string,
-  index: number,
+  dataId: number,
   position: { lat: number; lng: number },
 ) {
-  try {
-    const json = await read(dataId);
-    const coords = getCoordsArray(json);
+  const client = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+  );
 
-    const idx = Number(index);
-    const newCoord = [Number(position.lng), Number(position.lat)];
-    if (Number.isNaN(idx) || idx < 0 || idx > coords.length) {
-      coords.push(newCoord);
-    } else {
-      coords.splice(idx, 0, newCoord);
-    }
+  const previousSectionNode = (
+    await client
+      .from("sectionsToNodes")
+      .select("rank")
+      .order("rank", { ascending: false })
+      .limit(1)
+      .single()
+  ).data;
 
-    await write(dataId, json);
-  } catch (err) {
-    console.error("pushMarkerAdded error:", err);
-    throw err;
+  const newNode = await client
+    .from("nodes")
+    .insert({
+      latitude: position.lat,
+      longitude: position.lng,
+    })
+    .select()
+    .single();
+
+  const newNodeId = newNode.data?.id;
+
+  if (!newNodeId) {
+    throw new Error("Failed to insert new node");
   }
+
+  const previousRank = previousSectionNode?.rank ?? 0;
+  await client.from("sectionsToNodes").insert({
+    nodeId: newNodeId,
+    sectionId: dataId,
+    rank: previousRank + 1,
+  });
+
+  return newNode.data;
 }

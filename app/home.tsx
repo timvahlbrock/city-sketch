@@ -1,7 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Button, Card, Checkbox, CheckboxChangeEvent, Splitter } from "antd";
+import { useEffect, useRef, useState, MouseEvent } from "react";
+import {
+  Button,
+  Card,
+  Checkbox,
+  CheckboxChangeEvent,
+  Splitter,
+  Radio,
+} from "antd";
 import { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
 import { Layer } from "@/app/layers";
@@ -19,6 +26,8 @@ export default function Home({ layers }: HomeProps) {
   const [orientation, setOrientation] = useState<"horizontal" | "vertical">(
     "vertical",
   );
+
+  const [activeLayer, setActiveLayer] = useState<Layer | null>(layers[0]);
 
   useEffect(() => {
     setOrientation(
@@ -58,29 +67,22 @@ export default function Home({ layers }: HomeProps) {
       >
         <Splitter.Panel defaultSize={"70%"}>
           <DynamicMap ref={mapRef} isAdding={false}>
-            {activeLayers}
+            {activeLayer?.element}
           </DynamicMap>
           ;
         </Splitter.Panel>
         <Splitter.Panel className={"bg-white"}>
-          <Card className={"w-full"} title={"Layer"}>
-            {layers.map((layer) => {
-              console.log(
-                layer.label + " " + selectedLayers.includes(layer.id),
-              );
-              return (
-                <span key={layer.id}>
-                  <Checkbox
-                    checked={selectedLayers.includes(layer.id)}
-                    key={layer.id}
-                    onChange={(e) => onLayerCheckChanged(e, layer.id)}
-                  >
-                    {layer.label}
-                  </Checkbox>
-                  <br />
-                </span>
-              );
-            })}
+          <Card className={"w-full"} title={"Layers"}>
+            <Radio.Group
+              value={activeLayer}
+              options={layers.map((layer) => ({
+                label: layer.label,
+                value: layer,
+                id: layer.id,
+                key: layer.id,
+              }))}
+              onChange={(e) => setActiveLayer(e.target.value)}
+            />
             <Button onClick={handleNewSectionClick} color="primary">
               Add New Section
             </Button>
