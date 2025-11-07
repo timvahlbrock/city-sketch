@@ -1,29 +1,33 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "@/app/database.types";
+
+function createSupabaseClient() {
+  return createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+  );
+}
 
 export async function pushMarkerMoved(
   nodeId: number,
   position: { lat: number; lng: number },
 ) {
-  const client = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-  );
-
-  await client.from("nodes").update({
-    id: nodeId,
-    latitude: position.lat,
-    longitude: position.lng,
-  });
+  createSupabaseClient()
+    .from("nodes")
+    .update({
+      latitude: position.lat,
+      longitude: position.lng,
+    })
+    .eq("id", nodeId)
+    .single()
+    .throwOnError();
 }
 
 export async function pushMarkerAdded(
   dataId: number,
   position: { lat: number; lng: number },
 ) {
-  const client = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-  );
+  const client = createSupabaseClient();
 
   const previousSectionNode = (
     await client
@@ -32,6 +36,7 @@ export async function pushMarkerAdded(
       .order("rank", { ascending: false })
       .limit(1)
       .single()
+      .throwOnError()
   ).data;
 
   const newNode = await client
@@ -41,17 +46,12 @@ export async function pushMarkerAdded(
       longitude: position.lng,
     })
     .select()
-    .single();
+    .single()
+    .throwOnError();
 
-  const newNodeId = newNode.data?.id;
-
-  if (!newNodeId) {
-    throw new Error("Failed to insert new node");
-  }
-
-  const previousRank = previousSectionNode?.rank ?? 0;
+  const previousRank = previousSectionNode.rank;
   await client.from("sectionsToNodes").insert({
-    nodeId: newNodeId,
+    nodeId: newNode.data.id,
     sectionId: dataId,
     rank: previousRank + 1,
   });
