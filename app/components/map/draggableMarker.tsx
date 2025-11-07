@@ -2,7 +2,7 @@
 
 import { Marker } from "react-leaflet";
 import { useMemo, useRef } from "react";
-import { icon, LatLng } from "leaflet";
+import { icon, LatLng, type LeafletEventHandlerFnMap } from "leaflet";
 
 export interface DraggableMarkerProps {
   isDraggable: boolean;
@@ -10,7 +10,8 @@ export interface DraggableMarkerProps {
     lat: number;
     lng: number;
   };
-  onMarkerUpdate: (newPosition: LatLng) => void;
+  onMarkerUpdate?: (newPosition: LatLng) => void;
+  onMarkerUpdateEnd?: (newPosition: LatLng) => void;
 }
 
 const iconSize = 10;
@@ -24,15 +25,22 @@ export default function DraggableMarker(props: DraggableMarkerProps) {
   const { initialPosition, onMarkerUpdate } = props;
   const markerRef = useRef<L.Marker>(null);
   const eventHandlers = useMemo(
-    () => ({
-      drag() {
-        const marker = markerRef.current;
-        if (marker != null) {
-          onMarkerUpdate(marker.getLatLng());
-        }
-      },
-    }),
-    [onMarkerUpdate, markerRef],
+    () =>
+      ({
+        drag() {
+          const marker = markerRef.current;
+          if (marker != null) {
+            onMarkerUpdate?.(marker.getLatLng());
+          }
+        },
+        dragend() {
+          const marker = markerRef.current;
+          if (marker != null) {
+            props.onMarkerUpdateEnd?.(marker.getLatLng());
+          }
+        },
+      }) as LeafletEventHandlerFnMap,
+    [onMarkerUpdate, markerRef, props],
   );
 
   return (
