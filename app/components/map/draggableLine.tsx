@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useMapEvents } from "react-leaflet";
-import { LatLng } from "@/app/components/map/latLng";
 import DraggableMarker from "@/app/components/map/draggableMarker";
 import {
   pushMarkerAdded,
@@ -9,6 +8,8 @@ import {
 } from "@/app/components/map/serverActions";
 import SplinePolyline from "@/app/components/map/SplinePolyline";
 import { RankedNode, toLatLng } from "@/app/hooks/rankedNodes";
+import { LatLng } from "leaflet";
+import { TrackMousePosition } from "@/app/components/map/trackMousePosition";
 
 export interface DraggableLineProps {
   initialNodes: RankedNode[];
@@ -90,7 +91,7 @@ export default function DraggableLine({
         <DraggableMarker
           isDraggable={!isAdding}
           key={idx}
-          initialPosition={{
+          position={{
             lat: position.latitude,
             lng: position.longitude,
           }}
@@ -111,17 +112,6 @@ export default function DraggableLine({
       ;
     </>
   );
-}
-
-function TrackMousePosition(props: {
-  setPosition: (markers: LatLng | null) => void;
-}) {
-  useMapEvents({
-    mousemove(e) {
-      props.setPosition(e.latlng);
-    },
-  });
-  return null;
 }
 
 function AddMarkerOnClick(props: { addMarker: (marker: LatLng) => void }) {

@@ -1,12 +1,13 @@
 "use client";
 
-import { Marker } from "react-leaflet";
-import { useMemo, useRef } from "react";
+import { Marker, useMap } from "react-leaflet";
+import { useMemo, useRef, useState } from "react";
 import { icon, LatLng, type LeafletEventHandlerFnMap } from "leaflet";
+import { TrackMousePosition } from "@/app/components/map/trackMousePosition";
 
 export interface DraggableMarkerProps {
   isDraggable: boolean;
-  initialPosition: {
+  position: {
     lat: number;
     lng: number;
   };
@@ -14,15 +15,22 @@ export interface DraggableMarkerProps {
   onMarkerUpdateEnd?: (newPosition: LatLng) => void;
 }
 
-const iconSize = 10;
-const markerIcon = icon({
+const smallerIconSize = 10;
+const smallerIcon = icon({
   iconUrl: "/map/marker.png",
-  iconSize: [iconSize, iconSize], // ToDo: Scale down marker size for better performance
-  iconAnchor: [iconSize / 2, iconSize / 2],
+  iconSize: [smallerIconSize, smallerIconSize], // ToDo: Scale down marker size for better performance
+  iconAnchor: [smallerIconSize / 2, smallerIconSize / 2],
+});
+
+const largerIconSize = 20;
+const largerIcon = icon({
+  iconUrl: "/map/marker.png",
+  iconSize: [largerIconSize, largerIconSize],
+  iconAnchor: [largerIconSize / 2, largerIconSize / 2],
 });
 
 export default function DraggableMarker(props: DraggableMarkerProps) {
-  const { initialPosition, onMarkerUpdate } = props;
+  const { position, onMarkerUpdate } = props;
   const markerRef = useRef<L.Marker>(null);
   const eventHandlers = useMemo(
     () =>
@@ -42,14 +50,25 @@ export default function DraggableMarker(props: DraggableMarkerProps) {
       }) as LeafletEventHandlerFnMap,
     [onMarkerUpdate, markerRef, props],
   );
+  const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
+
+  const mapRef = useMap();
+  const distance = mousePosition
+    ? mapRef
+        .latLngToLayerPoint(position)
+        .distanceTo(mapRef.latLngToLayerPoint(mousePosition))
+    : Infinity;
 
   return (
-    <Marker
-      draggable={props.isDraggable}
-      eventHandlers={eventHandlers}
-      position={initialPosition}
-      ref={markerRef}
-      icon={markerIcon}
-    />
+    <>
+      <TrackMousePosition setPosition={setMousePosition} />
+      <Marker
+        draggable={props.isDraggable}
+        eventHandlers={eventHandlers}
+        position={position}
+        ref={markerRef}
+        icon={distance < 30 ? largerIcon : smallerIcon}
+      />
+    </>
   );
 }
