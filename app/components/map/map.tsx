@@ -4,11 +4,10 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
-import { PropsWithChildren, RefObject, useRef } from "react";
+import { PropsWithChildren, RefObject } from "react";
 import { Map as LeafletMap } from "leaflet";
 
 export interface MapProps {
-  isAdding: boolean;
   ref: RefObject<LeafletMap | null>;
 }
 

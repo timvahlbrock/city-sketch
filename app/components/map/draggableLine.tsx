@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMapEvents } from "react-leaflet";
 import { LatLng } from "@/app/components/map/latLng";
 import DraggableMarker from "@/app/components/map/draggableMarker";
@@ -8,18 +8,20 @@ import {
   pushMarkerMoved,
 } from "@/app/components/map/serverActions";
 import SplinePolyline from "@/app/components/map/SplinePolyline";
-import { Database } from "@/app/database.types";
-
-type Node = Database["public"]["Tables"]["nodes"]["Row"];
+import { RankedNode } from "@/app/hooks/rankedNodes";
 
 export interface DraggableLineProps {
-  nodes: Node[];
+  nodes: RankedNode[];
   dataId: number;
 }
 export default function DraggableLine({ nodes, dataId }: DraggableLineProps) {
-  const [markers, setMarkers] = useState<Node[]>(nodes);
+  const [markers, setMarkers] = useState<RankedNode[]>(nodes);
   const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
   const [isAdding, setIsAdding] = useState<boolean>(false);
+
+  useEffect(() => {
+    setMarkers(nodes);
+  }, [nodes]);
 
   const points = markers
     .map((marker) => ({
@@ -41,21 +43,49 @@ export default function DraggableLine({ nodes, dataId }: DraggableLineProps) {
               id: node.id,
               latitude: newPosition.lat,
               longitude: newPosition.lng,
+              rank: node.rank,
             }
           : marker,
       ),
     );
   }
 
-  async function markerAdd(newPosition: LatLng) {
-    const newNode = await pushMarkerAdded(dataId, newPosition);
-    setMarkers([...markers, newNode]);
+  async function addMarkerAtIndex(index: number, newPosition: LatLng) {
+    const prevMarker = markers[index - 1];
+    const nextMarker = markers[index];
+
+    let rank;
+    if (prevMarker && nextMarker) {
+      rank = prevMarker.rank + (nextMarker.rank - prevMarker.rank) / 2;
+    } else if (prevMarker) {
+      rank = prevMarker.rank + 1;
+    } else {
+      rank = nextMarker.rank / 2;
+    }
+    const newNode = await pushMarkerAdded(dataId, rank, newPosition);
+
+    setMarkers((markers) => {
+      const newMarkers = [...markers];
+      newMarkers.splice(index, 0, {
+        id: newNode.id,
+        latitude: newPosition.lat,
+        longitude: newPosition.lng,
+        rank: rank,
+      });
+      return newMarkers;
+    });
   }
 
   return (
     <>
       <TrackMousePosition setPosition={setMousePosition} />
-      {isAdding && <AddMarkerOnClick addMarker={markerAdd} />}
+      {isAdding && (
+        <AddMarkerOnClick
+          addMarker={(newPosition) =>
+            addMarkerAtIndex(markers.length, newPosition)
+          }
+        />
+      )}
       {markers.map((position, idx) => (
         <DraggableMarker
           isDraggable={!isAdding}
@@ -69,7 +99,13 @@ export default function DraggableLine({ nodes, dataId }: DraggableLineProps) {
           }}
         />
       ))}
-      <SplinePolyline basePoints={points} />;
+      <SplinePolyline
+        basePoints={points}
+        onClick={(precedingMarkerIndex, clickedPosition) =>
+          addMarkerAtIndex(precedingMarkerIndex + 1, clickedPosition)
+        }
+      />
+      ;
     </>
   );
 }

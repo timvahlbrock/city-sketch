@@ -1,22 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Button, Card, Radio, Splitter } from "antd";
+import { Card, Splitter } from "antd";
 import { Map as LeafletMap } from "leaflet";
-import { Layer } from "@/app/layers";
-import { addSection } from "@/app/addSection";
 import MapComponent from "@/app/components/map/map";
+import { Section } from "@/app/components/map/section";
 
-export interface HomeProps {
-  layers: Layer[];
-}
+export type HomeProps = object;
 
-export default function Home({ layers }: HomeProps) {
+export default function Home({}: HomeProps) {
   const [orientation, setOrientation] = useState<"horizontal" | "vertical">(
     "vertical",
   );
-
-  const [activeLayer, setActiveLayer] = useState<Layer | null>(layers[0]);
 
   useEffect(() => {
     setOrientation(
@@ -26,11 +21,6 @@ export default function Home({ layers }: HomeProps) {
 
   const mapRef = useRef<LeafletMap | null>(null);
 
-  async function handleNewSectionClick() {
-    const newSection = await addSection();
-    alert(`New section added with ID: ${newSection}`);
-  }
-
   return (
     <>
       <Splitter
@@ -39,27 +29,13 @@ export default function Home({ layers }: HomeProps) {
         onResize={() => mapRef.current?.invalidateSize({ pan: true })}
       >
         <Splitter.Panel defaultSize={"70%"}>
-          <MapComponent ref={mapRef} isAdding={false}>
-            {activeLayer?.element}
+          <MapComponent ref={mapRef}>
+            <Section sectionId={1} />
           </MapComponent>
           ;
         </Splitter.Panel>
         <Splitter.Panel className={"bg-white"}>
-          <Card className={"w-full"} title={"Layers"}>
-            <Radio.Group
-              value={activeLayer}
-              options={layers.map((layer) => ({
-                label: layer.label,
-                value: layer,
-                id: layer.id,
-                key: layer.id,
-              }))}
-              onChange={(e) => setActiveLayer(e.target.value)}
-            />
-            <Button onClick={handleNewSectionClick} color="primary">
-              Add New Section
-            </Button>
-          </Card>
+          <Card className={"w-full"} title={"Hello"}></Card>
         </Splitter.Panel>
       </Splitter>
     </>
