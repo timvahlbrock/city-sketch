@@ -32,18 +32,16 @@ export default function DraggableLine({ nodes, dataId }: DraggableLineProps) {
 
   function markerUpdate(index: number, newPosition: LatLng) {
     const node = markers[index];
-    setMarkers((markers) =>
-      markers.map((marker, i) =>
-        i === index
-          ? {
-              id: node.id,
-              latitude: newPosition.lat,
-              longitude: newPosition.lng,
-              rank: node.rank,
-            }
-          : marker,
-      ),
-    );
+    setMarkers((markers) => {
+      const newMarkers = [...markers];
+      newMarkers[index] = {
+        id: node.id,
+        latitude: newPosition.lat,
+        longitude: newPosition.lng,
+        rank: node.rank,
+      };
+      return newMarkers;
+    });
   }
 
   async function markerUpdateEnd(index: number, newPosition: LatLng) {
