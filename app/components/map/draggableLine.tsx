@@ -8,31 +8,31 @@ import {
   pushMarkerMoved,
 } from "@/app/components/map/serverActions";
 import SplinePolyline from "@/app/components/map/SplinePolyline";
-import { RankedNode } from "@/app/hooks/rankedNodes";
+import { RankedNode, toLatLng } from "@/app/hooks/rankedNodes";
 
 export interface DraggableLineProps {
-  nodes: RankedNode[];
+  initialNodes: RankedNode[];
   dataId: number;
 }
-export default function DraggableLine({ nodes, dataId }: DraggableLineProps) {
-  const [markers, setMarkers] = useState<RankedNode[]>(nodes);
+export default function DraggableLine({
+  initialNodes,
+  dataId,
+}: DraggableLineProps) {
+  const [nodes, setNodes] = useState<RankedNode[]>(initialNodes);
   const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
   const [isAdding, setIsAdding] = useState<boolean>(false);
 
   useEffect(() => {
-    setMarkers(nodes);
-  }, [nodes]);
+    setNodes(initialNodes);
+  }, [initialNodes]);
 
-  const points = markers
-    .map((marker) => ({
-      lat: marker.latitude,
-      lng: marker.longitude,
-    }))
+  const points = nodes
+    .map((node) => toLatLng(node))
     .concat(mousePosition && isAdding ? [mousePosition] : []);
 
-  function markerUpdate(index: number, newPosition: LatLng) {
-    const node = markers[index];
-    setMarkers((markers) => {
+  function handleMarkerDrag(index: number, newPosition: LatLng) {
+    const node = nodes[index];
+    setNodes((markers) => {
       const newMarkers = [...markers];
       newMarkers[index] = {
         id: node.id,
@@ -44,17 +44,17 @@ export default function DraggableLine({ nodes, dataId }: DraggableLineProps) {
     });
   }
 
-  async function markerUpdateEnd(index: number, newPosition: LatLng) {
-    const node = markers[index];
+  async function handleMarkerDragend(index: number, newPosition: LatLng) {
+    const node = nodes[index];
     await pushMarkerMoved(node.id, {
       lat: newPosition.lat,
       lng: newPosition.lng,
     });
   }
 
-  async function addMarkerAtIndex(index: number, newPosition: LatLng) {
-    const prevMarker = markers[index - 1];
-    const nextMarker = markers[index];
+  async function addNodeAtIndex(index: number, newPosition: LatLng) {
+    const prevMarker = nodes[index - 1];
+    const nextMarker = nodes[index];
 
     let rank;
     if (prevMarker && nextMarker) {
@@ -66,7 +66,7 @@ export default function DraggableLine({ nodes, dataId }: DraggableLineProps) {
     }
     const newNode = await pushMarkerAdded(dataId, rank, newPosition);
 
-    setMarkers((markers) => {
+    setNodes((markers) => {
       const newMarkers = [...markers];
       newMarkers.splice(index, 0, {
         id: newNode.id,
@@ -83,12 +83,10 @@ export default function DraggableLine({ nodes, dataId }: DraggableLineProps) {
       <TrackMousePosition setPosition={setMousePosition} />
       {isAdding && (
         <AddMarkerOnClick
-          addMarker={(newPosition) =>
-            addMarkerAtIndex(markers.length, newPosition)
-          }
+          addMarker={(newPosition) => addNodeAtIndex(nodes.length, newPosition)}
         />
       )}
-      {markers.map((position, idx) => (
+      {nodes.map((position, idx) => (
         <DraggableMarker
           isDraggable={!isAdding}
           key={idx}
@@ -97,17 +95,17 @@ export default function DraggableLine({ nodes, dataId }: DraggableLineProps) {
             lng: position.longitude,
           }}
           onMarkerUpdate={(newPosition) => {
-            markerUpdate(idx, newPosition);
+            handleMarkerDrag(idx, newPosition);
           }}
           onMarkerUpdateEnd={(newPosition) => {
-            markerUpdateEnd(idx, newPosition);
+            handleMarkerDragend(idx, newPosition);
           }}
         />
       ))}
       <SplinePolyline
         basePoints={points}
         onClick={(precedingMarkerIndex, clickedPosition) =>
-          addMarkerAtIndex(precedingMarkerIndex + 1, clickedPosition)
+          addNodeAtIndex(precedingMarkerIndex + 1, clickedPosition)
         }
       />
       ;

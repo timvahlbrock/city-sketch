@@ -8,5 +8,5 @@ export interface SectionProps {
 
 export function Section({ sectionId }: SectionProps) {
   const rankedNodes = useRankedNodes(sectionId);
-  return <DraggableLine nodes={rankedNodes} dataId={sectionId} />;
+  return <DraggableLine initialNodes={rankedNodes} dataId={sectionId} />;
 }

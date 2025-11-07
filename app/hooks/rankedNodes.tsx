@@ -35,3 +35,7 @@ async function fetchRankedNodes(sectionId: number) {
     rank: entry.rank,
   }));
 }
+
+export function toLatLng(node: RankedNode) {
+  return { lat: node.latitude, lng: node.longitude };
+}
