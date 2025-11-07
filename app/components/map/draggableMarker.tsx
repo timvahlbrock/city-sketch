@@ -13,10 +13,11 @@ export interface DraggableMarkerProps {
   onMarkerUpdate: (newPosition: LatLng) => void;
 }
 
+const iconSize = 10;
 const markerIcon = icon({
   iconUrl: "/map/marker.png",
-  iconSize: [16, 16], // ToDo: Scale down marker size for better performance
-  iconAnchor: [8, 8],
+  iconSize: [iconSize, iconSize], // ToDo: Scale down marker size for better performance
+  iconAnchor: [iconSize / 2, iconSize / 2],
 });
 
 export default function DraggableMarker(props: DraggableMarkerProps) {

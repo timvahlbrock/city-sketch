@@ -1,7 +1,7 @@
 "use server";
 import { ReactNode } from "react";
 import { createClient } from "@/app/utils";
-import DraggableLine from "@/app/components/map/DraggableLine";
+import DraggableLine from "@/app/components/map/draggableLine";
 import { Database } from "@/app/database.types";
 
 export interface Layer {
@@ -33,7 +33,6 @@ export async function getLayers(): Promise<Layer[]> {
       label: "Section " + section.id,
       element: (
         <DraggableLine
-          isAdding={true}
           key={section.id}
           nodes={section.nodes}
           dataId={section.id}

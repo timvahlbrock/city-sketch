@@ -14,16 +14,12 @@ type Node = Database["public"]["Tables"]["nodes"]["Row"];
 
 export interface DraggableLineProps {
   nodes: Node[];
-  isAdding: boolean;
   dataId: number;
 }
-export default function DraggableLine({
-  nodes,
-  isAdding,
-  dataId,
-}: DraggableLineProps) {
+export default function DraggableLine({ nodes, dataId }: DraggableLineProps) {
   const [markers, setMarkers] = useState<Node[]>(nodes);
   const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
+  const [isAdding, setIsAdding] = useState<boolean>(false);
 
   const points = markers
     .map((marker) => ({
