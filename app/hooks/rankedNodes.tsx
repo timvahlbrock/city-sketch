@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFrontendClient } from "@/app/createFrontendClient";
+import { LatLng } from "leaflet";
 
 export interface RankedNode {
   id: number;
@@ -37,5 +38,5 @@ async function fetchRankedNodes(sectionId: number) {
 }
 
 export function toLatLng(node: RankedNode) {
-  return { lat: node.latitude, lng: node.longitude };
+  return new LatLng(node.latitude, node.longitude);
 }

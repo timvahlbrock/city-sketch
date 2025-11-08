@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useMapEvents } from "react-leaflet";
+import { Marker, useMap, useMapEvents } from "react-leaflet";
 import DraggableMarker from "@/app/components/map/draggableMarker";
 import {
   pushMarkerAdded,
@@ -8,28 +8,46 @@ import {
 } from "@/app/components/map/serverActions";
 import SplinePolyline from "@/app/components/map/SplinePolyline";
 import { RankedNode, toLatLng } from "@/app/hooks/rankedNodes";
-import { LatLng } from "leaflet";
+import { divIcon, LatLng, Map as LeafletMap, point } from "leaflet";
 import { TrackMousePosition } from "@/app/components/map/trackMousePosition";
+import leafletSpline from "@/app/components/map/leafletSpline";
+import { renderToString } from "react-dom/server";
+import { PlusCircleOutlined } from "@ant-design/icons";
 
 export interface DraggableLineProps {
   initialNodes: RankedNode[];
   dataId: number;
 }
+
+const plusIcon = divIcon({
+  html: renderToString(
+    <PlusCircleOutlined style={{ fontSize: "x-large", color: "green" }} />,
+  ),
+  className: "icon",
+});
+
 export default function DraggableLine({
   initialNodes,
   dataId,
 }: DraggableLineProps) {
   const [nodes, setNodes] = useState<RankedNode[]>(initialNodes);
   const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
-  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [addingLocation, setAddingLocation] = useState<"start" | "end" | null>(
+    null,
+  );
+  const isAdding = addingLocation !== null;
 
   useEffect(() => {
     setNodes(initialNodes);
   }, [initialNodes]);
 
-  const points = nodes
-    .map((node) => toLatLng(node))
-    .concat(mousePosition && isAdding ? [mousePosition] : []);
+  const latLngNodes = nodes.map((node) => toLatLng(node));
+  let points = latLngNodes;
+  if (mousePosition && addingLocation === "start") {
+    points = [mousePosition, ...latLngNodes];
+  } else if (mousePosition && addingLocation === "end") {
+    points = [...latLngNodes, mousePosition];
+  }
 
   function handleMarkerDrag(index: number, newPosition: LatLng) {
     const node = nodes[index];
@@ -77,14 +95,46 @@ export default function DraggableLine({
       });
       return newMarkers;
     });
+    setAddingLocation(null);
   }
 
+  const spline =
+    points.length > 2
+      ? leafletSpline(points.map((point) => new LatLng(point.lat, point.lng)))
+      : [];
+
+  const map = useMap();
+
+  const endPlusIconPoint =
+    spline.length > 2
+      ? getPlusIconPoint(
+          map,
+          spline.map((p) => new LatLng(p.latLng.lat, p.latLng.lng)),
+          24,
+          false,
+        )
+      : null;
+
+  const startPlusIconPoint =
+    spline.length > 2
+      ? getPlusIconPoint(
+          map,
+          spline.map((p) => new LatLng(p.latLng.lat, p.latLng.lng)),
+          24,
+          true,
+        )
+      : null;
   return (
     <>
       <TrackMousePosition setPosition={setMousePosition} />
       {isAdding && (
         <AddMarkerOnClick
-          addMarker={(newPosition) => addNodeAtIndex(nodes.length, newPosition)}
+          addMarker={(newPosition) =>
+            addNodeAtIndex(
+              addingLocation == "start" ? 0 : nodes.length,
+              newPosition,
+            )
+          }
         />
       )}
       {nodes.map((position, idx) => (
@@ -104,12 +154,36 @@ export default function DraggableLine({
         />
       ))}
       <SplinePolyline
-        basePoints={points}
-        onClick={(precedingMarkerIndex, clickedPosition) =>
-          addNodeAtIndex(precedingMarkerIndex + 1, clickedPosition)
-        }
+        spline={spline}
+        onClick={(precedingMarkerIndex, clickedPosition) => {
+          if (isAdding) {
+            return;
+          }
+          addNodeAtIndex(precedingMarkerIndex + 1, clickedPosition);
+        }}
       />
-      ;
+      {!isAdding && endPlusIconPoint && (
+        <Marker
+          position={endPlusIconPoint}
+          icon={plusIcon}
+          eventHandlers={{
+            click(e) {
+              setAddingLocation("end");
+            },
+          }}
+        />
+      )}
+      {!isAdding && startPlusIconPoint && (
+        <Marker
+          position={startPlusIconPoint}
+          icon={plusIcon}
+          eventHandlers={{
+            click(e) {
+              setAddingLocation("start");
+            },
+          }}
+        />
+      )}
     </>
   );
 }
@@ -121,4 +195,35 @@ function AddMarkerOnClick(props: { addMarker: (marker: LatLng) => void }) {
     },
   });
   return null;
+}
+
+// Implementation from DraggableLines.ts of https://github.com/FacilMap/Leaflet.DraggableLines
+function getPlusIconPoint(
+  map: LeafletMap,
+  trackPoints: LatLng[],
+  distance: number,
+  atStart: boolean,
+) {
+  const tr = atStart ? trackPoints : [...trackPoints].reverse();
+
+  const point0 = map.latLngToContainerPoint(tr[0]);
+  const tr1 = tr.find(
+    (p, i) => i > 0 && point0.distanceTo(map.latLngToContainerPoint(p)) > 0,
+  );
+
+  let result;
+  if (!tr1) {
+    result = point(point0.x + (atStart ? -1 : 1) * distance, point0.y);
+  } else {
+    const point1 = map.latLngToContainerPoint(tr1);
+
+    const fraction = distance / point0.distanceTo(point1);
+
+    result = point(
+      point0.x - fraction * (point1.x - point0.x),
+      point0.y - fraction * (point1.y - point0.y),
+    );
+  }
+
+  return map.containerPointToLatLng(result);
 }

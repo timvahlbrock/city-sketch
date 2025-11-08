@@ -1,5 +1,4 @@
 "use client";
-import leafletSpline from "@/app/components/map/leafletSpline";
 import {
   LatLng,
   LatLngLiteral,
@@ -7,23 +6,17 @@ import {
   LeafletMouseEvent,
 } from "leaflet";
 import { Polyline } from "react-leaflet";
+import { SplinePoint } from "@/app/components/map/leafletSpline";
 
 export interface BezierLineProps {
-  basePoints: readonly LatLngLiteral[];
+  spline: readonly SplinePoint[];
   onClick?: (precedingMarkerIndex: number, clickedPosition: LatLng) => void;
 }
 
-export default function SplinePolyline({
-  basePoints,
-  onClick,
-}: BezierLineProps) {
-  if (basePoints.length < 2) {
+export default function SplinePolyline({ spline, onClick }: BezierLineProps) {
+  if (spline.length < 2) {
     return null;
   }
-
-  const spline = leafletSpline(
-    basePoints.map((point) => new LatLng(point.lat, point.lng)),
-  );
 
   const eventHandlers: LeafletEventHandlerFnMap = {
     click: (e: LeafletMouseEvent) => handleLineClick(e),
