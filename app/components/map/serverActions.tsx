@@ -43,3 +43,12 @@ export async function pushMarkerAdded(
 
   return newNode.data;
 }
+
+export async function pushMarkerRemoved(nodeId: number) {
+  await createFrontendClient()
+    .from("nodes")
+    .delete()
+    .eq("id", nodeId)
+    .single()
+    .throwOnError();
+}

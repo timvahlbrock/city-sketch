@@ -5,6 +5,7 @@ import DraggableMarker from "@/app/components/map/draggableMarker";
 import {
   pushMarkerAdded,
   pushMarkerMoved,
+  pushMarkerRemoved,
 } from "@/app/components/map/serverActions";
 import SplinePolyline from "@/app/components/map/SplinePolyline";
 import { RankedNode, toLatLng } from "@/app/hooks/rankedNodes";
@@ -98,6 +99,16 @@ export default function DraggableLine({
     setAddingLocation(null);
   }
 
+  async function handleMarkerRemove(index: number) {
+    const node = nodes[index];
+    await pushMarkerRemoved(node.id);
+    setNodes((markers) => {
+      const newMarkers = [...markers];
+      newMarkers.splice(index, 1);
+      return newMarkers;
+    });
+  }
+
   const spline =
     points.length > 2
       ? leafletSpline(points.map((point) => new LatLng(point.lat, point.lng)))
@@ -151,6 +162,7 @@ export default function DraggableLine({
           onMarkerUpdateEnd={(newPosition) => {
             handleMarkerDragend(idx, newPosition);
           }}
+          onMarkerRemove={() => handleMarkerRemove(idx)}
         />
       ))}
       <SplinePolyline

@@ -1,9 +1,15 @@
 "use client";
 
-import { Marker, useMap } from "react-leaflet";
-import { useMemo, useRef, useState } from "react";
-import { icon, LatLng, type LeafletEventHandlerFnMap } from "leaflet";
-import { TrackMousePosition } from "@/app/components/map/trackMousePosition";
+import { Marker, Popup, useMap } from "react-leaflet";
+import { useMemo, useRef } from "react";
+import {
+  icon,
+  LatLng,
+  type LeafletEventHandlerFnMap,
+  Popup as LeafletPopup,
+} from "leaflet";
+import { Button } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 
 export interface DraggableMarkerProps {
   isDraggable: boolean;
@@ -13,6 +19,7 @@ export interface DraggableMarkerProps {
   };
   onMarkerUpdate?: (newPosition: LatLng) => void;
   onMarkerUpdateEnd?: (newPosition: LatLng) => void;
+  onMarkerRemove?: () => void;
 }
 
 const markerIconSize = 10;
@@ -43,6 +50,7 @@ export default function DraggableMarker(props: DraggableMarkerProps) {
       }) as LeafletEventHandlerFnMap,
     [onMarkerUpdate, markerRef, props],
   );
+  const map = useMap();
 
   return (
     <>
@@ -52,7 +60,20 @@ export default function DraggableMarker(props: DraggableMarkerProps) {
         position={position}
         ref={markerRef}
         icon={markerIcon}
-      />
+      >
+        <Popup>
+          <Button
+            danger={true}
+            onClick={() => {
+              map.closePopup();
+              props.onMarkerRemove?.();
+            }}
+          >
+            <DeleteOutlined />
+            Remove
+          </Button>
+        </Popup>
+      </Marker>
     </>
   );
 }
