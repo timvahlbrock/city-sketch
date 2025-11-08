@@ -15,18 +15,11 @@ export interface DraggableMarkerProps {
   onMarkerUpdateEnd?: (newPosition: LatLng) => void;
 }
 
-const smallerIconSize = 10;
-const smallerIcon = icon({
+const markerIconSize = 10;
+const markerIcon = icon({
   iconUrl: "/map/marker.png",
-  iconSize: [smallerIconSize, smallerIconSize], // ToDo: Scale down marker size for better performance
-  iconAnchor: [smallerIconSize / 2, smallerIconSize / 2],
-});
-
-const largerIconSize = 20;
-const largerIcon = icon({
-  iconUrl: "/map/marker.png",
-  iconSize: [largerIconSize, largerIconSize],
-  iconAnchor: [largerIconSize / 2, largerIconSize / 2],
+  iconSize: [markerIconSize, markerIconSize], // ToDo: Scale down marker size for better performance
+  iconAnchor: [markerIconSize / 2, markerIconSize / 2],
 });
 
 export default function DraggableMarker(props: DraggableMarkerProps) {
@@ -50,24 +43,15 @@ export default function DraggableMarker(props: DraggableMarkerProps) {
       }) as LeafletEventHandlerFnMap,
     [onMarkerUpdate, markerRef, props],
   );
-  const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
-
-  const mapRef = useMap();
-  const distance = mousePosition
-    ? mapRef
-        .latLngToLayerPoint(position)
-        .distanceTo(mapRef.latLngToLayerPoint(mousePosition))
-    : Infinity;
 
   return (
     <>
-      <TrackMousePosition setPosition={setMousePosition} />
       <Marker
         draggable={props.isDraggable}
         eventHandlers={eventHandlers}
         position={position}
         ref={markerRef}
-        icon={distance < 30 ? largerIcon : smallerIcon}
+        icon={markerIcon}
       />
     </>
   );
