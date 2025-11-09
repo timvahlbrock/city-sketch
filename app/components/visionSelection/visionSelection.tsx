@@ -1,36 +1,24 @@
-"use client";
+import { Card } from "antd";
+import { createClient } from "@/app/utils";
+import ClientVisionSelection from "@/app/components/visionSelection/clientVisionSelection";
 
-import { Card, List } from "antd";
-import { useVisions } from "@/app/hooks/visions";
-import { BulbOutlined, RightOutlined } from "@ant-design/icons";
-import Link from "next/link";
-
-export default function VisionSelection() {
-  const visions = useVisions();
+export default async function VisionSelection() {
+  const visions = await fetchVisions();
 
   return (
     <Card title="Visions">
-      <List
-        dataSource={visions}
-        renderItem={(item) => (
-          <Link href={`/vision/${item.id}`}>
-            <List.Item style={{ justifyContent: "start" }}>
-              <div
-                style={{ fontSize: "xx-large", flexGrow: 0, marginRight: 16 }}
-              >
-                <BulbOutlined />
-              </div>
-              <div style={{ flexGrow: "1" }}>
-                <h1>
-                  <b>{item.title}</b>
-                </h1>
-                <p>{item.description}</p>
-              </div>
-              <RightOutlined style={{ fontSize: "xx-large" }} />
-            </List.Item>
-          </Link>
-        )}
-      />
+      <ClientVisionSelection visions={visions} />
     </Card>
   );
+}
+
+async function fetchVisions() {
+  const client = await createClient();
+
+  return (
+    await client
+      .from("visions")
+      .select("id, title, description, implementationState")
+      .throwOnError()
+  ).data;
 }

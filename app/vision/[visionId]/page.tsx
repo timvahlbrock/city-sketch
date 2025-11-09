@@ -1,10 +1,11 @@
-"use client";
-
-import { useParams } from "next/navigation";
 import Link from "next/link";
 
-export default function Page() {
-  const { visionId } = useParams();
+export default async function Page({
+  params,
+}: {
+  params: { visionId: string };
+}) {
+  const visionId = params.visionId;
 
   return (
     <>
