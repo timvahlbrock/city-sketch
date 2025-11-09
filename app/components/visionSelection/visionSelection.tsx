@@ -1,8 +1,9 @@
 "use client";
 
-import { Card, List, Typography } from "antd";
+import { Card, List } from "antd";
 import { useVisions } from "@/app/hooks/visions";
 import { BulbOutlined, RightOutlined } from "@ant-design/icons";
+import Link from "next/link";
 
 export default function VisionSelection() {
   const visions = useVisions();
@@ -12,18 +13,22 @@ export default function VisionSelection() {
       <List
         dataSource={visions}
         renderItem={(item) => (
-          <List.Item style={{ justifyContent: "start" }}>
-            <div style={{ fontSize: "xx-large", flexGrow: 0, marginRight: 16 }}>
-              <BulbOutlined />
-            </div>
-            <div style={{ flexGrow: "1" }}>
-              <h1>
-                <b>{item.title}</b>
-              </h1>
-              <p>{item.description}</p>
-            </div>
-            <RightOutlined style={{ fontSize: "xx-large" }} />
-          </List.Item>
+          <Link href={`/vision/${item.id}`}>
+            <List.Item style={{ justifyContent: "start" }}>
+              <div
+                style={{ fontSize: "xx-large", flexGrow: 0, marginRight: 16 }}
+              >
+                <BulbOutlined />
+              </div>
+              <div style={{ flexGrow: "1" }}>
+                <h1>
+                  <b>{item.title}</b>
+                </h1>
+                <p>{item.description}</p>
+              </div>
+              <RightOutlined style={{ fontSize: "xx-large" }} />
+            </List.Item>
+          </Link>
         )}
       />
     </Card>

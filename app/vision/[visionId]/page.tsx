@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Space, Splitter } from "antd";
+import { Splitter } from "antd";
 import { Map as LeafletMap } from "leaflet";
 import MapComponent from "@/app/components/map/map";
 import { Section } from "@/app/components/map/section";
 import VisionSelection from "@/app/components/visionSelection/visionSelection";
+import { useParams } from "next/navigation";
 
-export type HomeProps = object;
-
-export default function Home({}: HomeProps) {
+export default function Page() {
+  const { visionId } = useParams();
+  const sectionId = parseInt(visionId as string, 10);
   const [orientation, setOrientation] = useState<"horizontal" | "vertical">(
     "vertical",
   );
@@ -30,7 +31,10 @@ export default function Home({}: HomeProps) {
         onResize={() => mapRef.current?.invalidateSize({ pan: true })}
       >
         <Splitter.Panel defaultSize={"70%"}>
-          <MapComponent ref={mapRef} />;
+          <MapComponent ref={mapRef}>
+            <Section sectionId={sectionId} />
+          </MapComponent>
+          ;
         </Splitter.Panel>
         <Splitter.Panel className={"bg-white"}>
           <div style={{ padding: "16px" }}>
