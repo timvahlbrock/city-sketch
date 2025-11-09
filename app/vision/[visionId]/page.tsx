@@ -2,6 +2,7 @@ import { fetchSections } from "@/app/queries/fetchSections";
 import { Card, Space, Tag } from "antd";
 import Link from "next/link";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import { fetchVision } from "@/app/queries/fetchVision";
 
 export default async function Page({
   params,
@@ -9,6 +10,7 @@ export default async function Page({
   params: { visionId: string };
 }) {
   const visionId = parseInt(params.visionId);
+  const vision = await fetchVision(visionId);
   const sections = await fetchSections(visionId);
 
   return (
@@ -19,8 +21,11 @@ export default async function Page({
           &nbsp; Go Back
         </Link>
         <h1 style={{ fontWeight: "bold", fontSize: "x-large" }}>
-          Vision {visionId}
+          {vision.title}
         </h1>
+        <Card title={"Description"}>
+          {vision.description || "No description provided."}
+        </Card>
         <Card title={`Sections (${sections.length})`}>
           {sections.map((section) => {
             return (
