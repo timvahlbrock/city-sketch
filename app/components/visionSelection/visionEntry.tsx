@@ -1,22 +1,26 @@
 import Link from "next/link";
 import { BulbOutlined, RightOutlined } from "@ant-design/icons";
-import { List } from "antd";
+import { Avatar, List } from "antd";
 import { Vision } from "@/app/components/visionSelection/vision";
 
 export default function VisionEntry({ vision }: { vision: Vision }) {
   return (
     <Link href={`/vision/${vision.id}`}>
-      <List.Item style={{ justifyContent: "start" }}>
-        <div style={{ fontSize: "xx-large", flexGrow: 0, marginRight: 16 }}>
-          <BulbOutlined />
-        </div>
-        <div style={{ flexGrow: "1" }}>
-          <h1>
-            <b>{vision.title}</b>
-          </h1>
-          <p>{vision.description}</p>
-        </div>
-        <RightOutlined style={{ fontSize: "xx-large" }} />
+      <List.Item>
+        <List.Item.Meta
+          avatar={
+            <Avatar
+              size={50}
+              icon={<BulbOutlined />}
+              style={{ backgroundColor: "white", color: "black" }}
+            />
+          }
+          title={vision.title}
+          description={vision.description}
+        />
+        <RightOutlined
+          style={{ fontSize: "large", color: "rgba(0, 0, 0, 0.45)" }}
+        />
       </List.Item>
     </Link>
   );
