@@ -1,5 +1,5 @@
 import DraggableLine from "@/app/components/map/draggableLine";
-import { createClient } from "@/app/utils";
+import { createSsrClient } from "@/app/utils/createSsrClient";
 
 export interface SectionProps {
   sectionId: number;
@@ -11,7 +11,7 @@ export async function Section({ sectionId }: SectionProps) {
 }
 
 async function fetchRankedNodes(sectionId: number) {
-  const client = await createClient();
+  const client = await createSsrClient();
   const sectionToNodes = await client
     .from("sectionsToNodes")
     .select("rank, nodes(id, latitude, longitude)")

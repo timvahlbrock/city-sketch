@@ -1,8 +1,8 @@
 "use server";
-import { createClient } from "@/app/utils";
+import { createSsrClient } from "@/app/utils/createSsrClient";
 
 export async function addSection() {
-  const client = await createClient();
+  const client = await createSsrClient();
 
   const insertedData = await client
     .from("sections")

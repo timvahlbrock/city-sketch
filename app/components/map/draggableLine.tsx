@@ -8,7 +8,7 @@ import {
   pushMarkerRemoved,
 } from "@/app/components/map/serverActions";
 import SplinePolyline from "@/app/components/map/SplinePolyline";
-import { RankedNode, toLatLng } from "@/app/rankedNodes";
+import { RankedNode, toLatLng } from "@/app/types/rankedNodes";
 import { divIcon, LatLng, Map as LeafletMap, point } from "leaflet";
 import { TrackMousePosition } from "@/app/components/map/trackMousePosition";
 import leafletSpline from "@/app/components/map/leafletSpline";

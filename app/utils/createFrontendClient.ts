@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { Database } from "@/app/database.types";
+import { Database } from "@/app/types/database.types";
 
 export function createFrontendClient() {
   return createClient<Database>(

@@ -1,4 +1,4 @@
-import { createFrontendClient } from "@/app/createFrontendClient";
+import { createFrontendClient } from "@/app/utils/createFrontendClient";
 
 export async function pushMarkerMoved(
   nodeId: number,

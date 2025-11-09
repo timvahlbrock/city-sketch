@@ -1,5 +1,5 @@
 import { Section } from "@/app/components/map/section";
-import { createClient } from "@/app/utils";
+import { createSsrClient } from "@/app/utils/createSsrClient";
 
 export default async function Page({
   params,
@@ -19,7 +19,7 @@ export default async function Page({
 }
 
 async function fetchSections(visionId: number) {
-  const client = await createClient();
+  const client = await createSsrClient();
 
   const response = await client
     .from("visions")

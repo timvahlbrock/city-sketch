@@ -1,5 +1,5 @@
 import { Card } from "antd";
-import { createClient } from "@/app/utils";
+import { createSsrClient } from "@/app/utils/createSsrClient";
 import ClientVisionSelection from "@/app/components/visionSelection/clientVisionSelection";
 
 export default async function VisionSelection() {
@@ -13,7 +13,7 @@ export default async function VisionSelection() {
 }
 
 async function fetchVisions() {
-  const client = await createClient();
+  const client = await createSsrClient();
 
   return (
     await client
