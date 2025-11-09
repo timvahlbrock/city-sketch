@@ -1,7 +1,7 @@
 "use server";
 
-import Home from "@/app/home";
+import VisionSelection from "@/app/components/visionSelection/visionSelection";
 
 export default async function Page() {
-  return <Home />;
+  return <VisionSelection />;
 }

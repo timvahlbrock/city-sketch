@@ -7,11 +7,11 @@ import "leaflet-defaulticon-compatibility";
 import { PropsWithChildren, RefObject } from "react";
 import { Map as LeafletMap } from "leaflet";
 
-export interface MapProps {
-  ref: RefObject<LeafletMap | null>;
-}
+export type MapProps = PropsWithChildren<{
+  ref?: RefObject<LeafletMap | null>;
+}>;
 
-export default function Map(props: PropsWithChildren<MapProps>) {
+export default function Map(props: MapProps) {
   return (
     <MapContainer
       ref={props.ref}
