@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Card, Splitter } from "antd";
+import { Space, Splitter } from "antd";
 import { Map as LeafletMap } from "leaflet";
 import MapComponent from "@/app/components/map/map";
 import { Section } from "@/app/components/map/section";
+import VisionSelection from "@/app/components/visionSelection/visionSelection";
 
 export type HomeProps = object;
 
@@ -35,7 +36,9 @@ export default function Home({}: HomeProps) {
           ;
         </Splitter.Panel>
         <Splitter.Panel className={"bg-white"}>
-          <Card className={"w-full"} title={"Hello"}></Card>
+          <div style={{ padding: "16px" }}>
+            <VisionSelection />
+          </div>
         </Splitter.Panel>
       </Splitter>
     </>

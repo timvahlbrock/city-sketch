@@ -97,6 +97,57 @@ export type Database = {
           },
         ]
       }
+      visions: {
+        Row: {
+          description: string
+          id: number
+          implementationState: string
+          title: string
+        }
+        Insert: {
+          description: string
+          id?: number
+          implementationState: string
+          title?: string
+        }
+        Update: {
+          description?: string
+          id?: number
+          implementationState?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      visionsToSections: {
+        Row: {
+          sectionId: number
+          visionId: number
+        }
+        Insert: {
+          sectionId: number
+          visionId: number
+        }
+        Update: {
+          sectionId?: number
+          visionId?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visionsToSections_sectionId_fkey"
+            columns: ["sectionId"]
+            isOneToOne: false
+            referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visionsToSections_visionId_fkey"
+            columns: ["visionId"]
+            isOneToOne: false
+            referencedRelation: "visions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
