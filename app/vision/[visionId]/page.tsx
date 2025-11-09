@@ -7,10 +7,11 @@ import MapComponent from "@/app/components/map/map";
 import { Section } from "@/app/components/map/section";
 import VisionSelection from "@/app/components/visionSelection/visionSelection";
 import { useParams } from "next/navigation";
+import { useSections } from "@/app/hooks/sections";
 
 export default function Page() {
   const { visionId } = useParams();
-  const sectionId = parseInt(visionId as string, 10);
+  const sections = useSections(parseInt(visionId as string, 10));
   const [orientation, setOrientation] = useState<"horizontal" | "vertical">(
     "vertical",
   );
@@ -32,7 +33,9 @@ export default function Page() {
       >
         <Splitter.Panel defaultSize={"70%"}>
           <MapComponent ref={mapRef}>
-            <Section sectionId={sectionId} />
+            {sections.map((section) => (
+              <Section key={section.id} sectionId={section.id} />
+            ))}
           </MapComponent>
           ;
         </Splitter.Panel>
