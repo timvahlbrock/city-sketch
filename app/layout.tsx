@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ReactNode } from "react";
 import MapWithSidebarLayout from "@/app/mapWithSidebarLayout";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +32,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <MapWithSidebarLayout map={map}>{children}</MapWithSidebarLayout>
+        <AntdRegistry>
+          <MapWithSidebarLayout map={map}>{children}</MapWithSidebarLayout>
+        </AntdRegistry>
       </body>
     </html>
   );
