@@ -1,4 +1,4 @@
-import { Section } from "@/app/components/map/section";
+import { EditableSection } from "@/app/components/map/editableSection";
 import { fetchSections } from "@/app/queries/fetchSections";
 import FlyIntoBounds from "@/app/components/map/FlyIntoBounds";
 
@@ -14,7 +14,11 @@ export default async function Page({
     <>
       <FlyIntoBounds visionId={visionId} />
       {sections.map((section) => (
-        <Section key={section.id} sectionId={section.id} />
+        <EditableSection
+          key={section.id}
+          sectionId={section.id}
+          editable={false}
+        />
       ))}
     </>
   );

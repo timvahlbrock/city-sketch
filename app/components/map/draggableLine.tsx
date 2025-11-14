@@ -18,6 +18,7 @@ import { PlusCircleOutlined } from "@ant-design/icons";
 export interface DraggableLineProps {
   initialNodes: RankedNode[];
   dataId: number;
+  isEditable: boolean;
 }
 
 const plusIcon = divIcon({
@@ -30,6 +31,7 @@ const plusIcon = divIcon({
 export default function DraggableLine({
   initialNodes,
   dataId,
+  isEditable,
 }: DraggableLineProps) {
   const [nodes, setNodes] = useState<RankedNode[]>(initialNodes);
   const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
@@ -137,7 +139,7 @@ export default function DraggableLine({
       : null;
   return (
     <>
-      <TrackMousePosition setPosition={setMousePosition} />
+      {isAdding && <TrackMousePosition setPosition={setMousePosition} />}
       {isAdding && (
         <AddMarkerOnClick
           addMarker={(newPosition) =>
@@ -148,33 +150,35 @@ export default function DraggableLine({
           }
         />
       )}
-      {nodes.map((position, idx) => (
-        <DraggableMarker
-          isDraggable={!isAdding}
-          key={idx}
-          position={{
-            lat: position.latitude,
-            lng: position.longitude,
-          }}
-          onMarkerUpdate={(newPosition) => {
-            handleMarkerDrag(idx, newPosition);
-          }}
-          onMarkerUpdateEnd={(newPosition) => {
-            handleMarkerDragend(idx, newPosition);
-          }}
-          onMarkerRemove={() => handleMarkerRemove(idx)}
-        />
-      ))}
+      {isEditable &&
+        nodes.map((position, idx) => (
+          <DraggableMarker
+            isDraggable={!isAdding}
+            key={idx}
+            position={{
+              lat: position.latitude,
+              lng: position.longitude,
+            }}
+            onMarkerUpdate={(newPosition) => {
+              handleMarkerDrag(idx, newPosition);
+            }}
+            onMarkerUpdateEnd={(newPosition) => {
+              handleMarkerDragend(idx, newPosition);
+            }}
+            onMarkerRemove={() => handleMarkerRemove(idx)}
+          />
+        ))}
       <SplinePolyline
         spline={spline}
         onClick={(precedingMarkerIndex, clickedPosition) => {
+          if (!isEditable) return;
           if (isAdding) {
             return;
           }
           addNodeAtIndex(precedingMarkerIndex + 1, clickedPosition);
         }}
       />
-      {!isAdding && endPlusIconPoint && (
+      {isEditable && !isAdding && endPlusIconPoint && (
         <Marker
           position={endPlusIconPoint}
           icon={plusIcon}
@@ -185,7 +189,7 @@ export default function DraggableLine({
           }}
         />
       )}
-      {!isAdding && startPlusIconPoint && (
+      {isEditable && !isAdding && startPlusIconPoint && (
         <Marker
           position={startPlusIconPoint}
           icon={plusIcon}

@@ -3,11 +3,18 @@ import { createSsrClient } from "@/app/utils/createSsrClient";
 
 export interface SectionProps {
   sectionId: number;
+  editable: boolean;
 }
 
-export async function Section({ sectionId }: SectionProps) {
+export async function EditableSection({ sectionId, editable }: SectionProps) {
   const rankedNodes = await fetchRankedNodes(sectionId);
-  return <DraggableLine initialNodes={rankedNodes} dataId={sectionId} />;
+  return (
+    <DraggableLine
+      initialNodes={rankedNodes}
+      dataId={sectionId}
+      isEditable={editable}
+    />
+  );
 }
 
 async function fetchRankedNodes(sectionId: number) {
