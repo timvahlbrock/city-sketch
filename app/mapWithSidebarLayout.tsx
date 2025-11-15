@@ -1,9 +1,10 @@
 "use client";
 
 import { Splitter } from "antd";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
+import { MapContext } from "@/app/components/map/mapContext";
 
 const DynamicMap = dynamic(() => import("./components/map/map"), {
   ssr: false,
@@ -11,7 +12,7 @@ const DynamicMap = dynamic(() => import("./components/map/map"), {
 
 export default function MapWithSidebarLayout({
   children,
-  map,
+  map: mapChildren,
 }: {
   children: ReactNode;
   map: ReactNode;
@@ -26,19 +27,25 @@ export default function MapWithSidebarLayout({
     );
   }, []);
 
-  const mapRef = useRef<LeafletMap | null>(null);
+  const [map, setMap] = useState<LeafletMap | null>(null);
+
+  useEffect(() => {
+    console.log("mapRef", map);
+  }, [map]);
 
   return (
     <Splitter
       layout={orientation}
       className={"h-full"}
-      onResize={() => mapRef.current?.invalidateSize({ pan: true })}
+      onResize={() => map?.invalidateSize({ pan: true })}
     >
       <Splitter.Panel defaultSize={"70%"}>
-        <DynamicMap ref={mapRef}>{map}</DynamicMap>
+        <DynamicMap setMap={setMap}>{mapChildren}</DynamicMap>
       </Splitter.Panel>
       <Splitter.Panel className={"bg-white"}>
-        <div style={{ padding: "16px" }}>{children}</div>
+        <MapContext.Provider value={map}>
+          <div style={{ padding: "16px" }}>{children}</div>
+        </MapContext.Provider>
       </Splitter.Panel>
     </Splitter>
   );

@@ -4,17 +4,19 @@ import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
-import { PropsWithChildren, RefObject } from "react";
+import { PropsWithChildren } from "react";
 import { Map as LeafletMap } from "leaflet";
 
 export type MapProps = PropsWithChildren<{
-  ref?: RefObject<LeafletMap | null>;
+  setMap?: (map: LeafletMap | null) => void;
 }>;
 
 export default function Map(props: MapProps) {
   return (
     <MapContainer
-      ref={props.ref}
+      ref={(ref) => {
+        props.setMap?.(ref);
+      }}
       center={[51.83692, 6.61892]}
       zoom={14}
       style={{ height: "100%", width: "100%" }}

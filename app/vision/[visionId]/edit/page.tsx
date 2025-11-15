@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { fetchVision } from "@/app/queries/fetchVision";
 import { fetchSections } from "@/app/queries/fetchSections";
+import AddSectionButton from "@/app/components/visionEditor/addSectionButton";
 
 export default async function Page({
   params,
@@ -23,25 +24,28 @@ export default async function Page({
         <h1 style={{ fontWeight: "bold", fontSize: "x-large" }}>
           Editing: {vision.title}
         </h1>
-        <h2 style={{ fontWeight: "bold", fontSize: "large" }}>Sections</h2>
-        {sections.map((section) => {
-          return (
-            <Tag
-              key={section.id}
-              color={"blue"}
-              style={{
-                width: "100%",
-                marginBottom: "0.75rem",
-                padding: "0.25rem",
-                display: "flex",
-              }}
-              closable={true}
-            >
-              Section {section.id}
-              <span style={{ flexGrow: 1 }} />
-            </Tag>
-          );
-        })}
+        <div>
+          <h2 style={{ fontWeight: "bold", fontSize: "large" }}>Sections</h2>
+          {sections.map((section) => {
+            return (
+              <Tag
+                key={section.id}
+                color={"blue"}
+                style={{
+                  width: "100%",
+                  marginBottom: "0.75rem",
+                  padding: "0.25rem",
+                  display: "flex",
+                }}
+                closable={true}
+              >
+                Section {section.id}
+                <span style={{ flexGrow: 1 }} />
+              </Tag>
+            );
+          })}
+          <AddSectionButton visionId={visionId} />
+        </div>
       </Space>
     </>
   );
