@@ -1,5 +1,5 @@
-import { EditableSection } from "@/app/components/map/editableSection";
 import { fetchSections } from "@/app/queries/fetchSections";
+import { EditableSection } from "@/app/components/map/editableSection";
 
 export default async function Page({
   params,
