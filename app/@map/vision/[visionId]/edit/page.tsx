@@ -1,4 +1,5 @@
 import { fetchSections } from "@/app/queries/fetchSections";
+import ClientSections from "@/app/components/map/clientSections";
 import { EditableSection } from "@/app/components/map/editableSection";
 
 export default async function Page({
@@ -13,11 +14,12 @@ export default async function Page({
     <>
       {sections.map((section) => (
         <EditableSection
-          key={section.id}
           sectionId={section.id}
+          key={section.id}
           editable={true}
         />
       ))}
+      <ClientSections serverSections={sections} />
     </>
   );
 }

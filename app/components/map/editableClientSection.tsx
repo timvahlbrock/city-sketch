@@ -1,13 +1,17 @@
-import { createSsrClient } from "@/app/utils/createSsrClient";
+"use client";
+
 import DraggableLine from "@/app/components/map/draggableLine";
+import { RankedNode } from "@/app/types/rankedNodes";
+import { useEffect, useState } from "react";
+import { createFrontendClient } from "@/app/utils/createFrontendClient";
 
 export interface SectionProps {
   sectionId: number;
   editable: boolean;
 }
 
-export async function EditableSection({ sectionId, editable }: SectionProps) {
-  const rankedNodes = await fetchRankedNodes(sectionId);
+export function EditableClientSection({ sectionId, editable }: SectionProps) {
+  const rankedNodes = useRankedNodes(sectionId);
 
   return (
     <DraggableLine
@@ -18,8 +22,18 @@ export async function EditableSection({ sectionId, editable }: SectionProps) {
   );
 }
 
+export function useRankedNodes(sectionId: number) {
+  const [nodes, setNodes] = useState<RankedNode[]>([]);
+
+  useEffect(() => {
+    fetchRankedNodes(sectionId).then((rankedNodes) => setNodes(rankedNodes));
+  }, [sectionId]);
+
+  return nodes;
+}
+
 async function fetchRankedNodes(sectionId: number) {
-  const client = await createSsrClient();
+  const client = await createFrontendClient();
   const sectionToNodes = await client
     .from("sectionsToNodes")
     .select("rank, nodes(id, latitude, longitude)")
