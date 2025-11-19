@@ -15,8 +15,8 @@ export function EditableClientSection({ sectionId, editable }: SectionProps) {
 
   return (
     <DraggableLine
-      initialNodes={rankedNodes}
-      dataId={sectionId}
+      serverNodes={rankedNodes}
+      sectionId={sectionId}
       isEditable={editable}
     />
   );

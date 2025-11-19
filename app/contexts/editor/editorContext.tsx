@@ -14,4 +14,12 @@ export const EditorContext = createContext<EditorState>({
   removeSections: () => {
     void 0;
   },
+  removedNodes: new Map(),
+  removeNodes: () => {
+    void 0;
+  },
+  updatedNodes: new Map(),
+  updateNodes: () => {
+    void 0;
+  },
 });

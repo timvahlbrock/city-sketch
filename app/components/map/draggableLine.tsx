@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Marker, useMap, useMapEvents } from "react-leaflet";
 import DraggableMarker from "@/app/components/map/draggableMarker";
 import {
@@ -14,10 +14,11 @@ import { TrackMousePosition } from "@/app/components/map/trackMousePosition";
 import leafletSpline from "@/app/components/map/leafletSpline";
 import { renderToString } from "react-dom/server";
 import { PlusCircleOutlined } from "@ant-design/icons";
+import { EditorContext } from "@/app/contexts/editor/editorContext";
 
 export interface DraggableLineProps {
-  initialNodes: RankedNode[];
-  dataId: number;
+  serverNodes: RankedNode[];
+  sectionId: number;
   isEditable: boolean;
 }
 
@@ -29,20 +30,30 @@ const plusIcon = divIcon({
 });
 
 export default function DraggableLine({
-  initialNodes,
-  dataId,
+  serverNodes,
+  sectionId,
   isEditable,
 }: DraggableLineProps) {
-  const [nodes, setNodes] = useState<RankedNode[]>(initialNodes);
+  const {
+    addedNodes,
+    addNodes,
+    updatedNodes,
+    updateNodes,
+    removedNodes,
+    removeNodes,
+  } = useContext(EditorContext);
+
+  const nodes = serverNodes
+    .concat(Array.from(addedNodes.get(sectionId)?.values() ?? []))
+    .map((node) => updatedNodes.get(sectionId)?.get(node.id) ?? node)
+    .filter((node) => !removedNodes.get(sectionId)?.has(node.id))
+    .sort((a, b) => a.rank - b.rank);
+
   const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
   const [addingLocation, setAddingLocation] = useState<"start" | "end" | null>(
     null,
   );
   const isAdding = addingLocation !== null;
-
-  useEffect(() => {
-    setNodes(initialNodes);
-  }, [initialNodes]);
 
   const latLngNodes = nodes.map((node) => toLatLng(node));
   let points = latLngNodes;
@@ -54,16 +65,14 @@ export default function DraggableLine({
 
   function handleMarkerDrag(index: number, newPosition: LatLng) {
     const node = nodes[index];
-    setNodes((markers) => {
-      const newMarkers = [...markers];
-      newMarkers[index] = {
-        id: node.id,
-        latitude: newPosition.lat,
-        longitude: newPosition.lng,
-        rank: node.rank,
-      };
-      return newMarkers;
-    });
+    const newNode = {
+      id: node.id,
+      latitude: newPosition.lat,
+      longitude: newPosition.lng,
+      rank: node.rank,
+    };
+
+    updateNodes(sectionId, [newNode]);
   }
 
   async function handleMarkerDragend(index: number, newPosition: LatLng) {
@@ -86,29 +95,25 @@ export default function DraggableLine({
     } else {
       rank = nextMarker.rank / 2;
     }
-    const newNode = await pushMarkerAdded(dataId, rank, newPosition);
+    const newNode = await pushMarkerAdded(sectionId, rank, newPosition);
 
-    setNodes((markers) => {
-      const newMarkers = [...markers];
-      newMarkers.splice(index, 0, {
+    addNodes(sectionId, [
+      {
         id: newNode.id,
         latitude: newPosition.lat,
         longitude: newPosition.lng,
         rank: rank,
-      });
-      return newMarkers;
-    });
+      },
+    ]);
+
     setAddingLocation(null);
   }
 
   async function handleMarkerRemove(index: number) {
     const node = nodes[index];
     await pushMarkerRemoved(node.id);
-    setNodes((markers) => {
-      const newMarkers = [...markers];
-      newMarkers.splice(index, 1);
-      return newMarkers;
-    });
+
+    removeNodes(sectionId, [node.id]);
   }
 
   const spline =

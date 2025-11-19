@@ -3,17 +3,22 @@ export interface Section {
   // nodes: number[];
 }
 
-export interface Node {
+export interface RankedNode {
   id: number;
   latitude: number;
   longitude: number;
+  rank: number;
 }
 
 export interface EditorState {
   addedSections: ReadonlyMap<number, Section>;
   addSections: (newSections: Section[]) => void;
-  addedNodes: ReadonlyMap<number, Node>;
-  addNodes: (newNodes: Node[]) => void;
   removedSections: ReadonlySet<number>;
   removeSections: (removedSectionIds: number[]) => void;
+  addedNodes: ReadonlyMap<number, ReadonlyMap<number, RankedNode>>;
+  addNodes: (sectionId: number, newNodes: RankedNode[]) => void;
+  removedNodes: ReadonlyMap<number, ReadonlySet<number>>;
+  removeNodes: (sectionId: number, removedNodeIds: number[]) => void;
+  updatedNodes: ReadonlyMap<number, ReadonlyMap<number, RankedNode>>;
+  updateNodes: (sectionId: number, updatedNodes: RankedNode[]) => void;
 }
