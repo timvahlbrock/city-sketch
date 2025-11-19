@@ -3,11 +3,13 @@
 import { Popconfirm, Tag } from "antd";
 import { Section as SectionModel } from "@/app/contexts/editor/editorState";
 import { createFrontendClient } from "@/app/utils/createFrontendClient";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { EditorContext } from "@/app/contexts/editor/editorContext";
 
 export default function SectionTag({ section }: { section: SectionModel }) {
   const [tagVisible, setTagVisible] = useState(true);
   const [popConfirmOpen, setPopConfirmOpen] = useState(false);
+  const editorContext = useContext(EditorContext);
 
   return (
     tagVisible && (
@@ -18,6 +20,7 @@ export default function SectionTag({ section }: { section: SectionModel }) {
         onCancel={() => setPopConfirmOpen(false)}
         onConfirm={async () => {
           await deleteSection(section.id);
+          editorContext.removeSections([section.id]);
           setPopConfirmOpen(false);
           setTagVisible(false);
         }}

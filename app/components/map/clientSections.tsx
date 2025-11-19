@@ -10,17 +10,11 @@ export default function ClientSections({
 }: ClientSectionsProps) {
   serverSections = serverSections ?? [];
 
-  const clientSections = useContext(EditorContext).addedSections;
+  const { addedSections, removedSections } = useContext(EditorContext);
 
-  const unsyncedSections = new Map(clientSections);
-
-  serverSections?.forEach((serverSection) => {
-    unsyncedSections.delete(serverSection.id);
-  });
-
-  const combinedSections = serverSections?.concat(
-    Array.from(unsyncedSections.values()),
-  );
+  const combinedSections = serverSections
+    ?.concat(Array.from(addedSections.values()))
+    .filter((section) => !removedSections.has(section.id));
 
   return combinedSections.map((section) => (
     <EditableClientSection

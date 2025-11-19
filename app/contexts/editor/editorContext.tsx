@@ -10,4 +10,8 @@ export const EditorContext = createContext<EditorState>({
   addSections: () => {
     void 0;
   },
+  removedSections: new Set(),
+  removeSections: () => {
+    void 0;
+  },
 });

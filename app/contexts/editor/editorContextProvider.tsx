@@ -11,12 +11,16 @@ export default function EditorContextProvider({ children }: PropsWithChildren) {
   const [addedNodes, setAddedNodes] = useState<ReadonlyMap<number, Node>>(
     new Map(),
   );
+  const [removedSections, setRemovedSections] = useState<ReadonlySet<number>>(
+    new Set(),
+  );
 
   return (
     <EditorContext
       value={{
         addedSections,
         addedNodes,
+        removedSections,
         addSections: (sections) =>
           setAddedSections((previous) => {
             const newMap = new Map(previous);
@@ -28,6 +32,12 @@ export default function EditorContextProvider({ children }: PropsWithChildren) {
             const newMap = new Map(previous);
             nodes.forEach((node) => newMap.set(node.id, node));
             return newMap;
+          }),
+        removeSections: (removedSections) =>
+          setRemovedSections((previous) => {
+            const newSet = new Set(previous);
+            removedSections.forEach((section) => newSet.add(section));
+            return newSet;
           }),
       }}
     >

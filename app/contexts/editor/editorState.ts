@@ -14,4 +14,6 @@ export interface EditorState {
   addSections: (newSections: Section[]) => void;
   addedNodes: ReadonlyMap<number, Node>;
   addNodes: (newNodes: Node[]) => void;
+  removedSections: ReadonlySet<number>;
+  removeSections: (removedSectionIds: number[]) => void;
 }
