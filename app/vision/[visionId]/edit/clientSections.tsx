@@ -25,7 +25,11 @@ export default function ClientSections({
     Array.from(unsyncedSections.values()),
   );
 
-  return combinedSections.map((section) => (
-    <SectionTag key={section.id} section={section} />
-  ));
+  return (
+    <div style={{ width: "100%", display: "flex", flexDirection: "column" }}>
+      {combinedSections.map((section) => (
+        <SectionTag key={section.id} section={section} />
+      ))}
+    </div>
+  );
 }
