@@ -3,7 +3,7 @@
 import DraggableLine from "@/app/components/map/draggableLine";
 import { RankedNode } from "@/app/types/rankedNodes";
 import { useEffect, useState } from "react";
-import { createFrontendClient } from "@/app/utils/createFrontendClient";
+import useClient from "@/app/hooks/useClient";
 
 export interface SectionProps {
   sectionId: number;
@@ -24,27 +24,27 @@ export function EditableClientSection({ sectionId, editable }: SectionProps) {
 
 export function useRankedNodes(sectionId: number) {
   const [nodes, setNodes] = useState<RankedNode[]>([]);
+  const client = useClient();
 
   useEffect(() => {
+    async function fetchRankedNodes(sectionId: number) {
+      const sectionToNodes = await client
+        .from("sectionsToNodes")
+        .select("rank, nodes(id, latitude, longitude)")
+        .eq("sectionId", sectionId)
+        .order("rank")
+        .throwOnError();
+
+      return sectionToNodes.data.map((entry) => ({
+        id: entry.nodes.id,
+        latitude: entry.nodes.latitude,
+        longitude: entry.nodes.longitude,
+        rank: entry.rank,
+      }));
+    }
+
     fetchRankedNodes(sectionId).then((rankedNodes) => setNodes(rankedNodes));
-  }, [sectionId]);
+  }, [sectionId, client]);
 
   return nodes;
-}
-
-async function fetchRankedNodes(sectionId: number) {
-  const client = await createFrontendClient();
-  const sectionToNodes = await client
-    .from("sectionsToNodes")
-    .select("rank, nodes(id, latitude, longitude)")
-    .eq("sectionId", sectionId)
-    .order("rank")
-    .throwOnError();
-
-  return sectionToNodes.data.map((entry) => ({
-    id: entry.nodes.id,
-    latitude: entry.nodes.latitude,
-    longitude: entry.nodes.longitude,
-    rank: entry.rank,
-  }));
 }

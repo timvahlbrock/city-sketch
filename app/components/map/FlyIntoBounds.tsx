@@ -1,16 +1,15 @@
 "use client";
 
-import { createFrontendClient } from "@/app/utils/createFrontendClient";
 import { useMap } from "react-leaflet";
 import { useEffect } from "react";
+import useClient from "@/app/hooks/useClient";
 
 export default function FlyIntoBounds({ visionId }: { visionId: number }) {
   const map = useMap();
+  const client = useClient();
 
   useEffect(() => {
     (async function () {
-      const client = createFrontendClient();
-
       const nodes = await client
         .from("visionsToSections")
         .select("sections(nodes(id))")

@@ -2,14 +2,19 @@
 
 import { Popconfirm, Tag } from "antd";
 import { Section as SectionModel } from "@/app/contexts/editor/editorState";
-import { createFrontendClient } from "@/app/utils/createFrontendClient";
 import { useContext, useState } from "react";
 import { EditorContext } from "@/app/contexts/editor/editorContext";
+import useClient from "@/app/hooks/useClient";
 
 export default function SectionTag({ section }: { section: SectionModel }) {
+  const client = useClient();
   const [tagVisible, setTagVisible] = useState(true);
   const [popConfirmOpen, setPopConfirmOpen] = useState(false);
   const editorContext = useContext(EditorContext);
+
+  async function deleteSection(sectionId: number) {
+    await client.from("sections").delete().eq("id", sectionId).single();
+  }
 
   return (
     tagVisible && (
@@ -46,9 +51,4 @@ export default function SectionTag({ section }: { section: SectionModel }) {
       </Popconfirm>
     )
   );
-}
-
-async function deleteSection(sectionId: number) {
-  const client = createFrontendClient();
-  await client.from("sections").delete().eq("id", sectionId).single();
 }

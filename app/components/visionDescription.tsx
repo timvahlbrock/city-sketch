@@ -4,7 +4,7 @@ import { Typography } from "antd";
 import { Vision } from "@/app/components/visionSelection/vision";
 import { useContext } from "react";
 import { EditorContext } from "@/app/contexts/editor/editorContext";
-import { createFrontendClient } from "@/app/utils/createFrontendClient";
+import useClient from "@/app/hooks/useClient";
 
 export interface VisionDescriptionProps {
   vision: Vision;
@@ -15,6 +15,7 @@ export default function VisionDescription({
   vision,
   editable,
 }: VisionDescriptionProps) {
+  const client = useClient();
   const { updatedVisions, updateVision } = useContext(EditorContext);
   async function updateDescription(newDescription: string) {
     await updateDescriptionRemote(vision.id, newDescription);
@@ -31,7 +32,6 @@ export default function VisionDescription({
     visionId: number,
     newDescription: string,
   ) {
-    const client = createFrontendClient();
     await client
       .from("visions")
       .update({ description: newDescription })

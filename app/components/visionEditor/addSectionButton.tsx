@@ -2,13 +2,13 @@
 
 import { PlusOutlined } from "@ant-design/icons";
 import { Button } from "antd";
-import { createFrontendClient } from "@/app/utils/createFrontendClient";
 import useMapBounds from "@/app/contexts/map/hooks/useMapBounds";
 import { useContext } from "react";
 import { EditorContext } from "@/app/contexts/editor/editorContext";
+import useClient from "@/app/hooks/useClient";
 
 export default function AddSectionButton({ visionId }: { visionId: number }) {
-  const client = createFrontendClient();
+  const client = useClient();
   const bounds = useMapBounds();
   const editorContext = useContext(EditorContext);
 
