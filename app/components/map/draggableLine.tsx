@@ -15,6 +15,7 @@ import leafletSpline from "@/app/components/map/leafletSpline";
 import { renderToString } from "react-dom/server";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { EditorContext } from "@/app/contexts/editor/editorContext";
+import useClientNodes from "@/app/contexts/editor/useClientNodes";
 
 export interface DraggableLineProps {
   serverNodes: RankedNode[];
@@ -34,28 +35,9 @@ export default function DraggableLine({
   sectionId,
   isEditable,
 }: DraggableLineProps) {
-  const {
-    addedNodes,
-    addNodes,
-    updatedNodes,
-    updateNodes,
-    removedNodes,
-    removeNodes,
-  } = useContext(EditorContext);
+  const { addNodes, updateNodes, removeNodes } = useContext(EditorContext);
 
-  const serverNodeIds = serverNodes.map((serverNode) => serverNode.id);
-  const addedNodesMap: ReadonlyMap<number, RankedNode> =
-    addedNodes.get(sectionId) ?? new Map();
-  const nodes = serverNodes
-    .map((serverNode) => addedNodesMap.get(serverNode.id) ?? serverNode)
-    .concat(
-      Array.from(addedNodesMap.values()).filter(
-        (node) => !serverNodeIds.includes(node.id),
-      ),
-    )
-    .map((node) => updatedNodes.get(sectionId)?.get(node.id) ?? node)
-    .filter((node) => !removedNodes.get(sectionId)?.has(node.id))
-    .sort((a, b) => a.rank - b.rank);
+  const nodes = useClientNodes(sectionId, serverNodes);
 
   const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
   const [addingLocation, setAddingLocation] = useState<"start" | "end" | null>(
