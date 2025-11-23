@@ -72,7 +72,26 @@ export default function AddSectionButton({ visionId }: { visionId: number }) {
       visionId: visionId,
     });
 
-    editorContext.addNodes(newNodes.data);
+    editorContext.addNodes(newSection.data.id, [
+      {
+        id: newNodes.data[0].id,
+        latitude: leftPoint[0],
+        longitude: leftPoint[1],
+        rank: 0,
+      },
+      {
+        id: newNodes.data[1].id,
+        latitude: center.lat,
+        longitude: center.lng,
+        rank: 1,
+      },
+      {
+        id: newNodes.data[2].id,
+        latitude: rightPoint[0],
+        longitude: rightPoint[1],
+        rank: 2,
+      },
+    ]);
     editorContext.addSections([
       {
         id: newSection.data.id,

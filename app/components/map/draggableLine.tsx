@@ -43,8 +43,16 @@ export default function DraggableLine({
     removeNodes,
   } = useContext(EditorContext);
 
+  const serverNodeIds = serverNodes.map((serverNode) => serverNode.id);
+  const addedNodesMap: ReadonlyMap<number, RankedNode> =
+    addedNodes.get(sectionId) ?? new Map();
   const nodes = serverNodes
-    .concat(Array.from(addedNodes.get(sectionId)?.values() ?? []))
+    .map((serverNode) => addedNodesMap.get(serverNode.id) ?? serverNode)
+    .concat(
+      Array.from(addedNodesMap.values()).filter(
+        (node) => !serverNodeIds.includes(node.id),
+      ),
+    )
     .map((node) => updatedNodes.get(sectionId)?.get(node.id) ?? node)
     .filter((node) => !removedNodes.get(sectionId)?.has(node.id))
     .sort((a, b) => a.rank - b.rank);
