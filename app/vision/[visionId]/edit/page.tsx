@@ -6,6 +6,7 @@ import { fetchSections } from "@/app/queries/fetchSections";
 import AddSectionButton from "@/app/components/visionEditor/addSectionButton";
 import Sections from "@/app/vision/[visionId]/edit/sections";
 import VisionDescription from "@/app/components/visionDescription";
+import VisionTitle from "@/app/components/visionTitle";
 
 export default async function Page({
   params,
@@ -24,9 +25,7 @@ export default async function Page({
           &nbsp; Go Back
         </Link>
         <Space direction="vertical" size="small" style={{ width: "100%" }}>
-          <h1 style={{ fontWeight: "bold", fontSize: "x-large" }}>
-            Editing: {vision.title}
-          </h1>
+          <VisionTitle vision={vision} editable={true} />
           <VisionDescription vision={vision} editable={true} />
         </Space>
         <div>
