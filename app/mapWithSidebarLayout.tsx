@@ -5,7 +5,6 @@ import { ReactNode, useEffect, useState } from "react";
 import { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
 import { MapContext } from "@/app/contexts/map/mapContext";
-import EditorContextProvider from "@/app/contexts/editor/editorContextProvider";
 
 const DynamicMap = dynamic(() => import("./components/map/map"), {
   ssr: false,
@@ -35,21 +34,19 @@ export default function MapWithSidebarLayout({
   }, [map]);
 
   return (
-    <EditorContextProvider>
-      <Splitter
-        layout={orientation}
-        className={"h-full"}
-        onResize={() => map?.invalidateSize({ pan: true })}
-      >
-        <Splitter.Panel defaultSize={"70%"}>
-          <DynamicMap setMap={setMap}>{mapChildren}</DynamicMap>
-        </Splitter.Panel>
-        <Splitter.Panel className={"bg-white"}>
-          <MapContext value={map}>
-            <div style={{ padding: "16px" }}>{children}</div>
-          </MapContext>
-        </Splitter.Panel>
-      </Splitter>
-    </EditorContextProvider>
+    <Splitter
+      layout={orientation}
+      className={"h-full"}
+      onResize={() => map?.invalidateSize({ pan: true })}
+    >
+      <Splitter.Panel defaultSize={"70%"}>
+        <DynamicMap setMap={setMap}>{mapChildren}</DynamicMap>
+      </Splitter.Panel>
+      <Splitter.Panel className={"bg-white"}>
+        <MapContext value={map}>
+          <div style={{ padding: "16px" }}>{children}</div>
+        </MapContext>
+      </Splitter.Panel>
+    </Splitter>
   );
 }

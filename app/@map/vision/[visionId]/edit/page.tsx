@@ -1,5 +1,5 @@
 import { fetchSections } from "@/app/queries/fetchSections";
-import ClientSections from "@/app/components/map/clientSections";
+import { EditableSection } from "@/app/components/map/editableSection";
 
 export default async function Page({
   params,
@@ -11,7 +11,13 @@ export default async function Page({
 
   return (
     <>
-      <ClientSections serverSections={sections} />
+      {sections.map((section) => (
+        <EditableSection
+          key={section.id}
+          sectionId={section.id}
+          editable={true}
+        />
+      ))}
     </>
   );
 }

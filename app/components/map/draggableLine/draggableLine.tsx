@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Marker, useMap, useMapEvents } from "react-leaflet";
 import DraggableMarker from "@/app/components/map/draggableMarker";
 import SplinePolyline from "@/app/components/map/SplinePolyline";
@@ -9,11 +9,10 @@ import { TrackMousePosition } from "@/app/components/map/trackMousePosition";
 import leafletSpline from "@/app/components/map/leafletSpline";
 import { renderToString } from "react-dom/server";
 import { PlusCircleOutlined } from "@ant-design/icons";
-import { EditorContext } from "@/app/contexts/editor/editorContext";
-import useClientNodes from "@/app/contexts/editor/useClientNodes";
 import useUpdateNodePositionRemote from "@/app/components/map/draggableLine/useUpdateNodePositionRemote";
 import useAddNodeRemote from "@/app/components/map/draggableLine/useAddNodeRemote";
 import useRemoveNodeRemote from "@/app/components/map/draggableLine/useRemoveNodeRemote";
+import { useRouter } from "next/navigation";
 
 export interface DraggableLineProps {
   serverNodes: RankedNode[];
@@ -33,11 +32,16 @@ export default function DraggableLine({
   sectionId,
   isEditable,
 }: DraggableLineProps) {
-  const { addNodes, updateNodes, removeNodes } = useContext(EditorContext);
-  const nodes = useClientNodes(sectionId, serverNodes);
+  const router = useRouter();
   const addNodeRemote = useAddNodeRemote();
   const updateNodePositionRemote = useUpdateNodePositionRemote();
   const removeNodeRemote = useRemoveNodeRemote();
+
+  const [draggedNode, setDraggedNode] = useState<RankedNode | null>(null);
+
+  const nodes = serverNodes.map((node) =>
+    node.id === draggedNode?.id ? draggedNode : node,
+  );
 
   const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
   const [addingLocation, setAddingLocation] = useState<"start" | "end" | null>(
@@ -62,7 +66,7 @@ export default function DraggableLine({
       rank: node.rank,
     };
 
-    updateNodes(sectionId, [newNode]);
+    setDraggedNode(newNode);
   }
 
   async function handleMarkerDragend(index: number, newPosition: LatLng) {
@@ -71,6 +75,7 @@ export default function DraggableLine({
       lat: newPosition.lat,
       lng: newPosition.lng,
     });
+    router.refresh();
   }
 
   async function addNodeAtIndex(index: number, newPosition: LatLng) {
@@ -86,16 +91,8 @@ export default function DraggableLine({
       rank = nextMarker.rank / 2;
     }
 
-    const newNode = await addNodeRemote(sectionId, rank, newPosition);
-
-    addNodes(sectionId, [
-      {
-        id: newNode.id,
-        latitude: newPosition.lat,
-        longitude: newPosition.lng,
-        rank: rank,
-      },
-    ]);
+    await addNodeRemote(sectionId, rank, newPosition);
+    router.refresh();
 
     setAddingLocation(null);
   }
@@ -104,7 +101,7 @@ export default function DraggableLine({
     const node = nodes[index];
     await removeNodeRemote(node.id);
 
-    removeNodes(sectionId, [node.id]);
+    router.refresh();
   }
 
   const spline =

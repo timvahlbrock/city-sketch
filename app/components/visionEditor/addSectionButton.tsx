@@ -3,14 +3,13 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import useMapBounds from "@/app/contexts/map/hooks/useMapBounds";
-import { useContext } from "react";
-import { EditorContext } from "@/app/contexts/editor/editorContext";
 import useClient from "@/app/hooks/useClient";
+import { useRouter } from "next/navigation";
 
 export default function AddSectionButton({ visionId }: { visionId: number }) {
   const client = useClient();
   const bounds = useMapBounds();
-  const editorContext = useContext(EditorContext);
+  const router = useRouter();
 
   async function handleClick() {
     if (!bounds) return;
@@ -72,31 +71,7 @@ export default function AddSectionButton({ visionId }: { visionId: number }) {
       visionId: visionId,
     });
 
-    editorContext.addNodes(newSection.data.id, [
-      {
-        id: newNodes.data[0].id,
-        latitude: leftPoint[0],
-        longitude: leftPoint[1],
-        rank: 0,
-      },
-      {
-        id: newNodes.data[1].id,
-        latitude: center.lat,
-        longitude: center.lng,
-        rank: 1,
-      },
-      {
-        id: newNodes.data[2].id,
-        latitude: rightPoint[0],
-        longitude: rightPoint[1],
-        rank: 2,
-      },
-    ]);
-    editorContext.addSections([
-      {
-        id: newSection.data.id,
-      },
-    ]);
+    router.refresh();
   }
 
   return (

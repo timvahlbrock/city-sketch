@@ -4,7 +4,7 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 import { fetchVision } from "@/app/queries/fetchVision";
 import { fetchSections } from "@/app/queries/fetchSections";
 import AddSectionButton from "@/app/components/visionEditor/addSectionButton";
-import ClientSections from "@/app/vision/[visionId]/edit/clientSections";
+import Sections from "@/app/vision/[visionId]/edit/sections";
 import VisionDescription from "@/app/components/visionDescription";
 
 export default async function Page({
@@ -31,7 +31,7 @@ export default async function Page({
         </Space>
         <div>
           <h2 style={{ fontWeight: "bold", fontSize: "large" }}>Sections</h2>
-          <ClientSections serverSections={sections} />
+          <Sections serverSections={sections} />
           <AddSectionButton visionId={visionId} />
         </div>
       </Space>

@@ -2,9 +2,8 @@
 
 import { Typography } from "antd";
 import { Vision } from "@/app/components/visionSelection/vision";
-import { useContext } from "react";
-import { EditorContext } from "@/app/contexts/editor/editorContext";
 import useClient from "@/app/hooks/useClient";
+import { useRouter } from "next/navigation";
 
 export interface VisionDescriptionProps {
   vision: Vision;
@@ -16,17 +15,13 @@ export default function VisionDescription({
   editable,
 }: VisionDescriptionProps) {
   const client = useClient();
-  const { updatedVisions, updateVision } = useContext(EditorContext);
+  const router = useRouter();
+
   async function updateDescription(newDescription: string) {
     await updateDescriptionRemote(vision.id, newDescription);
 
-    updateVision({
-      ...vision,
-      description: newDescription,
-    });
+    router.refresh();
   }
-
-  vision = updatedVisions.get(vision.id) ?? vision;
 
   async function updateDescriptionRemote(
     visionId: number,
