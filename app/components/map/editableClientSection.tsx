@@ -1,6 +1,6 @@
 "use client";
 
-import DraggableLine from "@/app/components/map/draggableLine";
+import DraggableLine from "@/app/components/map/draggableLine/draggableLine";
 import { RankedNode } from "@/app/types/rankedNodes";
 import { useEffect, useState } from "react";
 import useClient from "@/app/hooks/useClient";

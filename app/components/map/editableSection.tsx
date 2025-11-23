@@ -1,5 +1,5 @@
 import { createSsrClient } from "@/app/utils/createSsrClient";
-import DraggableLine from "@/app/components/map/draggableLine";
+import DraggableLine from "@/app/components/map/draggableLine/draggableLine";
 
 export interface SectionProps {
   sectionId: number;

@@ -2,11 +2,6 @@
 import { useContext, useState } from "react";
 import { Marker, useMap, useMapEvents } from "react-leaflet";
 import DraggableMarker from "@/app/components/map/draggableMarker";
-import {
-  pushMarkerAdded,
-  pushMarkerMoved,
-  pushMarkerRemoved,
-} from "@/app/components/map/serverActions";
 import SplinePolyline from "@/app/components/map/SplinePolyline";
 import { RankedNode, toLatLng } from "@/app/types/rankedNodes";
 import { divIcon, LatLng, Map as LeafletMap, point } from "leaflet";
@@ -16,6 +11,9 @@ import { renderToString } from "react-dom/server";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { EditorContext } from "@/app/contexts/editor/editorContext";
 import useClientNodes from "@/app/contexts/editor/useClientNodes";
+import useUpdateNodePositionRemote from "@/app/components/map/draggableLine/useUpdateNodePositionRemote";
+import useAddNodeRemote from "@/app/components/map/draggableLine/useAddNodeRemote";
+import useRemoveNodeRemote from "@/app/components/map/draggableLine/useRemoveNodeRemote";
 
 export interface DraggableLineProps {
   serverNodes: RankedNode[];
@@ -36,8 +34,10 @@ export default function DraggableLine({
   isEditable,
 }: DraggableLineProps) {
   const { addNodes, updateNodes, removeNodes } = useContext(EditorContext);
-
   const nodes = useClientNodes(sectionId, serverNodes);
+  const addNodeRemote = useAddNodeRemote();
+  const updateNodePositionRemote = useUpdateNodePositionRemote();
+  const removeNodeRemote = useRemoveNodeRemote();
 
   const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
   const [addingLocation, setAddingLocation] = useState<"start" | "end" | null>(
@@ -67,7 +67,7 @@ export default function DraggableLine({
 
   async function handleMarkerDragend(index: number, newPosition: LatLng) {
     const node = nodes[index];
-    await pushMarkerMoved(node.id, {
+    await updateNodePositionRemote(node.id, {
       lat: newPosition.lat,
       lng: newPosition.lng,
     });
@@ -85,7 +85,8 @@ export default function DraggableLine({
     } else {
       rank = nextMarker.rank / 2;
     }
-    const newNode = await pushMarkerAdded(sectionId, rank, newPosition);
+
+    const newNode = await addNodeRemote(sectionId, rank, newPosition);
 
     addNodes(sectionId, [
       {
@@ -101,7 +102,7 @@ export default function DraggableLine({
 
   async function handleMarkerRemove(index: number) {
     const node = nodes[index];
-    await pushMarkerRemoved(node.id);
+    await removeNodeRemote(node.id);
 
     removeNodes(sectionId, [node.id]);
   }
