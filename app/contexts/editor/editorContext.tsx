@@ -22,4 +22,7 @@ export const EditorContext = createContext<EditorState>({
   updateNodes: () => {
     void 0;
   },
+  updateVision: () => {
+    void 0;
+  },
 });

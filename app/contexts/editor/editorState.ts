@@ -1,3 +1,5 @@
+import { Vision } from "@/app/components/visionSelection/vision";
+
 export interface Section {
   id: number;
   // nodes: number[];
@@ -11,6 +13,8 @@ export interface RankedNode {
 }
 
 export interface EditorState {
+  updatedVisions: ReadonlyMap<number, Vision>;
+  updateVision: (vision: Vision) => void;
   addedSections: ReadonlyMap<number, Section>;
   addSections: (newSections: Section[]) => void;
   removedSections: ReadonlySet<number>;

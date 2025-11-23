@@ -3,8 +3,13 @@
 import { PropsWithChildren, useState } from "react";
 import { RankedNode, Section } from "@/app/contexts/editor/editorState";
 import { EditorContext } from "@/app/contexts/editor/editorContext";
+import { Vision } from "@/app/components/visionSelection/vision";
 
 export default function EditorContextProvider({ children }: PropsWithChildren) {
+  const [updatedVisions, setUpdatedVisions] = useState<
+    ReadonlyMap<number, Vision>
+  >(new Map());
+
   const [addedSections, setAddedSections] = useState<
     ReadonlyMap<number, Section>
   >(new Map());
@@ -25,11 +30,20 @@ export default function EditorContextProvider({ children }: PropsWithChildren) {
   return (
     <EditorContext
       value={{
+        updatedVisions,
         addedSections,
         addedNodes,
         removedSections,
         updatedNodes,
         removedNodes,
+
+        updateVision: (vision) => {
+          setUpdatedVisions((previous) => {
+            const newMap = new Map(previous);
+            newMap.set(vision.id, vision);
+            return newMap;
+          });
+        },
         addSections: (sections) =>
           setAddedSections((previous) => {
             const newMap = new Map(previous);

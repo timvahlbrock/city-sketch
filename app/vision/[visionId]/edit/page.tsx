@@ -5,6 +5,7 @@ import { fetchVision } from "@/app/queries/fetchVision";
 import { fetchSections } from "@/app/queries/fetchSections";
 import AddSectionButton from "@/app/components/visionEditor/addSectionButton";
 import ClientSections from "@/app/vision/[visionId]/edit/clientSections";
+import VisionDescription from "@/app/components/visionDescription";
 
 export default async function Page({
   params,
@@ -22,9 +23,12 @@ export default async function Page({
           <ArrowLeftOutlined />
           &nbsp; Go Back
         </Link>
-        <h1 style={{ fontWeight: "bold", fontSize: "x-large" }}>
-          Editing: {vision.title}
-        </h1>
+        <Space direction="vertical" size="small" style={{ width: "100%" }}>
+          <h1 style={{ fontWeight: "bold", fontSize: "x-large" }}>
+            Editing: {vision.title}
+          </h1>
+          <VisionDescription vision={vision} editable={true} />
+        </Space>
         <div>
           <h2 style={{ fontWeight: "bold", fontSize: "large" }}>Sections</h2>
           <ClientSections serverSections={sections} />
