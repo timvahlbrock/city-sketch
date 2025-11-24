@@ -4,6 +4,7 @@ import "./globals.css";
 import { ReactNode } from "react";
 import MapWithSidebarLayout from "@/app/mapWithSidebarLayout";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import EditorContextProvider from "@/app/contexts/editorContext/editorContextProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AntdRegistry>
-          <MapWithSidebarLayout map={map}>{children}</MapWithSidebarLayout>
+          <EditorContextProvider>
+            <MapWithSidebarLayout map={map}>{children}</MapWithSidebarLayout>
+          </EditorContextProvider>
         </AntdRegistry>
       </body>
     </html>

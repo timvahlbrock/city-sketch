@@ -79,6 +79,8 @@ export default function AddSectionButton({ visionId }: { visionId: number }) {
       icon={<PlusOutlined />}
       style={{ width: "100%" }}
       onClick={handleClick}
+      color="blue"
+      variant="solid"
     >
       Add Section
     </Button>

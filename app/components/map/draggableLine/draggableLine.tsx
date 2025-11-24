@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Marker, useMap, useMapEvents } from "react-leaflet";
 import DraggableMarker from "@/app/components/map/draggableMarker";
 import SplinePolyline from "@/app/components/map/SplinePolyline";
@@ -8,11 +8,14 @@ import { divIcon, LatLng, Map as LeafletMap, point } from "leaflet";
 import { TrackMousePosition } from "@/app/components/map/trackMousePosition";
 import leafletSpline from "@/app/components/map/leafletSpline";
 import { renderToString } from "react-dom/server";
-import { PlusCircleOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import useUpdateNodePositionRemote from "@/app/components/map/draggableLine/useUpdateNodePositionRemote";
 import useAddNodeRemote from "@/app/components/map/draggableLine/useAddNodeRemote";
 import useRemoveNodeRemote from "@/app/components/map/draggableLine/useRemoveNodeRemote";
 import { useRouter } from "next/navigation";
+import EditorContext from "@/app/contexts/editorContext/editorContext";
+import useClient from "@/app/hooks/useClient";
+import { Modal } from "antd";
 
 export interface DraggableLineProps {
   serverNodes: RankedNode[];
@@ -36,6 +39,9 @@ export default function DraggableLine({
   const addNodeRemote = useAddNodeRemote();
   const updateNodePositionRemote = useUpdateNodePositionRemote();
   const removeNodeRemote = useRemoveNodeRemote();
+  const editorState = useContext(EditorContext).state;
+  const client = useClient();
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const [draggedNode, setDraggedNode] = useState<RankedNode | null>(null);
 
@@ -104,6 +110,12 @@ export default function DraggableLine({
     router.refresh();
   }
 
+  async function deleteSection(sectionId: number) {
+    await client.from("sections").delete().eq("id", sectionId).single();
+
+    router.refresh();
+  }
+
   const spline =
     points.length > 2
       ? leafletSpline(points.map((point) => new LatLng(point.lat, point.lng)))
@@ -168,9 +180,30 @@ export default function DraggableLine({
           if (isAdding) {
             return;
           }
-          addNodeAtIndex(precedingMarkerIndex + 1, clickedPosition);
+          if (editorState?.stateType == "addingNode") {
+            addNodeAtIndex(precedingMarkerIndex + 1, clickedPosition);
+          } else if (editorState?.stateType == "removeSection") {
+            setDeleteModalOpen(true);
+          }
         }}
       />
+      <Modal
+        title={"Delete section?"}
+        open={deleteModalOpen}
+        onCancel={() => setDeleteModalOpen(false)}
+        onOk={async () => {
+          await deleteSection(sectionId);
+          setDeleteModalOpen(false);
+        }}
+        okText={"Delete"}
+        okButtonProps={{
+          icon: <DeleteOutlined />,
+          variant: "solid",
+          color: "danger",
+        }}
+      >
+        Are you sure you want to delete this section? This cannot be undone.
+      </Modal>
       {isEditable && !isAdding && endPlusIconPoint && (
         <Marker
           position={endPlusIconPoint}
