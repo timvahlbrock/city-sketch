@@ -1,12 +1,12 @@
 "use client";
 
 import { Popconfirm, Tag } from "antd";
-import { Section as SectionModel } from "@/app/contexts/editor/editorState";
 import { useState } from "react";
 import useClient from "@/app/hooks/useClient";
 import { useRouter } from "next/navigation";
+import { Section } from "@/app/types/section";
 
-export default function SectionTag({ section }: { section: SectionModel }) {
+export default function SectionTag({ section }: { section: Section }) {
   const client = useClient();
   const [tagVisible, setTagVisible] = useState(true);
   const [popConfirmOpen, setPopConfirmOpen] = useState(false);

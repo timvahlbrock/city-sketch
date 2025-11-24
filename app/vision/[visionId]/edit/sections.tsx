@@ -1,5 +1,5 @@
 import SectionTag from "./sectionTag";
-import { Section } from "@/app/contexts/editor/editorState";
+import { Section } from "@/app/types/section";
 
 export interface SectionsProps {
   serverSections: Section[];
