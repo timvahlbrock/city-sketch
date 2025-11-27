@@ -2,8 +2,8 @@
 
 import { Vision } from "@/app/components/visionSelection/vision";
 import { Typography } from "antd";
-import useClient from "@/app/hooks/useClient";
 import { useRouter } from "next/navigation";
+import useUpdateTitle from "@/app/hooks/mutations/visions/useUpdateTitle";
 
 export interface VisionTitleProps {
   vision: Vision;
@@ -11,17 +11,11 @@ export interface VisionTitleProps {
 }
 
 export default function VisionTitle({ vision, editable }: VisionTitleProps) {
-  const client = useClient();
   const router = useRouter();
+  const updateTitle = useUpdateTitle();
 
-  async function update(newTitle: string) {
-    await client
-      .from("visions")
-      .update({ title: newTitle })
-      .eq("id", vision.id)
-      .single()
-      .throwOnError();
-
+  async function handleTitleUpdate(newTitle: string) {
+    await updateTitle(vision.id, newTitle);
     router.refresh();
   }
 
@@ -32,7 +26,7 @@ export default function VisionTitle({ vision, editable }: VisionTitleProps) {
       </Typography.Text>
 
       <Typography.Text
-        editable={editable && { onChange: update }}
+        editable={editable && { onChange: handleTitleUpdate }}
         style={{ fontWeight: "bold", fontSize: "x-large" }}
       >
         {vision.title}
