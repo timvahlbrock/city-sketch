@@ -9,9 +9,9 @@ import { TrackMousePosition } from "@/app/components/map/trackMousePosition";
 import leafletSpline from "@/app/components/map/leafletSpline";
 import { renderToString } from "react-dom/server";
 import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import useUpdateNodePositionRemote from "@/app/hooks/mutations/useUpdateNodePositionRemote";
-import useAddNodeRemote from "@/app/hooks/mutations/useAddNodeRemote";
-import useRemoveNodeRemote from "@/app/hooks/mutations/useRemoveNodeRemote";
+import useUpdateNodePositionRemote from "@/app/hooks/mutations/sections/useUpdateNodePositionRemote";
+import useAddNodeRemote from "@/app/hooks/mutations/sections/useAddNodeRemote";
+import useRemoveNodeRemote from "@/app/hooks/mutations/sections/useRemoveNodeRemote";
 import { useRouter } from "next/navigation";
 import EditorContext from "@/app/contexts/editorContext/editorContext";
 import useClient from "@/app/hooks/useClient";
@@ -188,7 +188,7 @@ export default function DraggableLine({
         }}
       />
       <Modal
-        title={"Delete section?"}
+        title={"Delete sections?"}
         open={deleteModalOpen}
         onCancel={() => setDeleteModalOpen(false)}
         onOk={async () => {

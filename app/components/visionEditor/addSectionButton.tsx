@@ -4,7 +4,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import useMapBounds from "@/app/contexts/map/hooks/useMapBounds";
 import { useRouter } from "next/navigation";
-import { useCreateSection } from "@/app/hooks/mutations/useCreateSection";
+import { useCreateSection } from "@/app/hooks/mutations/sections/useCreateSection";
 
 export default function AddSectionButton({ visionId }: { visionId: number }) {
   const bounds = useMapBounds();
