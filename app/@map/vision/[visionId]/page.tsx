@@ -1,6 +1,7 @@
 import { EditableSection } from "@/app/components/map/editableSection";
 import { fetchSections } from "@/app/queries/fetchSections";
 import FlyIntoBounds from "@/app/components/map/FlyIntoBounds";
+import { fetchBounds } from "@/app/queries/fetchBounds";
 
 export default async function Page({
   params,
@@ -9,10 +10,11 @@ export default async function Page({
 }) {
   const visionId = parseInt((await params).visionId);
   const sections = await fetchSections(visionId);
+  const bounds = await fetchBounds(visionId);
 
   return (
     <>
-      <FlyIntoBounds visionId={visionId} />
+      <FlyIntoBounds visionId={visionId} bounds={bounds} />
       {sections.map((section) => (
         <EditableSection
           key={section.id}
