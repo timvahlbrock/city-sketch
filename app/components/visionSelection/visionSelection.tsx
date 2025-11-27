@@ -1,10 +1,10 @@
 import { Card } from "antd";
-import { createSsrClient } from "@/app/utils/createSsrClient";
 import ClientVisionSelection from "@/app/components/visionSelection/clientVisionSelection";
 import CreateVisionButton from "@/app/components/visionSelection/createVisionButton";
+import { fetchAllVisions } from "@/app/queries/fetchAllVisions";
 
 export default async function VisionSelection() {
-  const visions = await fetchVisions();
+  const visions = await fetchAllVisions();
 
   return (
     <Card
@@ -18,15 +18,4 @@ export default async function VisionSelection() {
       <ClientVisionSelection visions={visions} />
     </Card>
   );
-}
-
-async function fetchVisions() {
-  const client = await createSsrClient();
-
-  return (
-    await client
-      .from("visions")
-      .select("id, title, description, implementationState")
-      .throwOnError()
-  ).data;
 }
