@@ -2,8 +2,8 @@
 
 import { Typography } from "antd";
 import { Vision } from "@/app/components/visionSelection/vision";
-import useClient from "@/app/hooks/useClient";
 import { useRouter } from "next/navigation";
+import { useUpdateDescription } from "@/app/hooks/mutations/visions/useUpdateDescription";
 
 export interface VisionDescriptionProps {
   vision: Vision;
@@ -14,25 +14,13 @@ export default function VisionDescription({
   vision,
   editable,
 }: VisionDescriptionProps) {
-  const client = useClient();
   const router = useRouter();
+  const updateDescription = useUpdateDescription();
 
-  async function updateDescription(newDescription: string) {
-    await updateDescriptionRemote(vision.id, newDescription);
+  async function handleDescriptionUpdate(newDescription: string) {
+    await updateDescription(vision.id, newDescription);
 
     router.refresh();
-  }
-
-  async function updateDescriptionRemote(
-    visionId: number,
-    newDescription: string,
-  ) {
-    await client
-      .from("visions")
-      .update({ description: newDescription })
-      .eq("id", visionId)
-      .single()
-      .throwOnError();
   }
 
   return (
@@ -41,7 +29,7 @@ export default function VisionDescription({
         type={"secondary"}
         editable={
           editable && {
-            onChange: updateDescription,
+            onChange: handleDescriptionUpdate,
           }
         }
       >

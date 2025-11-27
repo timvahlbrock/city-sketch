@@ -2,7 +2,7 @@
 
 import { PlusOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import { useCreateVision } from "@/app/hooks/mutations/useCreateVision";
+import { useCreateVision } from "@/app/hooks/mutations/visions/useCreateVision";
 
 export interface CreateVisionButtonProps {}
 
