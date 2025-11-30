@@ -3,19 +3,26 @@
 import { Typography } from "antd";
 import { useRouter } from "next/navigation";
 import useUpdateTitle from "@/app/hooks/mutations/visions/useUpdateTitle";
-import { Doc } from "@/convex/_generated/dataModel";
+import { Preloaded, usePreloadedQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export interface VisionTitleProps {
-  vision: Doc<"visions">;
+  preloadedVision: Preloaded<typeof api.visions.get>;
   editable?: boolean;
 }
 
-export default function VisionTitle({ vision, editable }: VisionTitleProps) {
+export default function VisionTitle({
+  preloadedVision,
+  editable,
+}: VisionTitleProps) {
   const router = useRouter();
   const updateTitle = useUpdateTitle();
+  const vision = usePreloadedQuery(preloadedVision);
+
+  if (!vision) return null;
 
   async function handleTitleUpdate(newTitle: string) {
-    await updateTitle(vision._id, newTitle);
+    await updateTitle(vision!._id, newTitle);
     router.refresh();
   }
 

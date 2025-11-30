@@ -24,7 +24,7 @@ export default async function VisionPage({
           <h1 style={{ fontWeight: "bold", fontSize: "x-large" }}>
             {vision.title}
           </h1>
-          <VisionDescription vision={vision} />
+          <VisionDescription preloadedVision={vision} />
         </Space>
         You&#39;ll probably be able to discuss this vision here in the future.
         <div style={{ flexGrow: 1 }}></div>

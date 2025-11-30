@@ -1,24 +1,23 @@
-import { fetchSections } from "@/app/queries/fetchSections";
-import { EditableSection } from "@/app/components/map/editableSection";
+import { api } from "@/convex/_generated/api";
+import { fetchBounds } from "@/app/queries/fetchBounds";
+import ClientSections from "@/app/@map/components/clientSections";
 import { Id } from "@/convex/_generated/dataModel";
+import { preloadQuery } from "convex/nextjs";
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ visionId: string }>;
+  params: Promise<{ visionId: Id<"visions"> }>;
 }) {
-  const visionId = (await params).visionId as Id<"visions">;
-  const sections = await fetchSections(visionId);
+  const visionId = (await params).visionId;
+  const preloadedSections = await preloadQuery(api.sections.forVision, {
+    visionId,
+  });
+  const bounds = await fetchBounds(visionId);
 
   return (
     <>
-      {sections.map((section) => (
-        <EditableSection
-          key={section!._id}
-          sectionId={section!._id}
-          editable={true}
-        />
-      ))}
+      <ClientSections preloadedSections={preloadedSections} editable={true} />
     </>
   );
 }

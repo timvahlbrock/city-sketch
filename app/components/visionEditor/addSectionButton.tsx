@@ -37,8 +37,6 @@ export default function AddSectionButton({
     ];
 
     await createSection(visionId, points);
-
-    router.refresh();
   }
 
   return (

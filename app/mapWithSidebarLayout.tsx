@@ -6,7 +6,7 @@ import { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
 import { MapContext } from "@/app/contexts/map/mapContext";
 
-const DynamicMap = dynamic(() => import("./components/map/map"), {
+const DynamicMap = dynamic(() => import("./@map/components/map"), {
   ssr: false,
 });
 

@@ -1,26 +1,26 @@
 "use client";
 
 import { Typography } from "antd";
-import { useRouter } from "next/navigation";
 import { useUpdateDescription } from "@/app/hooks/mutations/visions/useUpdateDescription";
-import { Doc } from "@/convex/_generated/dataModel";
+import { Preloaded, usePreloadedQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export interface VisionDescriptionProps {
-  vision: Doc<"visions">;
+  preloadedVision: Preloaded<typeof api.visions.get>;
   editable?: boolean;
 }
 
 export default function VisionDescription({
-  vision,
+  preloadedVision,
   editable,
 }: VisionDescriptionProps) {
-  const router = useRouter();
+  const vision = usePreloadedQuery(preloadedVision);
   const updateDescription = useUpdateDescription();
 
-  async function handleDescriptionUpdate(newDescription: string) {
-    await updateDescription(vision._id, newDescription);
+  if (!vision) return null;
 
-    router.refresh();
+  async function handleDescriptionUpdate(newDescription: string) {
+    await updateDescription(vision!._id, newDescription);
   }
 
   return (

@@ -6,7 +6,7 @@ import {
   LeafletMouseEvent,
 } from "leaflet";
 import { Polyline } from "react-leaflet";
-import { SplinePoint } from "@/app/components/map/leafletSpline";
+import { SplinePoint } from "@/app/@map/components/leafletSpline";
 
 export interface BezierLineProps {
   spline: readonly SplinePoint[];
