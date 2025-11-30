@@ -1,9 +1,9 @@
 import { Space } from "antd";
 import Link from "next/link";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import SketchDescription from "@/app/components/sketchDescription";
-import SketchTitle from "@/app/components/sketchTitle";
-import EditorControls from "@/app/components/sketchEditor/editorControls";
+import SketchDescription from "@/app/@sidebar/components/sketchDescription";
+import SketchTitle from "@/app/@sidebar/components/sketchTitle";
+import EditorControls from "@/app/@sidebar/components/sketchEditor/editorControls";
 import { Id } from "@/convex/_generated/dataModel";
 import { preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";

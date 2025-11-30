@@ -1,11 +1,11 @@
 import { Button, Space } from "antd";
 import Link from "next/link";
 import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
-import SketchDescription from "@/app/components/sketchDescription";
+import SketchDescription from "@/app/@sidebar/components/sketchDescription";
 import { Id } from "@/convex/_generated/dataModel";
 import { preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import SketchTitle from "@/app/components/sketchTitle";
+import SketchTitle from "@/app/@sidebar/components/sketchTitle";
 
 export default async function SketchPage({
   params,
@@ -18,7 +18,7 @@ export default async function SketchPage({
   return (
     <>
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
-        <Link href={"/"} style={{ color: "gray" }}>
+        <Link href={"/public"} style={{ color: "gray" }}>
           <ArrowLeftOutlined />
           &nbsp; Go Back
         </Link>

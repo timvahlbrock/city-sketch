@@ -11,11 +11,11 @@ const DynamicMap = dynamic(() => import("./@map/components/map"), {
 });
 
 export default function MapWithSidebarLayout({
-  children,
   map: mapChildren,
+  sidebar: sidebarChildren,
 }: {
-  children: ReactNode;
   map: ReactNode;
+  sidebar: ReactNode;
 }) {
   const [orientation, setOrientation] = useState<"horizontal" | "vertical">(
     "vertical",
@@ -44,7 +44,7 @@ export default function MapWithSidebarLayout({
       </Splitter.Panel>
       <Splitter.Panel className={"bg-white"}>
         <MapContext value={map}>
-          <div style={{ padding: "16px" }}>{children}</div>
+          <div style={{ padding: "16px" }}>{sidebarChildren}</div>
         </MapContext>
       </Splitter.Panel>
     </Splitter>

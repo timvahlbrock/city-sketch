@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext } from "react";
-import AddSectionButton from "@/app/components/sketchEditor/addSectionButton";
+import AddSectionButton from "@/app/@sidebar/components/sketchEditor/addSectionButton";
 import { Button, Space } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import EditorContext from "@/app/contexts/editorContext/editorContext";

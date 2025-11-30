@@ -23,11 +23,11 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
   map,
+  sidebar,
 }: {
-  children: ReactNode;
   map: ReactNode;
+  sidebar: ReactNode;
 }) {
   return (
     <html lang="en">
@@ -37,7 +37,10 @@ export default function RootLayout({
         <AntdRegistry>
           <ConvexClientProvider>
             <EditorContextProvider>
-              <MapWithSidebarLayout map={map}>{children}</MapWithSidebarLayout>
+              <MapWithSidebarLayout
+                map={map}
+                sidebar={sidebar}
+              ></MapWithSidebarLayout>
             </EditorContextProvider>
           </ConvexClientProvider>
         </AntdRegistry>

@@ -1,6 +1,6 @@
 import { Card } from "antd";
-import ClientSketchSelection from "@/app/components/sketchSelection/clientSketchSelection";
-import CreateSketchButton from "@/app/components/sketchSelection/createSketchButton";
+import ClientSketchSelection from "@/app/@sidebar/components/sketchSelection/clientSketchSelection";
+import CreateSketchButton from "@/app/@sidebar/components/sketchSelection/createSketchButton";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { List } from "antd";
-import SketchEntry from "@/app/components/sketchSelection/sketchEntry";
+import SketchEntry from "@/app/@sidebar/components/sketchSelection/sketchEntry";
 import { Doc } from "@/convex/_generated/dataModel";
 
 export interface ClientSketchSelectionProps {
