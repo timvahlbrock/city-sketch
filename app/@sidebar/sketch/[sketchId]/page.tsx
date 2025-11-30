@@ -18,7 +18,7 @@ export default async function SketchPage({
   return (
     <>
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
-        <Link href={"/public"} style={{ color: "gray" }}>
+        <Link href={"/"} style={{ color: "gray" }}>
           <ArrowLeftOutlined />
           &nbsp; Go Back
         </Link>
