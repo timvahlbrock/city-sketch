@@ -9,9 +9,6 @@ import { TrackMousePosition } from "@/app/@map/components/trackMousePosition";
 import leafletSpline from "@/app/@map/components/leafletSpline";
 import { renderToString } from "react-dom/server";
 import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import useUpdateNodePositionRemote from "@/app/hooks/mutations/sections/useUpdateNodePositionRemote";
-import useAddNodeRemote from "@/app/hooks/mutations/sections/useAddNodeRemote";
-import useRemoveNodeRemote from "@/app/hooks/mutations/sections/useRemoveNodeRemote";
 import EditorContext from "@/app/contexts/editorContext/editorContext";
 import { Modal } from "antd";
 import { Id } from "@/convex/_generated/dataModel";
@@ -36,9 +33,9 @@ export default function DraggableLine({
   sectionId,
   isEditable,
 }: DraggableLineProps) {
-  const addNodeRemote = useAddNodeRemote();
-  const updateNodePositionRemote = useUpdateNodePositionRemote();
-  const removeNodeRemote = useRemoveNodeRemote();
+  const createNode = useMutation(api.nodes.create);
+  const updateNodePositionRemote = useMutation(api.nodes.updatePosition);
+  const removeNodeRemote = useMutation(api.nodes.deleteNode);
   const editorState = useContext(EditorContext).state;
   const removeSectionMutation = useMutation(api.sections.del);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -76,9 +73,10 @@ export default function DraggableLine({
 
   async function handleMarkerDragend(index: number, newPosition: LatLng) {
     const node = nodes[index];
-    await updateNodePositionRemote(node._id, {
-      lat: newPosition.lat,
-      lng: newPosition.lng,
+    await updateNodePositionRemote({
+      nodeId: node._id,
+      latitude: newPosition.lat,
+      longitude: newPosition.lng,
     });
   }
 
@@ -95,14 +93,19 @@ export default function DraggableLine({
       rank = nextMarker.rank / 2;
     }
 
-    await addNodeRemote(sectionId, rank, newPosition);
+    await createNode({
+      sectionId,
+      rank,
+      latitude: newPosition.lat,
+      longitude: newPosition.lng,
+    });
 
     setAddingLocation(null);
   }
 
   async function handleMarkerRemove(index: number) {
     const node = nodes[index];
-    await removeNodeRemote(node._id);
+    await removeNodeRemote({ nodeId: node._id });
   }
 
   async function deleteSection(sectionId: Id<"sections">) {

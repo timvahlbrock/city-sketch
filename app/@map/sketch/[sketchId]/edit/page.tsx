@@ -1,5 +1,4 @@
 import { api } from "@/convex/_generated/api";
-import { fetchBounds } from "@/app/queries/fetchBounds";
 import ClientSections from "@/app/@map/components/clientSections";
 import { Id } from "@/convex/_generated/dataModel";
 import { preloadQuery } from "convex/nextjs";
@@ -13,7 +12,6 @@ export default async function Page({
   const preloadedSections = await preloadQuery(api.sections.forSketch, {
     sketchId,
   });
-  const bounds = await fetchBounds(sketchId);
 
   return (
     <>

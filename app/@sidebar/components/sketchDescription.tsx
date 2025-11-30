@@ -1,8 +1,7 @@
 "use client";
 
 import { Typography } from "antd";
-import { useUpdateDescription } from "@/app/hooks/mutations/sketches/useUpdateDescription";
-import { Preloaded, usePreloadedQuery } from "convex/react";
+import { Preloaded, useMutation, usePreloadedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 export interface SketchDescriptionProps {
@@ -15,12 +14,17 @@ export default function SketchDescription({
   editable,
 }: SketchDescriptionProps) {
   const sketch = usePreloadedQuery(preloadedSketch);
-  const updateDescription = useUpdateDescription();
+  const patchSketch = useMutation(api.sketches.patch);
 
   if (!sketch) return null;
 
   async function handleDescriptionUpdate(newDescription: string) {
-    await updateDescription(sketch!._id, newDescription);
+    await patchSketch({
+      sketchId: sketch!._id,
+      sketch: {
+        description: newDescription,
+      },
+    });
   }
 
   return (

@@ -3,9 +3,9 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import useMapBounds from "@/app/contexts/map/hooks/useMapBounds";
-import { useRouter } from "next/navigation";
-import { useCreateSection } from "@/app/hooks/mutations/sections/useCreateSection";
 import { Id } from "@/convex/_generated/dataModel";
+import { api } from "@/convex/_generated/api";
+import { useMutation } from "convex/react";
 
 export default function AddSectionButton({
   sketchId,
@@ -13,8 +13,7 @@ export default function AddSectionButton({
   sketchId: Id<"sketches">;
 }) {
   const bounds = useMapBounds();
-  const router = useRouter();
-  const createSection = useCreateSection();
+  const createSection = useMutation(api.sections.create);
 
   async function handleClick() {
     if (!bounds) return;
@@ -36,7 +35,7 @@ export default function AddSectionButton({
       },
     ];
 
-    await createSection(sketchId, points);
+    await createSection({ sketchId, points });
   }
 
   return (

@@ -1,9 +1,7 @@
 "use client";
 
 import { Typography } from "antd";
-import { useRouter } from "next/navigation";
-import useUpdateTitle from "@/app/hooks/mutations/sketches/useUpdateTitle";
-import { Preloaded, usePreloadedQuery } from "convex/react";
+import { Preloaded, useMutation, usePreloadedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 export interface SketchTitleProps {
@@ -15,15 +13,13 @@ export default function SketchTitle({
   preloadedSketch,
   editable,
 }: SketchTitleProps) {
-  const router = useRouter();
-  const updateTitle = useUpdateTitle();
+  const patchSketch = useMutation(api.sketches.patch);
   const sketch = usePreloadedQuery(preloadedSketch);
 
   if (!sketch) return null;
 
   async function handleTitleUpdate(newTitle: string) {
-    await updateTitle(sketch!._id, newTitle);
-    router.refresh();
+    await patchSketch({ sketchId: sketch!._id, sketch: { title: newTitle } });
   }
 
   return (

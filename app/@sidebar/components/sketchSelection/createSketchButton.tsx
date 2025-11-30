@@ -2,12 +2,13 @@
 
 import { PlusOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import { useCreateSketch } from "@/app/hooks/mutations/sketches/useCreateSketch";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export interface CreateSketchButtonProps {}
 
 export default function CreateSketchButton({}: CreateSketchButtonProps) {
-  const createVison = useCreateSketch();
+  const createVison = useMutation(api.sketches.create);
   const router = useRouter();
 
   async function handleCreateSketch() {
