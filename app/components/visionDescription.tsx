@@ -1,12 +1,12 @@
 "use client";
 
 import { Typography } from "antd";
-import { Vision } from "@/app/components/visionSelection/vision";
 import { useRouter } from "next/navigation";
 import { useUpdateDescription } from "@/app/hooks/mutations/visions/useUpdateDescription";
+import { Doc } from "@/convex/_generated/dataModel";
 
 export interface VisionDescriptionProps {
-  vision: Vision;
+  vision: Doc<"visions">;
   editable?: boolean;
 }
 
@@ -18,7 +18,7 @@ export default function VisionDescription({
   const updateDescription = useUpdateDescription();
 
   async function handleDescriptionUpdate(newDescription: string) {
-    await updateDescription(vision.id, newDescription);
+    await updateDescription(vision._id, newDescription);
 
     router.refresh();
   }

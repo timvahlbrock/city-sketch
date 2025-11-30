@@ -3,12 +3,13 @@
 import { useMap } from "react-leaflet";
 import { useEffect } from "react";
 import { Bounds } from "@/app/queries/fetchBounds";
+import { Id } from "@/convex/_generated/dataModel";
 
 export default function FlyIntoBounds({
   visionId,
   bounds,
 }: {
-  visionId: number;
+  visionId: Id<"visions">;
   bounds: Bounds | null;
 }) {
   const map = useMap();

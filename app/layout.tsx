@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import MapWithSidebarLayout from "@/app/mapWithSidebarLayout";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import EditorContextProvider from "@/app/contexts/editorContext/editorContextProvider";
+import { ConvexClientProvider } from "@/app/utils/convexClientProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,9 +35,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AntdRegistry>
-          <EditorContextProvider>
-            <MapWithSidebarLayout map={map}>{children}</MapWithSidebarLayout>
-          </EditorContextProvider>
+          <ConvexClientProvider>
+            <EditorContextProvider>
+              <MapWithSidebarLayout map={map}>{children}</MapWithSidebarLayout>
+            </EditorContextProvider>
+          </ConvexClientProvider>
         </AntdRegistry>
       </body>
     </html>

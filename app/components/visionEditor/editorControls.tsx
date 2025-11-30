@@ -5,9 +5,10 @@ import AddSectionButton from "@/app/components/visionEditor/addSectionButton";
 import { Button, Space } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import EditorContext from "@/app/contexts/editorContext/editorContext";
+import { Id } from "@/convex/_generated/dataModel";
 
 export interface EditorControlsProps {
-  visionId: number;
+  visionId: Id<"visions">;
 }
 
 export default function EditorControls({ visionId }: EditorControlsProps) {

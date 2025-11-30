@@ -3,13 +3,14 @@ import Link from "next/link";
 import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
 import { fetchVision } from "@/app/queries/fetchVision";
 import VisionDescription from "@/app/components/visionDescription";
+import { Id } from "@/convex/_generated/dataModel";
 
 export default async function VisionPage({
   params,
 }: {
   params: Promise<{ visionId: string }>;
 }) {
-  const visionId = parseInt((await params).visionId);
+  const visionId = (await params).visionId as Id<"visions">;
   const vision = await fetchVision(visionId);
 
   return (

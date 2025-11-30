@@ -1,8 +1,11 @@
-import useClient from "@/app/hooks/useClient";
+import { Id } from "@/convex/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function useRemoveNodeRemote() {
-  const client = useClient();
+  const mutation = useMutation(api.nodes.deleteNode);
 
-  return async (nodeId: number) =>
-    client.from("nodes").delete().eq("id", nodeId).single().throwOnError();
+  return async (nodeId: Id<"nodes">) => {
+    await mutation({ nodeId });
+  };
 }

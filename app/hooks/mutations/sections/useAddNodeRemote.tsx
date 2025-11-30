@@ -1,32 +1,20 @@
-import useClient from "@/app/hooks/useClient";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
 export default function useAddNodeRemote() {
-  const client = useClient();
+  const mutation = useMutation(api.nodes.create);
 
   return async (
-    dataId: number,
+    sectionId: Id<"sections">,
     rank: number,
     position: { lat: number; lng: number },
   ) => {
-    const newNode = await client
-      .from("nodes")
-      .insert({
-        latitude: position.lat,
-        longitude: position.lng,
-      })
-      .select()
-      .single()
-      .throwOnError();
-
-    await client
-      .from("sectionsToNodes")
-      .insert({
-        nodeId: newNode.data.id,
-        sectionId: dataId,
-        rank: rank,
-      })
-      .throwOnError();
-
-    return newNode.data;
+    return mutation({
+      sectionId,
+      rank,
+      latitude: position.lat,
+      longitude: position.lng,
+    });
   };
 }

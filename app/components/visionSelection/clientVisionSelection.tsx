@@ -2,10 +2,10 @@
 
 import { List } from "antd";
 import VisionEntry from "@/app/components/visionSelection/visionEntry";
-import { Vision } from "@/app/components/visionSelection/vision";
+import { Doc } from "@/convex/_generated/dataModel";
 
 export interface ClientVisionSelectionProps {
-  visions: Vision[];
+  visions: Doc<"visions">[];
 }
 
 export default function ClientVisionSelection({
@@ -14,7 +14,7 @@ export default function ClientVisionSelection({
   return (
     <List>
       {visions.map((vision) => (
-        <VisionEntry key={vision.id} vision={vision} />
+        <VisionEntry key={vision._id} vision={vision} />
       ))}
     </List>
   );

@@ -1,14 +1,14 @@
-import useClient from "@/app/hooks/useClient";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
 export function useUpdateDescription() {
-  const client = useClient();
+  const mutation = useMutation(api.visions.patch);
 
-  return async (visionId: number, newDescription: string) => {
-    await client
-      .from("visions")
-      .update({ description: newDescription })
-      .eq("id", visionId)
-      .single()
-      .throwOnError();
+  return async (visionId: Id<"visions">, newDescription: string) => {
+    await mutation({
+      visionId,
+      vision: { description: newDescription },
+    });
   };
 }

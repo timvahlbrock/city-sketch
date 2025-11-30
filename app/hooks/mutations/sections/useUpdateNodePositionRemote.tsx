@@ -1,17 +1,11 @@
-import useClient from "@/app/hooks/useClient";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
 export default function useUpdateNodePositionRemote() {
-  const client = useClient();
+  const mutation = useMutation(api.nodes.updatePosition);
 
-  return async (nodeId: number, position: { lat: number; lng: number }) => {
-    await client
-      .from("nodes")
-      .update({
-        latitude: position.lat,
-        longitude: position.lng,
-      })
-      .eq("id", nodeId)
-      .single()
-      .throwOnError();
+  return (nodeId: Id<"nodes">, { lat, lng }: { lat: number; lng: number }) => {
+    return mutation({ nodeId, latitude: lat, longitude: lng });
   };
 }

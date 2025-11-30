@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { BulbOutlined, RightOutlined } from "@ant-design/icons";
 import { Avatar, List } from "antd";
-import { Vision } from "@/app/components/visionSelection/vision";
+import { Doc } from "@/convex/_generated/dataModel";
 
-export default function VisionEntry({ vision }: { vision: Vision }) {
+export default function VisionEntry({ vision }: { vision: Doc<"visions"> }) {
   return (
-    <Link href={`/vision/${vision.id}`}>
+    <Link href={`/vision/${vision._id}`}>
       <List.Item>
         <List.Item.Meta
           avatar={

@@ -1,8 +1,10 @@
-import { createSsrClient } from "@/app/utils/createSsrClient";
 import DraggableLine from "@/app/components/map/draggableLine/draggableLine";
+import { Id } from "@/convex/_generated/dataModel";
+import { fetchQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
 
 export interface SectionProps {
-  sectionId: number;
+  sectionId: Id<"sections">;
   editable: boolean;
 }
 
@@ -18,19 +20,6 @@ export async function EditableSection({ sectionId, editable }: SectionProps) {
   );
 }
 
-async function fetchRankedNodes(sectionId: number) {
-  const client = await createSsrClient();
-  const sectionToNodes = await client
-    .from("sectionsToNodes")
-    .select("rank, nodes(id, latitude, longitude)")
-    .eq("sectionId", sectionId)
-    .order("rank")
-    .throwOnError();
-
-  return sectionToNodes.data.map((entry) => ({
-    id: entry.nodes.id,
-    latitude: entry.nodes.latitude,
-    longitude: entry.nodes.longitude,
-    rank: entry.rank,
-  }));
+function fetchRankedNodes(sectionId: Id<"sections">) {
+  return fetchQuery(api.nodes.forSection, { sectionId });
 }

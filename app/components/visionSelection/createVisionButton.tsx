@@ -11,8 +11,8 @@ export default function CreateVisionButton({}: CreateVisionButtonProps) {
   const router = useRouter();
 
   async function handleCreateVision() {
-    const vision = await createVison();
-    router.push(`vision/${vision.id}/edit`);
+    const visionId = await createVison();
+    router.push(`vision/${visionId}/edit`);
   }
 
   return (

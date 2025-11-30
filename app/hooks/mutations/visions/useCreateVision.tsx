@@ -1,21 +1,8 @@
 "use client";
 
-import useClient from "@/app/hooks/useClient";
+import { api } from "@/convex/_generated/api";
+import { useMutation } from "convex/react";
 
 export function useCreateVision() {
-  const client = useClient();
-  return async () => {
-    const createVisionResult = await client
-      .from("visions")
-      .insert({
-        title: "Your new Vision",
-        description: "Tell us a little bit about what you imagine.",
-        implementationState: "idea",
-      })
-      .select()
-      .single()
-      .throwOnError();
-
-    return createVisionResult.data;
-  };
+  return useMutation(api.visions.create);
 }

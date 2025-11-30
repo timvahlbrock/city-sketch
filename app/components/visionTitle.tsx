@@ -1,12 +1,12 @@
 "use client";
 
-import { Vision } from "@/app/components/visionSelection/vision";
 import { Typography } from "antd";
 import { useRouter } from "next/navigation";
 import useUpdateTitle from "@/app/hooks/mutations/visions/useUpdateTitle";
+import { Doc } from "@/convex/_generated/dataModel";
 
 export interface VisionTitleProps {
-  vision: Vision;
+  vision: Doc<"visions">;
   editable?: boolean;
 }
 
@@ -15,7 +15,7 @@ export default function VisionTitle({ vision, editable }: VisionTitleProps) {
   const updateTitle = useUpdateTitle();
 
   async function handleTitleUpdate(newTitle: string) {
-    await updateTitle(vision.id, newTitle);
+    await updateTitle(vision._id, newTitle);
     router.refresh();
   }
 

@@ -5,13 +5,14 @@ import { fetchVision } from "@/app/queries/fetchVision";
 import VisionDescription from "@/app/components/visionDescription";
 import VisionTitle from "@/app/components/visionTitle";
 import EditorControls from "@/app/components/visionEditor/editorControls";
+import { Id } from "@/convex/_generated/dataModel";
 
 export default async function Page({
   params,
 }: {
   params: Promise<{ visionId: string }>;
 }) {
-  const visionId = parseInt((await params).visionId);
+  const visionId = (await params).visionId as Id<"visions">;
   const vision = await fetchVision(visionId);
 
   return (

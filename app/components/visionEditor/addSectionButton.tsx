@@ -5,8 +5,13 @@ import { Button } from "antd";
 import useMapBounds from "@/app/contexts/map/hooks/useMapBounds";
 import { useRouter } from "next/navigation";
 import { useCreateSection } from "@/app/hooks/mutations/sections/useCreateSection";
+import { Id } from "@/convex/_generated/dataModel";
 
-export default function AddSectionButton({ visionId }: { visionId: number }) {
+export default function AddSectionButton({
+  visionId,
+}: {
+  visionId: Id<"visions">;
+}) {
   const bounds = useMapBounds();
   const router = useRouter();
   const createSection = useCreateSection();

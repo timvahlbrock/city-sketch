@@ -14,12 +14,14 @@ import useAddNodeRemote from "@/app/hooks/mutations/sections/useAddNodeRemote";
 import useRemoveNodeRemote from "@/app/hooks/mutations/sections/useRemoveNodeRemote";
 import { useRouter } from "next/navigation";
 import EditorContext from "@/app/contexts/editorContext/editorContext";
-import useClient from "@/app/hooks/useClient";
 import { Modal } from "antd";
+import { Id } from "@/convex/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export interface DraggableLineProps {
   serverNodes: RankedNode[];
-  sectionId: number;
+  sectionId: Id<"sections">;
   isEditable: boolean;
 }
 
@@ -40,13 +42,13 @@ export default function DraggableLine({
   const updateNodePositionRemote = useUpdateNodePositionRemote();
   const removeNodeRemote = useRemoveNodeRemote();
   const editorState = useContext(EditorContext).state;
-  const client = useClient();
+  const removeSectionMutation = useMutation(api.sections.del);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const [draggedNode, setDraggedNode] = useState<RankedNode | null>(null);
 
   const nodes = serverNodes.map((node) =>
-    node.id === draggedNode?.id ? draggedNode : node,
+    node._id === draggedNode?._id ? draggedNode : node,
   );
 
   const [mousePosition, setMousePosition] = useState<LatLng | null>(null);
@@ -66,10 +68,9 @@ export default function DraggableLine({
   function handleMarkerDrag(index: number, newPosition: LatLng) {
     const node = nodes[index];
     const newNode = {
-      id: node.id,
+      ...node,
       latitude: newPosition.lat,
       longitude: newPosition.lng,
-      rank: node.rank,
     };
 
     setDraggedNode(newNode);
@@ -77,7 +78,7 @@ export default function DraggableLine({
 
   async function handleMarkerDragend(index: number, newPosition: LatLng) {
     const node = nodes[index];
-    await updateNodePositionRemote(node.id, {
+    await updateNodePositionRemote(node._id, {
       lat: newPosition.lat,
       lng: newPosition.lng,
     });
@@ -105,13 +106,13 @@ export default function DraggableLine({
 
   async function handleMarkerRemove(index: number) {
     const node = nodes[index];
-    await removeNodeRemote(node.id);
+    await removeNodeRemote(node._id);
 
     router.refresh();
   }
 
-  async function deleteSection(sectionId: number) {
-    await client.from("sections").delete().eq("id", sectionId).single();
+  async function deleteSection(sectionId: Id<"sections">) {
+    await removeSectionMutation({ sectionId });
 
     router.refresh();
   }

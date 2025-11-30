@@ -1,7 +1,8 @@
 import { LatLng } from "leaflet";
+import { Id } from "@/convex/_generated/dataModel";
 
 export interface RankedNode {
-  id: number;
+  _id: Id<"nodes">;
   latitude: number;
   longitude: number;
   rank: number;
