@@ -7,13 +7,13 @@ import { preloadQuery } from "convex/nextjs";
 export default async function Page({
   params,
 }: {
-  params: Promise<{ visionId: Id<"visions"> }>;
+  params: Promise<{ sketchId: Id<"sketches"> }>;
 }) {
-  const visionId = (await params).visionId;
-  const preloadedSections = await preloadQuery(api.sections.forVision, {
-    visionId,
+  const sketchId = (await params).sketchId;
+  const preloadedSections = await preloadQuery(api.sections.forSketch, {
+    sketchId,
   });
-  const bounds = await fetchBounds(visionId);
+  const bounds = await fetchBounds(sketchId);
 
   return (
     <>

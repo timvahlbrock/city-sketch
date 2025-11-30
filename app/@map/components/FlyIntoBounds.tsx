@@ -6,10 +6,10 @@ import { Bounds } from "@/app/queries/fetchBounds";
 import { Id } from "@/convex/_generated/dataModel";
 
 export default function FlyIntoBounds({
-  visionId,
+  sketchId,
   bounds,
 }: {
-  visionId: Id<"visions">;
+  sketchId: Id<"sketches">;
   bounds: Bounds | null;
 }) {
   const map = useMap();
@@ -24,7 +24,7 @@ export default function FlyIntoBounds({
         {},
       );
     }
-  }, [visionId, map]);
+  }, [sketchId, map]);
 
   return null;
 }

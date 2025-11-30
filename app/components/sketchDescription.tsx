@@ -1,26 +1,26 @@
 "use client";
 
 import { Typography } from "antd";
-import { useUpdateDescription } from "@/app/hooks/mutations/visions/useUpdateDescription";
+import { useUpdateDescription } from "@/app/hooks/mutations/sketches/useUpdateDescription";
 import { Preloaded, usePreloadedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
-export interface VisionDescriptionProps {
-  preloadedVision: Preloaded<typeof api.visions.get>;
+export interface SketchDescriptionProps {
+  preloadedSketch: Preloaded<typeof api.sketches.get>;
   editable?: boolean;
 }
 
-export default function VisionDescription({
-  preloadedVision,
+export default function SketchDescription({
+  preloadedSketch,
   editable,
-}: VisionDescriptionProps) {
-  const vision = usePreloadedQuery(preloadedVision);
+}: SketchDescriptionProps) {
+  const sketch = usePreloadedQuery(preloadedSketch);
   const updateDescription = useUpdateDescription();
 
-  if (!vision) return null;
+  if (!sketch) return null;
 
   async function handleDescriptionUpdate(newDescription: string) {
-    await updateDescription(vision!._id, newDescription);
+    await updateDescription(sketch!._id, newDescription);
   }
 
   return (
@@ -33,7 +33,7 @@ export default function VisionDescription({
           }
         }
       >
-        {vision.description || "No description provided."}
+        {sketch.description || "No description provided."}
       </Typography.Text>
     </>
   );

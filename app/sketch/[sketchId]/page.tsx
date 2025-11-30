@@ -1,17 +1,19 @@
 import { Button, Space } from "antd";
 import Link from "next/link";
 import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
-import { fetchVision } from "@/app/queries/fetchVision";
-import VisionDescription from "@/app/components/visionDescription";
+import SketchDescription from "@/app/components/sketchDescription";
 import { Id } from "@/convex/_generated/dataModel";
+import { preloadQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
+import SketchTitle from "@/app/components/sketchTitle";
 
-export default async function VisionPage({
+export default async function SketchPage({
   params,
 }: {
-  params: Promise<{ visionId: string }>;
+  params: Promise<{ sketchId: Id<"sketches"> }>;
 }) {
-  const visionId = (await params).visionId as Id<"visions">;
-  const vision = await fetchVision(visionId);
+  const sketchId = (await params).sketchId;
+  const sketch = await preloadQuery(api.sketches.get, { sketchId });
 
   return (
     <>
@@ -21,14 +23,12 @@ export default async function VisionPage({
           &nbsp; Go Back
         </Link>
         <Space direction="vertical" size="small" style={{ width: "100%" }}>
-          <h1 style={{ fontWeight: "bold", fontSize: "x-large" }}>
-            {vision.title}
-          </h1>
-          <VisionDescription preloadedVision={vision} />
+          <SketchTitle preloadedSketch={sketch} />
+          <SketchDescription preloadedSketch={sketch} />
         </Space>
-        You&#39;ll probably be able to discuss this vision here in the future.
+        You&#39;ll probably be able to discuss this sketch here in the future.
         <div style={{ flexGrow: 1 }}></div>
-        <Link href={`/vision/${visionId}/edit`} style={{ width: "100%" }}>
+        <Link href={`/sketch/${sketchId}/edit`} style={{ width: "100%" }}>
           <Button icon={<EditOutlined />} style={{ width: "100%" }}>
             Edit
           </Button>

@@ -8,9 +8,9 @@ import { useCreateSection } from "@/app/hooks/mutations/sections/useCreateSectio
 import { Id } from "@/convex/_generated/dataModel";
 
 export default function AddSectionButton({
-  visionId,
+  sketchId,
 }: {
-  visionId: Id<"visions">;
+  sketchId: Id<"sketches">;
 }) {
   const bounds = useMapBounds();
   const router = useRouter();
@@ -36,7 +36,7 @@ export default function AddSectionButton({
       },
     ];
 
-    await createSection(visionId, points);
+    await createSection(sketchId, points);
   }
 
   return (

@@ -1,10 +1,10 @@
 import { mutation, query } from "@/convex/_generated/server";
 import { v } from "convex/values";
-import { notEmpty } from "@/convex/helpers";
+import { notEmpty } from "./helpers";
 
 export const create = mutation({
   args: {
-    visionId: v.id("visions"),
+    sketchId: v.id("sketches"),
     points: v.array(
       v.object({
         latitude: v.number(),
@@ -12,7 +12,7 @@ export const create = mutation({
       }),
     ),
   },
-  handler: async (ctx, { visionId, points }) => {
+  handler: async (ctx, { sketchId, points }) => {
     const sectionId = await ctx.db.insert("sections", {});
 
     await Promise.all(
@@ -30,9 +30,9 @@ export const create = mutation({
       }),
     );
 
-    await ctx.db.insert("visionsToSections", {
+    await ctx.db.insert("sketchesToSections", {
       sectionId,
-      visionId,
+      sketchId,
     });
   },
 });
@@ -49,16 +49,16 @@ export const del = mutation({
   },
 });
 
-export const forVision = query({
-  args: { visionId: v.id("visions") },
-  handler: async (ctx, { visionId }) => {
-    const visionsToSections = await ctx.db
-      .query("visionsToSections")
-      .withIndex("visionId", (q) => q.eq("visionId", visionId))
+export const forSketch = query({
+  args: { sketchId: v.id("sketches") },
+  handler: async (ctx, { sketchId }) => {
+    const sketchesToSections = await ctx.db
+      .query("sketchesToSections")
+      .withIndex("sketchId", (q) => q.eq("sketchId", sketchId))
       .collect();
 
     return Promise.all(
-      visionsToSections.map((vts) => ctx.db.get(vts.sectionId)),
+      sketchesToSections.map((vts) => ctx.db.get(vts.sectionId)),
     ).then((sections) => sections.filter(notEmpty));
   },
 });

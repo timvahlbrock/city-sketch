@@ -6,12 +6,12 @@ export function useCreateSection() {
   const mutation = useMutation(api.sections.create);
 
   return async (
-    visionId: Id<"visions">,
+    sketchId: Id<"sketches">,
     points: {
       latitude: number;
       longitude: number;
     }[],
   ) => {
-    await mutation({ visionId, points });
+    await mutation({ sketchId, points });
   };
 }

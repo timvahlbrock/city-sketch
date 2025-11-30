@@ -3,12 +3,12 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 
 export function useUpdateDescription() {
-  const mutation = useMutation(api.visions.patch);
+  const mutation = useMutation(api.sketches.patch);
 
-  return async (visionId: Id<"visions">, newDescription: string) => {
+  return async (sketchId: Id<"sketches">, newDescription: string) => {
     await mutation({
-      visionId,
-      vision: { description: newDescription },
+      sketchId,
+      sketch: { description: newDescription },
     });
   };
 }

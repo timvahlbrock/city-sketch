@@ -1,11 +1,11 @@
 import { mutation, query } from "@/convex/_generated/server";
 import { v } from "convex/values";
-import { notEmpty } from "@/convex/helpers";
+import { notEmpty } from "./helpers";
 
 export const create = mutation({
   handler: (ctx) => {
-    return ctx.db.insert("visions", {
-      title: "Your new Vision",
+    return ctx.db.insert("sketches", {
+      title: "Your new Sketch",
       description: "Tell us a little bit about what you imagine.",
       implementationState: "idea",
     });
@@ -14,44 +14,44 @@ export const create = mutation({
 
 export const get = query({
   args: {
-    visionId: v.id("visions"),
+    sketchId: v.id("sketches"),
   },
-  handler: (ctx, { visionId }) => {
-    return ctx.db.get(visionId);
+  handler: (ctx, { sketchId }) => {
+    return ctx.db.get(sketchId);
   },
 });
 
 export const patch = mutation({
   args: {
-    visionId: v.id("visions"),
-    vision: v.object({
+    sketchId: v.id("sketches"),
+    sketch: v.object({
       title: v.optional(v.string()),
       description: v.optional(v.string()),
       implementationState: v.optional(v.string()),
     }),
   },
-  handler(ctx, { visionId, vision }) {
-    return ctx.db.patch(visionId, vision);
+  handler(ctx, { sketchId, sketch }) {
+    return ctx.db.patch(sketchId, sketch);
   },
 });
 
 export const getAll = query({
   handler: (ctx) => {
-    return ctx.db.query("visions").collect();
+    return ctx.db.query("sketches").collect();
   },
 });
 
 export const getBounds = query({
   args: {
-    visionId: v.id("visions"),
+    sketchId: v.id("sketches"),
   },
-  handler: async (ctx, { visionId }) => {
-    const visionsToSections = await ctx.db
-      .query("visionsToSections")
-      .withIndex("visionId", (q) => q.eq("visionId", visionId))
+  handler: async (ctx, { sketchId }) => {
+    const sketchesToSections = await ctx.db
+      .query("sketchesToSections")
+      .withIndex("sketchId", (q) => q.eq("sketchId", sketchId))
       .collect();
 
-    const sectionIds = visionsToSections.map((vts) => vts.sectionId);
+    const sectionIds = sketchesToSections.map((vts) => vts.sectionId);
 
     const sectionsToNodes = await Promise.all(
       sectionIds.map(async (sectionId) => {

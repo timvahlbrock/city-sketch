@@ -1,17 +1,17 @@
 "use client";
 
 import { useContext } from "react";
-import AddSectionButton from "@/app/components/visionEditor/addSectionButton";
+import AddSectionButton from "@/app/components/sketchEditor/addSectionButton";
 import { Button, Space } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import EditorContext from "@/app/contexts/editorContext/editorContext";
 import { Id } from "@/convex/_generated/dataModel";
 
 export interface EditorControlsProps {
-  visionId: Id<"visions">;
+  sketchId: Id<"sketches">;
 }
 
-export default function EditorControls({ visionId }: EditorControlsProps) {
+export default function EditorControls({ sketchId }: EditorControlsProps) {
   const { state, setState } = useContext(EditorContext);
 
   return (
@@ -47,7 +47,7 @@ export default function EditorControls({ visionId }: EditorControlsProps) {
         >
           Delete Section
         </Button>
-        <AddSectionButton visionId={visionId} />
+        <AddSectionButton sketchId={sketchId} />
       </Space>
     </>
   );

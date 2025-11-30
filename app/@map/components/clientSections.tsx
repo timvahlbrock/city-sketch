@@ -5,7 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { EditableSection } from "@/app/@map/components/editableSection";
 
 export interface ClientSectionsProps {
-  preloadedSections: Preloaded<typeof api.sections.forVision>;
+  preloadedSections: Preloaded<typeof api.sections.forSketch>;
   editable?: boolean;
 }
 

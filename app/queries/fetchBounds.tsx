@@ -10,7 +10,7 @@ export interface Bounds {
 }
 
 export async function fetchBounds(
-  visionId: Id<"visions">,
+  sketchId: Id<"sketches">,
 ): Promise<Bounds | null> {
-  return fetchQuery(api.visions.getBounds, { visionId });
+  return fetchQuery(api.sketches.getBounds, { sketchId });
 }

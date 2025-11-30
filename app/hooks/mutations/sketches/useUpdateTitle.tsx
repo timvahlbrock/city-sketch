@@ -5,8 +5,8 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 
 export default function useUpdateTitle() {
-  const mutation = useMutation(api.visions.patch);
-  return async (visionId: Id<"visions">, newTitle: string) => {
-    await mutation({ visionId, vision: { title: newTitle } });
+  const mutation = useMutation(api.sketches.patch);
+  return async (sketchId: Id<"sketches">, newTitle: string) => {
+    await mutation({ sketchId, sketch: { title: newTitle } });
   };
 }

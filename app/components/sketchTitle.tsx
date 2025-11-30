@@ -2,27 +2,27 @@
 
 import { Typography } from "antd";
 import { useRouter } from "next/navigation";
-import useUpdateTitle from "@/app/hooks/mutations/visions/useUpdateTitle";
+import useUpdateTitle from "@/app/hooks/mutations/sketches/useUpdateTitle";
 import { Preloaded, usePreloadedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
-export interface VisionTitleProps {
-  preloadedVision: Preloaded<typeof api.visions.get>;
+export interface SketchTitleProps {
+  preloadedSketch: Preloaded<typeof api.sketches.get>;
   editable?: boolean;
 }
 
-export default function VisionTitle({
-  preloadedVision,
+export default function SketchTitle({
+  preloadedSketch,
   editable,
-}: VisionTitleProps) {
+}: SketchTitleProps) {
   const router = useRouter();
   const updateTitle = useUpdateTitle();
-  const vision = usePreloadedQuery(preloadedVision);
+  const sketch = usePreloadedQuery(preloadedSketch);
 
-  if (!vision) return null;
+  if (!sketch) return null;
 
   async function handleTitleUpdate(newTitle: string) {
-    await updateTitle(vision!._id, newTitle);
+    await updateTitle(sketch!._id, newTitle);
     router.refresh();
   }
 
@@ -36,7 +36,7 @@ export default function VisionTitle({
         editable={editable && { onChange: handleTitleUpdate }}
         style={{ fontWeight: "bold", fontSize: "x-large" }}
       >
-        {vision.title}
+        {sketch.title}
       </Typography.Text>
     </>
   );

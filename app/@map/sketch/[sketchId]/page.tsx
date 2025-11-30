@@ -8,17 +8,17 @@ import ClientSections from "@/app/@map/components/clientSections";
 export default async function Page({
   params,
 }: {
-  params: Promise<{ visionId: Id<"visions"> }>;
+  params: Promise<{ sketchId: Id<"sketches"> }>;
 }) {
-  const visionId = (await params).visionId;
-  const preloadedSections = await preloadQuery(api.sections.forVision, {
-    visionId,
+  const sketchId = (await params).sketchId;
+  const preloadedSections = await preloadQuery(api.sections.forSketch, {
+    sketchId,
   });
-  const bounds = await fetchBounds(visionId);
+  const bounds = await fetchBounds(sketchId);
 
   return (
     <>
-      <FlyIntoBounds visionId={visionId} bounds={bounds} />
+      <FlyIntoBounds sketchId={sketchId} bounds={bounds} />
       <ClientSections preloadedSections={preloadedSections} />
     </>
   );

@@ -2,7 +2,7 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  visions: defineTable({
+  sketches: defineTable({
     title: v.string(),
     description: v.string(),
     implementationState: v.string(),
@@ -20,10 +20,10 @@ export default defineSchema({
     .index("sectionId", ["sectionId"])
     .index("nodeId", ["nodeId"])
     .index("rank", ["rank"]),
-  visionsToSections: defineTable({
-    visionId: v.id("visions"),
+  sketchesToSections: defineTable({
+    sketchId: v.id("sketches"),
     sectionId: v.id("sections"),
   })
-    .index("visionId", ["visionId"])
+    .index("sketchId", ["sketchId"])
     .index("sectionId", ["sectionId"]),
 });

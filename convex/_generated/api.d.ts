@@ -11,7 +11,7 @@
 import type * as helpers from "../helpers.js";
 import type * as nodes from "../nodes.js";
 import type * as sections from "../sections.js";
-import type * as visions from "../visions.js";
+import type * as sketches from "../sketches.js";
 
 import type {
   ApiFromModules,
@@ -23,7 +23,7 @@ declare const fullApi: ApiFromModules<{
   helpers: typeof helpers;
   nodes: typeof nodes;
   sections: typeof sections;
-  visions: typeof visions;
+  sketches: typeof sketches;
 }>;
 
 /**

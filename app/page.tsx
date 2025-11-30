@@ -1,7 +1,7 @@
 "use server";
 
-import VisionSelection from "@/app/components/visionSelection/visionSelection";
+import SketchSelection from "@/app/components/sketchSelection/sketchSelection";
 
 export default async function Page() {
-  return <VisionSelection />;
+  return <SketchSelection />;
 }
