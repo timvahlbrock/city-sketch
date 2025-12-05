@@ -1,13 +1,15 @@
 import { mutation, query } from "@/convex/_generated/server";
-import { v } from "convex/values";
-import { notEmpty } from "./helpers";
+import { ConvexError, v } from "convex/values";
+import { getUserIdOrThrow, notEmpty } from "./helpers";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const create = mutation({
-  handler: (ctx) => {
+  handler: async (ctx) => {
     return ctx.db.insert("sketches", {
       title: "Your new Sketch",
       description: "Tell us a little bit about what you imagine.",
       implementationState: "idea",
+      ownerId: (await getAuthUserId(ctx))!,
     });
   },
 });
@@ -30,7 +32,17 @@ export const patch = mutation({
       implementationState: v.optional(v.string()),
     }),
   },
-  handler(ctx, { sketchId, sketch }) {
+  async handler(ctx, { sketchId, sketch }) {
+    const existingSketch = await ctx.db.get(sketchId);
+
+    if (!existingSketch) {
+      throw new ConvexError({ code: 404 });
+    }
+
+    if (existingSketch.ownerId !== (await getUserIdOrThrow(ctx))) {
+      throw new ConvexError({ code: 403 });
+    }
+
     return ctx.db.patch(sketchId, sketch);
   },
 });

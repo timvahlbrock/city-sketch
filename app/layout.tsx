@@ -6,6 +6,7 @@ import MapWithSidebarLayout from "@/app/mapWithSidebarLayout";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import EditorContextProvider from "@/app/contexts/editorContext/editorContextProvider";
 import { ConvexClientProvider } from "@/app/utils/convexClientProvider";
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,14 +36,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AntdRegistry>
-          <ConvexClientProvider>
-            <EditorContextProvider>
-              <MapWithSidebarLayout
-                map={map}
-                sidebar={sidebar}
-              ></MapWithSidebarLayout>
-            </EditorContextProvider>
-          </ConvexClientProvider>
+          <ConvexAuthNextjsServerProvider>
+            <ConvexClientProvider>
+              <EditorContextProvider>
+                <MapWithSidebarLayout
+                  map={map}
+                  sidebar={sidebar}
+                ></MapWithSidebarLayout>
+              </EditorContextProvider>
+            </ConvexClientProvider>
+          </ConvexAuthNextjsServerProvider>
         </AntdRegistry>
       </body>
     </html>
