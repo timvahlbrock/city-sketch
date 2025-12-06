@@ -5,6 +5,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { Map as LeafletMap } from "leaflet";
 import dynamic from "next/dynamic";
 import { MapContext } from "@/app/contexts/map/mapContext";
+import { useAuthToken } from "@convex-dev/auth/react";
 
 const DynamicMap = dynamic(() => import("./@map/components/map"), {
   ssr: false,
@@ -33,6 +34,8 @@ export default function MapWithSidebarLayout({
     console.log("mapRef", map);
   }, [map]);
 
+  const isAuthenticated = useAuthToken() !== null;
+
   return (
     <Splitter
       layout={orientation}
@@ -44,7 +47,9 @@ export default function MapWithSidebarLayout({
       </Splitter.Panel>
       <Splitter.Panel className={"bg-white"}>
         <MapContext value={map}>
-          <div style={{ padding: "16px" }}>{sidebarChildren}</div>
+          {isAuthenticated && (
+            <div style={{ padding: "16px" }}>{sidebarChildren}</div>
+          )}
         </MapContext>
       </Splitter.Panel>
     </Splitter>

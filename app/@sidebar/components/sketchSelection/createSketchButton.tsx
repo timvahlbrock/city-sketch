@@ -18,7 +18,10 @@ export default function CreateSketchButton({}: CreateSketchButtonProps) {
 
   return (
     <>
-      <PlusOutlined onClick={() => handleCreateSketch()} />
+      <PlusOutlined
+        data-testid="create-sketch-button"
+        onClick={() => handleCreateSketch()}
+      />
     </>
   );
 }
