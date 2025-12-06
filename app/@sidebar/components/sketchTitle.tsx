@@ -29,6 +29,7 @@ export default function SketchTitle({
       </Typography.Text>
 
       <Typography.Text
+        data-testid={"sketch-title"}
         editable={editable && { onChange: handleTitleUpdate }}
         style={{ fontWeight: "bold", fontSize: "x-large" }}
       >
