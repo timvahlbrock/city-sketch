@@ -30,6 +30,7 @@ export default function SketchDescription({
   return (
     <>
       <Typography.Text
+        data-testid={"sketch-description"}
         type={"secondary"}
         editable={
           editable && {

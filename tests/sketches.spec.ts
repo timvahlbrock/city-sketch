@@ -24,3 +24,25 @@ test("changing the sketch title", async ({ page }) => {
 
   await expect(titleElement).toHaveText("My Updated Sketch Title");
 });
+
+test("changing the sketch description", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("create-sketch-button").click();
+
+  const descriptionElement = page.getByTestId("sketch-description");
+  const editButton = descriptionElement.getByRole("button").first();
+  await editButton.click();
+  const editableDescriptionElement = page.getByText(
+    "Tell us a little bit about what you imagine.",
+  );
+  await editableDescriptionElement.fill(
+    "An updated description for my sketch.",
+  );
+  await page.getByText("An updated description for my sketch.").press("Enter");
+
+  await page.reload();
+
+  await expect(descriptionElement).toHaveText(
+    "An updated description for my sketch.",
+  );
+});
