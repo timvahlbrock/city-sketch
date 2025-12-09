@@ -45,6 +45,7 @@ export default function AddSectionButton({
       onClick={handleClick}
       color="blue"
       variant="solid"
+      data-testid="add-section-button"
     >
       Add Section
     </Button>
