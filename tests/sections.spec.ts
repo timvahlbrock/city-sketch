@@ -1,5 +1,5 @@
 import test, { expect, Page } from "@playwright/test";
-import { type Layer, type Marker } from "leaflet";
+import { type Layer, type Marker, type Polyline } from "leaflet";
 
 test("adding a section", async ({ page }) => {
   await page.goto("/");
@@ -15,22 +15,27 @@ test("adding a section", async ({ page }) => {
   const centerLng = center.lng;
   const rightMarkerLng = center.lng + westEastDistance * 0.3;
 
-  const leftMarker = await findMarker(page, {
-    lat: latitude,
-    lng: leftMarkerLng,
-  });
-  const centerMarker = await findMarker(page, {
-    lat: latitude,
-    lng: centerLng,
-  });
-  const rightMarker = await findMarker(page, {
-    lat: latitude,
-    lng: rightMarkerLng,
-  });
+  const points = [
+    {
+      lat: latitude,
+      lng: leftMarkerLng,
+    },
+    {
+      lat: latitude,
+      lng: centerLng,
+    },
+    {
+      lat: latitude,
+      lng: rightMarkerLng,
+    },
+  ];
 
-  expect(leftMarker).toBeDefined();
-  expect(centerMarker).toBeDefined();
-  expect(rightMarker).toBeDefined();
+  await Promise.all(
+    points.map(async (point) =>
+      expect(await findMarker(page, point)).toBeDefined(),
+    ),
+  );
+  expect(await findLineThrough(page, points)).toBeDefined();
 });
 
 async function getMapBounds(page: Page) {
@@ -71,7 +76,6 @@ async function findMarker(
             targetLatLng,
             markerLatLng,
           );
-          console.log(`distance: ${distance}`);
           if (distance < maxDistance) {
             return {
               latLng: markerLatLng,
@@ -88,6 +92,48 @@ async function findMarker(
 
     if (foundMarker) {
       return foundMarker;
+    }
+
+    await page.waitForTimeout(100);
+  }
+}
+
+async function findLineThrough(
+  page: Page,
+  pointsToGoThrough: { lat: number; lng: number }[],
+  maxDistance: number = 10,
+) {
+  while (true) {
+    const line = await page.evaluate(
+      ({ pointsToGoThrough, maxDistance }) => {
+        const layers: Layer[] = [];
+        window.leafletMap?.eachLayer((layer) => layers.push(layer));
+        for (const layer of layers) {
+          if (!isPolyline(layer)) continue;
+
+          const polylineLatLngs = layer.getLatLngs().flat(2);
+          const everyPasses = pointsToGoThrough.every((point) =>
+            polylineLatLngs.find(
+              (latLng) =>
+                window.leafletMap!.distance(point, latLng) < maxDistance,
+            ),
+          );
+          if (everyPasses) {
+            return {
+              latLng: polylineLatLngs,
+            };
+          }
+        }
+
+        function isPolyline(layer: Layer): layer is Polyline {
+          return typeof (layer as Polyline).getLatLngs === "function";
+        }
+      },
+      { pointsToGoThrough, maxDistance },
+    );
+
+    if (line) {
+      return line;
     }
 
     await page.waitForTimeout(100);
