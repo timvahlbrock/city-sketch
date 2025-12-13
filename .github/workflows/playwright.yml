@@ -15,6 +15,8 @@ jobs:
           - 3210:3210
     env:
       CONVEX_URL: http://localhost:3210
+      CONVEX_DEPLOYMENT: anonymous:anonymous-city-sketch
+      NEXT_PUBLIC_CONVEX_URL: http://localhost:3210
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
