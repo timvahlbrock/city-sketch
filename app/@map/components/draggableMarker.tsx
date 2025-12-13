@@ -2,12 +2,7 @@
 
 import { Marker, Popup, useMap } from "react-leaflet";
 import { useMemo, useRef } from "react";
-import {
-  icon,
-  LatLng,
-  type LeafletEventHandlerFnMap,
-  Popup as LeafletPopup,
-} from "leaflet";
+import { icon, LatLng, type LeafletEventHandlerFnMap } from "leaflet";
 import { Button } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 

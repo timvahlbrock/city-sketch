@@ -205,7 +205,7 @@ export default function DraggableLine({
           position={endPlusIconPoint}
           icon={plusIcon}
           eventHandlers={{
-            click(e) {
+            click() {
               setAddingLocation("end");
             },
           }}
@@ -216,7 +216,7 @@ export default function DraggableLine({
           position={startPlusIconPoint}
           icon={plusIcon}
           eventHandlers={{
-            click(e) {
+            click() {
               setAddingLocation("start");
             },
           }}

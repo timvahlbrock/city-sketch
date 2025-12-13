@@ -1,15 +1,11 @@
-import { FlatCompat } from "@eslint/eslintrc";
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-});
+import nextPlugin from "@next/eslint-plugin-next";
+import prettierConfig from "eslint-config-prettier";
+import tsPlugin from "eslint-config-next/typescript";
 
 const eslintConfig = [
-  ...compat.extends(
-    "next/core-web-vitals",
-    "next/typescript",
-    "eslint-config-prettier",
-  ),
+  nextPlugin.configs["core-web-vitals"],
+  ...tsPlugin,
+  prettierConfig,
 ];
 
 export default eslintConfig;

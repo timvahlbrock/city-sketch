@@ -5,9 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
-export interface CreateSketchButtonProps {}
-
-export default function CreateSketchButton({}: CreateSketchButtonProps) {
+export default function CreateSketchButton() {
   const createVison = useMutation(api.sketches.create);
   const router = useRouter();
 
