@@ -50,3 +50,6 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+      - name: Dump Convex Logs
+        if: always()
+        run: docker logs convex
