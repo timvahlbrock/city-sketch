@@ -8,11 +8,16 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-#    services:
-#      convex:
-#        image: ghcr.io/get-convex/convex-backend:latest
-#        ports:
-#          - 3210:3210
+    services:
+      convex:
+        image: ghcr.io/get-convex/convex-backend:latest
+        ports:
+          - 3210:3210
+        options: >-
+          --health-cmd "curl -f http://localhost:3210/healthz || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       CONVEX_URL: http://localhost:3210
       CONVEX_DEPLOYMENT: anonymous:anonymous-city-sketch
@@ -24,12 +29,18 @@ jobs:
           node-version: lts/*
       - name: Install dependencies
         run: npm ci
+      - name: Get Admin Key
+        run: |
+          docker exec convex-backend ./generate_admin_key.sh > admin_key.txt
+          echo "ADMIN_KEY=$(cat admin_key.txt)" >> $GITHUB_ENV
+      - name: Setup Convex
+        run: |
+          echo "ADMIN_KEY: $ADMIN_KEY"
+          npx convex deploy
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Build application
         run: npm run build
-      - name: Setup Convex
-        run: npx convex dev --configure new --team anonymous --project city-sketch --dev-deployment local
       - name: Run Playwright tests
         run: npx playwright test
       - uses: actions/upload-artifact@v4
