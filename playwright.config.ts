@@ -74,7 +74,7 @@ export default defineConfig({
     {
       command: "npm run convex",
       url: "http://localhost:3210",
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
     },
   ],
 });
