@@ -1,15 +1,18 @@
-name: Prettier
+name: Static Analysis
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
 jobs:
-  build:
+  eslint-prettier:
+    name: ESLint & Prettier
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install modules
         run: yarn
+      - name: Run ESLint
+        run: npm run lint:ci
       - name: Run Prettier
         run: npm run format:ci
