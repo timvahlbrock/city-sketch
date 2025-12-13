@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       convex:
-        image: ghcr.io/convex-dev/convex-oss:latest
+        image: ghcr.io/get-convex/convex-backend:latest
         ports:
           - 3210:3210
     env:
