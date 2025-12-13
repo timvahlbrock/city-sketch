@@ -27,7 +27,7 @@ jobs:
     - name: Build application
       run: npm run build
     - name: Setup Convex
-      run: convex deploy
+      run: npx run convex deploy
     - name: Run Playwright tests
       run: npx playwright test
     - uses: actions/upload-artifact@v4
