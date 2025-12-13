@@ -20,6 +20,7 @@ jobs:
 #          --health-retries 5
     env:
       CONVEX_URL: http://localhost:3210
+      CONVEX_SELF_HOSTED_URL: http://localhost:3210
       CONVEX_DEPLOYMENT: anonymous:anonymous-city-sketch
       NEXT_PUBLIC_CONVEX_URL: http://localhost:3210
     steps:
@@ -34,10 +35,9 @@ jobs:
           docker run --name convex -p 3120:3120 -d ghcr.io/get-convex/convex-backend:latest
           sleep 10
           docker exec convex ./generate_admin_key.sh > admin_key.txt
-          echo "ADMIN_KEY=$(cat admin_key.txt)" >> $GITHUB_ENV
+          echo "CONVEX_SELFHOSTED_ADMIN_KEY=$(cat admin_key.txt)" >> $GITHUB_ENV
       - name: Setup Convex
         run: |
-          echo "ADMIN_KEY: $ADMIN_KEY"
           npx convex deploy
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
