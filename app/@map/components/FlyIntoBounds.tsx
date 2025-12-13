@@ -2,7 +2,6 @@
 
 import { useMap } from "react-leaflet";
 import { useEffect } from "react";
-import { Bounds } from "@/app/queries/fetchBounds";
 import { Id } from "@/convex/_generated/dataModel";
 
 export default function FlyIntoBounds({
@@ -10,7 +9,12 @@ export default function FlyIntoBounds({
   bounds,
 }: {
   sketchId: Id<"sketches">;
-  bounds: Bounds | null;
+  bounds: {
+    latMin: number;
+    lngMin: number;
+    latMax: number;
+    lngMax: number;
+  } | null;
 }) {
   const map = useMap();
 
