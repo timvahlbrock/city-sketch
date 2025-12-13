@@ -9,7 +9,8 @@
     "lint": "npm run lint:ci -- --fix",
     "format:ci": "prettier --check .",
     "format": "prettier --write .",
-    "start": "next start"
+    "start": "next start",
+    "convex": "convex dev"
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.2.0",
