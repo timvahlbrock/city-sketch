@@ -37,7 +37,7 @@ jobs:
           echo "CONVEX_SELF_HOSTED_ADMIN_KEY=$(cat admin_key.txt)" >> $GITHUB_ENV
       - name: Setup Convex
         run: |
-          npx convex deploy
+          npx convex deploy -v
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Build application
