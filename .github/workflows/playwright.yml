@@ -8,11 +8,11 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    services:
-      convex:
-        image: ghcr.io/get-convex/convex-backend:latest
-        ports:
-          - 3210:3210
+#    services:
+#      convex:
+#        image: ghcr.io/get-convex/convex-backend:latest
+#        ports:
+#          - 3210:3210
     env:
       CONVEX_URL: http://localhost:3210
       CONVEX_DEPLOYMENT: anonymous:anonymous-city-sketch
@@ -29,7 +29,7 @@ jobs:
       - name: Build application
         run: npm run build
       - name: Setup Convex
-        run: npx convex deploy
+        run: npx convex dev --configure new --team anonymous --project city-sketch --dev-deployment local
       - name: Run Playwright tests
         run: npx playwright test
       - uses: actions/upload-artifact@v4
