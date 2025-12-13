@@ -23,7 +23,7 @@ jobs:
       CONVEX_SELF_HOSTED_URL: http://localhost:3210
       NEXT_PUBLIC_CONVEX_URL: http://localhost:3210
       CONVEX_CLOUD_ORIGIN: http://localhost:3210
-      CONVEX_SITE_ORIGIN: http://localhost:3210
+      CONVEX_SITE_ORIGIN: http://localhost:3211
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
