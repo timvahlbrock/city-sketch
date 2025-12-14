@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.2.0",
-    "@auth/core": "^0.37.0",
+    "@auth/core": "^0.41.0",
     "@convex-dev/aggregate": "^0.2.0",
     "@convex-dev/auth": "^0.0.90",
     "@emotion/react": "^11.14.0",
