@@ -8,16 +8,6 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    #    services:
-    #      convex:
-    #        image: ghcr.io/get-convex/convex-backend:latest
-    #        ports:
-    #          - 3210:3210
-    #        options: >-
-    #          --health-cmd "curl -f http://localhost:3210/healthz || exit 1"
-    #          --health-interval 10s
-    #          --health-timeout 5s
-    #          --health-retries 5
     env:
       CONVEX_URL: http://localhost:3210
       CONVEX_SELF_HOSTED_URL: http://localhost:3210
@@ -34,7 +24,7 @@ jobs:
       - name: Launch Convex
         run: |
           docker compose -f ./.github/ci-support/docker-compose.yml up -d
-          docker compose exec convex ./generate_admin_key.sh > admin_key.txt
+          docker compose -f ./.github/ci-support/docker-compose.yml exec convex ./generate_admin_key.sh > admin_key.txt
           echo "CONVEX_SELF_HOSTED_ADMIN_KEY=$(cat admin_key.txt)" >> $GITHUB_ENV
       - name: Configure Convex
         run: |
@@ -55,4 +45,4 @@ jobs:
           retention-days: 30
       - name: Dump Convex Logs
         if: always()
-        run: docker compose logs convex
+        run: docker compose -f ./.github/ci-support/docker-compose.yml logs convex
