@@ -29,7 +29,6 @@ jobs:
       - name: Configure Convex
         run: |
           node ./.github/ci-support/generateKeys.js
-          npx convex s
           npx convex deploy -v
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
