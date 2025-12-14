@@ -33,7 +33,7 @@ jobs:
         run: npm ci
       - name: Launch Convex
         run: |
-          docker compose -f ./.github/ci-support/docker-compose.yml
+          docker compose -f ./.github/ci-support/docker-compose.yml up -d
           docker compose exec convex ./generate_admin_key.sh > admin_key.txt
           echo "CONVEX_SELF_HOSTED_ADMIN_KEY=$(cat admin_key.txt)" >> $GITHUB_ENV
       - name: Configure Convex
@@ -55,4 +55,4 @@ jobs:
           retention-days: 30
       - name: Dump Convex Logs
         if: always()
-        run: docker logs convex
+        run: docker compose logs convex
