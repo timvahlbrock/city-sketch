@@ -1,6 +1,6 @@
 #!/bin/bash
 # from https://github.com/get-convex/convex-backend/issues/128
-output=$(node generateKeys.mjs)
+output=$(node ./github/ci-support/generateKeys.mjs)
 
 JWT_PRIVATE_KEY=$(echo "$output" | sed -n 's/^JWT_PRIVATE_KEY="\([^"]*\)"/\1/p')
 JWKS=$(echo "$output" | sed -n 's/^JWKS=\(.*\)/\1/p')
