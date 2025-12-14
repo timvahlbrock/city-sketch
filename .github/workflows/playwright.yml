@@ -14,6 +14,7 @@ jobs:
       NEXT_PUBLIC_CONVEX_URL: http://localhost:3210
       CONVEX_CLOUD_ORIGIN: http://127.0.0.1:3210
       CONVEX_SITE_ORIGIN: http://127.0.0.1:3211
+      EXPOSE_TEST_APIS: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -34,8 +35,6 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Build application
-        env:
-          EXPOSE_TEST_APIS: true
         run: npm run build
       - name: Run Playwright tests
         run: npx playwright test
