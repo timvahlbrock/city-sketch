@@ -1,8 +1,10 @@
 {
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "automerge": true
+      "description": "Group non-breaking updates",
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "matchJsonata": ["isBreaking != true"],
+      "groupName": "Non-breaking updates"
     },
     {
       "matchDepTypes": ["devDependencies"],
