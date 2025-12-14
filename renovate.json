@@ -14,5 +14,5 @@
     "enabled": true,
     "automerge": true
   },
-  "npm": { "postUpdateOptions": ["npmInstallTwice"] }
+  "npm": { "postUpdateOptions": ["npmInstallTwice", "lockFileMaintenance"] }
 }
