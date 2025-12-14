@@ -46,10 +46,9 @@ async function getMapBounds(page: Page) {
   while (true) {
     const bounds = await page.evaluate(() => {
       if (!window.leafletMap) {
-        console.log("leafletMap is not loaded");
         return undefined;
       }
-      console.log("leafletMap is loaded");
+
       const bounds = window.leafletMap.getBounds();
       return {
         east: bounds.getEast(),

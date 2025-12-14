@@ -17,21 +17,10 @@ export default function Map(props: MapProps) {
     const exposeTestApis =
       isDevelopment || process.env.NEXT_PUBLIC_EXPOSE_TEST_APIS === "true";
 
-    if (!exposeTestApis) {
-      console.log("Exposing test APIS is disabled");
-      return;
+    if (exposeTestApis && ref) {
+      window.leafletMap = ref;
+      window.leaflet = Leaflet;
     }
-
-    console.log("Exposing test APIs is enabled");
-    if (!ref) {
-      console.log("Ref is unset. Cannot expose APIs");
-      return;
-    }
-
-    console.log("Exposing ref.");
-
-    window.leafletMap = ref;
-    window.leaflet = Leaflet;
   }
   return (
     <MapContainer
