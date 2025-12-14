@@ -19,7 +19,7 @@
     "@convex-dev/auth": "^0.0.90",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "antd": "^5.27.5",
+    "antd": "^6.0.0",
     "convex": "^1.29.3",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
