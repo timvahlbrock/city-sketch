@@ -12,16 +12,29 @@ export type MapProps = PropsWithChildren<{
 }>;
 
 export default function Map(props: MapProps) {
+  function checkExposeMapRef(ref: Leaflet.Map | null) {
+    const isDevelopment = process.env.NODE_ENV === "development";
+    const exposeTestApis =
+      isDevelopment || process.env.EXPOSE_TEST_APIS === "true";
+
+    if (!exposeTestApis) {
+      console.log("Exposing test APIS is disabled");
+      return;
+    }
+
+    console.log("Exposing test APIs is enabled");
+    if (!ref) {
+      console.log("Ref is unset. Cannot expose APIs");
+      return;
+    }
+
+    window.leafletMap = ref;
+    window.leaflet = Leaflet;
+  }
   return (
     <MapContainer
       ref={(ref) => {
-        const isDevelopment = process.env.NODE_ENV === "development";
-        const exposeTestApis =
-          isDevelopment || process.env.EXPOSE_TEST_APIS === "true";
-        if (exposeTestApis && ref) {
-          window.leafletMap = ref;
-          window.leaflet = Leaflet;
-        }
+        checkExposeMapRef(ref);
         props.setMap?.(ref);
       }}
       center={[51.83692, 6.61892]}
