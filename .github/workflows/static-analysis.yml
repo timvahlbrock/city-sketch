@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install modules
-        run: yarn
+        run: npm ci
       - name: Run ESLint
         run: npm run lint:ci
       - name: Run Prettier
