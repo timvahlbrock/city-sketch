@@ -6,7 +6,7 @@ test("adding a section", async ({ page }) => {
   await page.getByTestId("create-sketch-button").click();
   await page.getByTestId("add-section-button").click();
 
-  page.on('console', (msg) => {
+  page.on("console", (msg) => {
     console.log(msg);
   });
 
