@@ -6,6 +6,10 @@ test("adding a section", async ({ page }) => {
   await page.getByTestId("create-sketch-button").click();
   await page.getByTestId("add-section-button").click();
 
+  page.on('console', (msg) => {
+    console.log(msg);
+  });
+
   const bounds = await getMapBounds(page);
   const westEastDistance = Math.abs(bounds.east - bounds.west);
   const center = bounds.center;
