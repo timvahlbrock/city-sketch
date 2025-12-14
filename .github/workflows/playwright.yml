@@ -31,7 +31,7 @@ jobs:
         run: |
           sh ./.github/ci-support/generateKeys.sh
           npx convex env list
-          npx convex deploy -v
+          npx convex deploy
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Build application
