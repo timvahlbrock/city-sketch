@@ -15,8 +15,10 @@ export default function Map(props: MapProps) {
   return (
     <MapContainer
       ref={(ref) => {
-        const env = process.env.NODE_ENV;
-        if (env === "development" && ref) {
+        const isDevelopment = process.env.NODE_ENV === "development";
+        const exposeTestApis =
+          isDevelopment || process.env.EXPOSE_TEST_APIS === "true";
+        if (exposeTestApis && ref) {
           window.leafletMap = ref;
           window.leaflet = Leaflet;
         }
