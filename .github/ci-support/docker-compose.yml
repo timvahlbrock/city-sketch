@@ -1,0 +1,15 @@
+services:
+  convex:
+    image: ghcr.io/get-convex/convex-backend:latest
+    stop_grace_period: 10s
+    stop_signal: SIGINT
+    ports:
+      - "3210:3210"
+      - "3211:3211"
+    environment:
+      - CONVEX_CLOUD_ORIGIN=http://localhost:3210
+      - CONVEX_SITE_ORIGIN=http://localhost:3211
+    healthcheck:
+      test: curl -f http://localhost:3210/version
+      interval: 5s
+      start_period: 3s
