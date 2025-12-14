@@ -33,7 +33,7 @@ jobs:
         run: npm ci
       - name: Launch Convex
         run: |
-          docker run --name convex -p 3210:3210 -d ghcr.io/get-convex/convex-backend:latest
+          docker run --name convex -p 3210:3210 -p 3211:3211 --env CONVEX_SITE_ORIGIN=http://localhost:3211 --env CONVEX_CLOUD_ORIGIN=http://localhost:3210 -d ghcr.io/get-convex/convex-backend:latest
           sleep 10
           docker exec convex ./generate_admin_key.sh > admin_key.txt
           echo "CONVEX_SELF_HOSTED_ADMIN_KEY=$(cat admin_key.txt)" >> $GITHUB_ENV
