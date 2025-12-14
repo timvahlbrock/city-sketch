@@ -9,15 +9,12 @@ const publicKey = await exportJWK(keys.publicKey);
 const jwks = JSON.stringify({ keys: [{ use: "sig", ...publicKey }] });
 const stringifiedPrivateKey = privateKey.trimEnd().replace(/\n/g, " ");
 
-childProcess.spawnSync(
-  `npx convex env set JWT_PRIVATE_KEY "${stringifiedPrivateKey}"`,
-  {
-    stdio: "inherit",
-  },
+console.log(
+  childProcess.execSync(
+    `npx convex env set JWT_PRIVATE_KEY "${stringifiedPrivateKey}"`,
+  ),
 );
-childProcess.spawnSync(`npx convex env set JWKS "${jwks}"`, {
-  stdio: "inherit",
-});
+console.log(childProcess.execSync(`npx convex env set JWKS "${jwks}"`));
 
 process.stdout.write(`JWT_PRIVATE_KEY="${stringifiedPrivateKey}"`);
 process.stdout.write("\n");
