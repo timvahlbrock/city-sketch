@@ -1,11 +1,25 @@
-name: Playwright Tests
+name: CI
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
 jobs:
-  test:
+  eslint-prettier:
+    name: ESLint & Prettier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install modules
+        run: npm ci
+      - name: Run ESLint
+        run: npm run lint:ci
+      - name: Run Prettier
+        run: npm run format:ci
+  e2e:
+    name: E2E (Playwright)
+    needs:
+      - eslint-prettier
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
