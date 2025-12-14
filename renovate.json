@@ -13,5 +13,6 @@
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true
-  }
+  },
+  "npm": { "postUpdateOptions": ["npmInstallTwice"] }
 }
