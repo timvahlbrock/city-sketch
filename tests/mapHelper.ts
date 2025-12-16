@@ -1,9 +1,10 @@
-import { Layer, Map as LeafletMap } from "leaflet";
+import { Layer, Map as LeafletMap, Marker } from "leaflet";
 import { Page } from "@playwright/test";
 
 export interface IMapHelper {
   withMap<T>(callback: (map: LeafletMap) => T): Promise<T>;
   findLayer(filter: (layer: Layer) => boolean): Promise<Layer>;
+  findMarker(filter: (layer: Marker) => boolean): Promise<Marker>;
 }
 
 export async function installMapHelper(page: Page) {
@@ -75,6 +76,16 @@ export async function installMapHelper(page: Page) {
             };
             this.layerQueries.add(query);
           });
+        }
+
+        public findMarker(filter: (layer: Marker) => boolean): Promise<Marker> {
+          function isMarker(layer: Layer): layer is Marker {
+            return typeof (layer as Marker).getLatLng === "function";
+          }
+          return this.findLayer((layer) => {
+            if (!isMarker(layer)) return false;
+            return filter(layer);
+          }) as Promise<Marker>;
         }
 
         private proxyLeafletMapProp() {

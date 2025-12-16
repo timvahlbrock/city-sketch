@@ -1,5 +1,5 @@
 import { Page } from "@playwright/test";
-import { Layer, Marker } from "leaflet";
+import { Layer } from "leaflet";
 import { installMapHelper } from "@/tests/mapHelper";
 
 interface SimpleLatLng {
@@ -42,9 +42,8 @@ export class MapFixture {
     const { maxDistance = 10 } = options;
     return this.page.evaluate(
       async ({ targetLatLng, maxDistance }) => {
-        const layer = await window.mapHelper.findLayer((layer) => {
-          if (!isMarker(layer)) return false;
-          const markerLatLng = layer.getLatLng();
+        const marker = await window.mapHelper.findMarker((marker) => {
+          const markerLatLng = marker.getLatLng();
           const distance = window.leafletMap!.distance(
             targetLatLng,
             markerLatLng,
@@ -52,11 +51,7 @@ export class MapFixture {
           return distance < maxDistance;
         });
 
-        function isMarker(layer: Layer): layer is Marker {
-          return typeof (layer as Marker).getLatLng === "function";
-        }
-
-        const markerLatLng = (layer as Marker).getLatLng();
+        const markerLatLng = marker.getLatLng();
         return {
           lat: markerLatLng.lat,
           lng: markerLatLng.lng,
