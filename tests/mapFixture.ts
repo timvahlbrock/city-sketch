@@ -1,6 +1,5 @@
 import { Page } from "@playwright/test";
 import { installMapHelper } from "@/tests/mapHelper";
-import { LatLng } from "leaflet";
 
 interface SimpleLatLng {
   lat: number;
@@ -81,10 +80,13 @@ export class MapFixture {
           );
         });
 
-        return polyline.getLatLngs().map((latLng) => ({
-          lat: (latLng as LatLng).lat,
-          lng: (latLng as LatLng).lng,
-        }));
+        return polyline
+          .getLatLngs()
+          .flat(2)
+          .map((latLng) => ({
+            lat: latLng.lat,
+            lng: latLng.lng,
+          }));
       },
       { pointsToGoThrough, maxDistance },
     );
