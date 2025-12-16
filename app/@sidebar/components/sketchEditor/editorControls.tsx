@@ -16,7 +16,7 @@ export default function EditorControls({ sketchId }: EditorControlsProps) {
 
   return (
     <>
-      <Space direction="vertical" style={{ width: "100%" }}>
+      <Space orientation="vertical" style={{ width: "100%" }}>
         <Button
           icon={<PlusOutlined />}
           style={{ width: "100%" }}

@@ -18,12 +18,12 @@ export default async function Page({
 
   return (
     <>
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Space orientation="vertical" size="large" style={{ width: "100%" }}>
         <Link href={`/sketch/${sketchId}`} style={{ color: "gray" }}>
           <ArrowLeftOutlined />
           &nbsp; Go Back
         </Link>
-        <Space direction="vertical" size="small" style={{ width: "100%" }}>
+        <Space orientation="vertical" size="small" style={{ width: "100%" }}>
           <SketchTitle preloadedSketch={sketch} editable={true} />
           <SketchDescription preloadedSketch={sketch} editable={true} />
         </Space>
