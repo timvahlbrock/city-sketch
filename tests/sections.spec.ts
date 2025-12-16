@@ -33,11 +33,35 @@ test("adding a section", async ({ page, map }) => {
     },
   ];
 
-  console.log("Placing markers at", points);
   await Promise.all(
     points.map(async (point) =>
       expect(await map.findMarkerAt(point)).toBeDefined(),
     ),
   );
   expect(await map.findLineThrough(points)).toBeDefined();
+});
+
+test("moving a node of a section", async ({ page, map }) => {
+  await page.goto("/");
+  await page.getByTestId("create-sketch-button").click();
+  await page.getByTestId("add-section-button").click();
+  const mapBounds = await map.getBounds();
+
+  const oldMarkerPosition = await map.findMarkerAt(mapBounds.center);
+  const newMarkerPosition = {
+    lat: mapBounds.center.lat + (mapBounds.north - mapBounds.south) * 0.2,
+    lng: mapBounds.center.lng + (mapBounds.east - mapBounds.west) * 0.2,
+  };
+
+  const oldMarkerXy = await map.getXYFrom(oldMarkerPosition);
+  const newMarkerXy = await map.getXYFrom(newMarkerPosition);
+
+  await page.mouse.move(oldMarkerXy.x, oldMarkerXy.y);
+  await page.mouse.down();
+  await page.mouse.move(newMarkerXy.x, newMarkerXy.y);
+  await page.mouse.up();
+
+  await page.reload();
+
+  expect(await map.findMarkerAt(newMarkerPosition)).toBeDefined();
 });

@@ -15,6 +15,8 @@ export class MapFixture {
   public async getBounds(): Promise<{
     east: number;
     west: number;
+    north: number;
+    south: number;
     center: SimpleLatLng;
   }> {
     return this.page.evaluate(() => {
@@ -23,6 +25,8 @@ export class MapFixture {
         return {
           east: bounds.getEast(),
           west: bounds.getWest(),
+          north: bounds.getNorth(),
+          south: bounds.getSouth(),
           center: {
             lat: bounds.getCenter().lat,
             lng: bounds.getCenter().lng,
@@ -90,5 +94,14 @@ export class MapFixture {
       },
       { pointsToGoThrough, maxDistance },
     );
+  }
+
+  public async getXYFrom(
+    latLng: SimpleLatLng,
+  ): Promise<{ x: number; y: number }> {
+    return this.page.evaluate(async (latLng) => {
+      const point = window.leafletMap!.latLngToContainerPoint(latLng);
+      return { x: point.x, y: point.y };
+    }, latLng);
   }
 }
