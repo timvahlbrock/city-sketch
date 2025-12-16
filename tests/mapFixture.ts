@@ -91,22 +91,4 @@ export class MapFixture {
       { pointsToGoThrough, maxDistance },
     );
   }
-
-  private async retryUntilTimeout<T>(
-    fn: () => Promise<T | undefined>,
-    timeout: number = 5000,
-    interval: number = 100,
-  ): Promise<T> {
-    const start = Date.now();
-    while (true) {
-      const result = await fn();
-      if (result !== undefined) {
-        return result;
-      }
-      if (Date.now() - start > timeout) {
-        throw new Error("Timeout while retrying function");
-      }
-      await this.page.waitForTimeout(interval);
-    }
-  }
 }
