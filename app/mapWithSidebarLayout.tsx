@@ -38,7 +38,7 @@ export default function MapWithSidebarLayout({
 
   return (
     <Splitter
-      layout={orientation}
+      orientation={orientation}
       className={"h-full"}
       onResize={() => map?.invalidateSize({ pan: true })}
     >
