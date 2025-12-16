@@ -65,7 +65,7 @@ export default function DraggableMarker(props: DraggableMarkerProps) {
             }}
           >
             <DeleteOutlined />
-            Remove
+            Delete
           </Button>
         </Popup>
       </Marker>
