@@ -44,7 +44,7 @@ export async function installMapHelper(page: Page) {
             });
           });
 
-          this.proxyLeafletMapProp();
+          this.checkProxyLeafletMapProp();
         }
 
         public withMap<T>(callback: (map: LeafletMap) => T): Promise<T> {
@@ -100,6 +100,14 @@ export async function installMapHelper(page: Page) {
             if (!isPolyline(layer)) return false;
             return filter(layer);
           }) as Promise<Polyline>;
+        }
+
+        private checkProxyLeafletMapProp() {
+          if (window.leafletMap) {
+            this.setMap(window.leafletMap);
+          } else {
+            this.proxyLeafletMapProp();
+          }
         }
 
         private proxyLeafletMapProp() {
