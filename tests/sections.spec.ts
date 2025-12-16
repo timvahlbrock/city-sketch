@@ -65,3 +65,29 @@ test("moving a node of a section", async ({ page, map }) => {
 
   expect(await map.findMarkerAt(newMarkerPosition)).toBeDefined();
 });
+
+test("removing a section", async ({ page, map }) => {
+  await page.goto("/");
+  await page.getByTestId("create-sketch-button").click();
+  await page.getByTestId("add-section-button").click();
+  const mapBounds = await map.getBounds();
+  await map.findMarkerAt(mapBounds.center);
+
+  await page.getByTestId("delete-section-button").click();
+  const mapCenterXy = await map.getXYFrom(mapBounds.center);
+  await page.mouse.click(mapCenterXy.x + 20, mapCenterXy.y);
+
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  await expect(
+    dialog.getByText("Delete section?", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByText(
+      "Are you sure you want to delete this section? This cannot be undone.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await page.getByRole("button").getByText("Delete", { exact: true }).click();
+  await expect(dialog).toBeHidden();
+});

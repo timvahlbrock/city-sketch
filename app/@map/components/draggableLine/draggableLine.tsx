@@ -184,7 +184,7 @@ export default function DraggableLine({
         }}
       />
       <Modal
-        title={"Delete sections?"}
+        title={"Delete section?"}
         open={deleteModalOpen}
         onCancel={() => setDeleteModalOpen(false)}
         onOk={async () => {

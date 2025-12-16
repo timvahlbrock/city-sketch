@@ -33,6 +33,7 @@ export default function EditorControls({ sketchId }: EditorControlsProps) {
           Add Node
         </Button>
         <Button
+          data-testid="delete-section-button"
           icon={<DeleteOutlined />}
           style={{ width: "100%" }}
           onClick={() =>
