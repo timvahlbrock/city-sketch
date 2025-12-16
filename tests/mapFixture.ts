@@ -1,5 +1,6 @@
 import { Page } from "@playwright/test";
 import type { Layer, Marker } from "leaflet";
+import { installMapHelper } from "@/tests/mapHelper";
 
 interface SimpleLatLng {
   lat: number;
@@ -7,7 +8,10 @@ interface SimpleLatLng {
 }
 
 export class MapFixture {
-  constructor(private readonly page: Page) {}
+  public readonly ready: Promise<void>;
+  public constructor(private readonly page: Page) {
+    this.ready = installMapHelper(page);
+  }
 
   public async getBounds(options: { timeout?: number } = {}): Promise<{
     east: number;
@@ -16,19 +20,17 @@ export class MapFixture {
   }> {
     return this.retryUntilTimeout(async () => {
       const bounds = await this.page.evaluate(() => {
-        if (!window.leafletMap) {
-          return undefined;
-        }
-
-        const bounds = window.leafletMap.getBounds();
-        return {
-          east: bounds.getEast(),
-          west: bounds.getWest(),
-          center: {
-            lat: bounds.getCenter().lat,
-            lng: bounds.getCenter().lng,
-          },
-        };
+        return window.mapHelper.withMap((map) => {
+          const bounds = map.getBounds();
+          return {
+            east: bounds.getEast(),
+            west: bounds.getWest(),
+            center: {
+              lat: bounds.getCenter().lat,
+              lng: bounds.getCenter().lng,
+            },
+          };
+        });
       });
 
       if (bounds) {

@@ -2,9 +2,12 @@ import { expect } from "@playwright/test";
 import { test } from "./fixtures";
 
 test("adding a section", async ({ page, map }) => {
+  console.log("test");
   await page.goto("/");
   await page.getByTestId("create-sketch-button").click();
   await page.getByTestId("add-section-button").click();
+
+  page.on("console", console.log);
 
   const bounds = await map.getBounds();
   const westEastDistance = Math.abs(bounds.east - bounds.west);
@@ -30,6 +33,7 @@ test("adding a section", async ({ page, map }) => {
     },
   ];
 
+  console.log("Placing markers at", points);
   await Promise.all(
     points.map(async (point) =>
       expect(await map.findMarkerAt(point)).toBeDefined(),

@@ -7,6 +7,8 @@ interface Fixtures {
 
 export const test = base.extend<Fixtures>({
   map: async ({ page }, use) => {
-    await use(new MapFixture(page));
+    const mapFixture = new MapFixture(page);
+    await mapFixture.ready;
+    await use(mapFixture);
   },
 });
