@@ -14,9 +14,7 @@ export class MapFixture {
     west: number;
     center: SimpleLatLng;
   }> {
-    const { timeout = 5000 } = options;
-    const start = Date.now();
-    while (true) {
+    return this.retryUntilTimeout(async () => {
       const bounds = await this.page.evaluate(() => {
         if (!window.leafletMap) {
           return undefined;
@@ -36,13 +34,7 @@ export class MapFixture {
       if (bounds) {
         return bounds;
       }
-
-      if (Date.now() - start > timeout) {
-        throw new Error("Timeout while getting map bounds");
-      }
-
-      await this.page.waitForTimeout(100);
-    }
+    }, options.timeout);
   }
 
   public async findMarkerAt(
@@ -52,10 +44,9 @@ export class MapFixture {
       timeout?: number;
     } = {},
   ): Promise<SimpleLatLng> {
-    const { maxDistance = 10, timeout = 5000 } = options;
-    const start = Date.now();
+    const { maxDistance = 10, timeout } = options;
 
-    while (true) {
+    return this.retryUntilTimeout(async () => {
       const marker = await this.page.evaluate(
         ({ targetLatLng, maxDistance }) => {
           const layers: Layer[] = [];
@@ -87,13 +78,7 @@ export class MapFixture {
           lng: marker.latLng.lng,
         };
       }
-
-      if (Date.now() - start > timeout) {
-        throw new Error("Timeout while searching for marker");
-      }
-
-      await this.page.waitForTimeout(100);
-    }
+    }, timeout);
   }
 
   public async findLineThrough(
@@ -103,10 +88,9 @@ export class MapFixture {
       timeout?: number;
     } = {},
   ): Promise<SimpleLatLng[]> {
-    const { maxDistance = 10, timeout = 5000 } = options;
-    const start = Date.now();
+    const { maxDistance = 10, timeout } = options;
 
-    while (true) {
+    return this.retryUntilTimeout(async () => {
       const line = await this.page.evaluate(
         ({ pointsToGoThrough, maxDistance }) => {
           const layers: Layer[] = [];
@@ -141,12 +125,24 @@ export class MapFixture {
           lng: latLng.lng,
         }));
       }
+    }, timeout);
+  }
 
-      if (Date.now() - start > timeout) {
-        throw new Error("Timeout while searching for line");
+  private async retryUntilTimeout<T>(
+    fn: () => Promise<T | undefined>,
+    timeout: number = 5000,
+    interval: number = 100,
+  ): Promise<T> {
+    const start = Date.now();
+    while (true) {
+      const result = await fn();
+      if (result !== undefined) {
+        return result;
       }
-
-      await this.page.waitForTimeout(100);
+      if (Date.now() - start > timeout) {
+        throw new Error("Timeout while retrying function");
+      }
+      await this.page.waitForTimeout(interval);
     }
   }
 }
