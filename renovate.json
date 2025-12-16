@@ -4,7 +4,8 @@
       "description": "Group non-breaking updates",
       "matchUpdateTypes": ["minor", "patch", "digest"],
       "matchJsonata": ["isBreaking != true"],
-      "groupName": "Non-breaking updates"
+      "groupName": "Non-breaking updates",
+      "automerge": true
     },
     {
       "matchDepTypes": ["devDependencies"],
