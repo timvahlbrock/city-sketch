@@ -1,5 +1,5 @@
 import { Page } from "@playwright/test";
-import type { Layer, Marker } from "leaflet";
+import { Layer, Marker } from "leaflet";
 import { installMapHelper } from "@/tests/mapHelper";
 
 interface SimpleLatLng {
@@ -37,44 +37,33 @@ export class MapFixture {
     targetLatLng: SimpleLatLng,
     options: {
       maxDistance?: number;
-      timeout?: number;
     } = {},
   ): Promise<SimpleLatLng> {
-    const { maxDistance = 10, timeout } = options;
+    const { maxDistance = 10 } = options;
+    return this.page.evaluate(
+      async ({ targetLatLng, maxDistance }) => {
+        const layer = await window.mapHelper.findLayer((layer) => {
+          if (!isMarker(layer)) return false;
+          const markerLatLng = layer.getLatLng();
+          const distance = window.leafletMap!.distance(
+            targetLatLng,
+            markerLatLng,
+          );
+          return distance < maxDistance;
+        });
 
-    return this.retryUntilTimeout(async () => {
-      const marker = await this.page.evaluate(
-        ({ targetLatLng, maxDistance }) => {
-          const layers: Layer[] = [];
-          window.leafletMap?.eachLayer((layer) => layers.push(layer));
-          for (const layer of layers) {
-            if (!isMarker(layer)) continue;
-            const markerLatLng = layer.getLatLng();
-            const distance = window.leafletMap!.distance(
-              targetLatLng,
-              markerLatLng,
-            );
-            if (distance < maxDistance) {
-              return {
-                latLng: markerLatLng,
-              };
-            }
-          }
+        function isMarker(layer: Layer): layer is Marker {
+          return typeof (layer as Marker).getLatLng === "function";
+        }
 
-          function isMarker(layer: Layer): layer is Marker {
-            return typeof (layer as Marker).getLatLng === "function";
-          }
-        },
-        { targetLatLng, maxDistance },
-      );
-
-      if (marker) {
+        const markerLatLng = (layer as Marker).getLatLng();
         return {
-          lat: marker.latLng.lat,
-          lng: marker.latLng.lng,
+          lat: markerLatLng.lat,
+          lng: markerLatLng.lng,
         };
-      }
-    }, timeout);
+      },
+      { targetLatLng, maxDistance },
+    );
   }
 
   public async findLineThrough(

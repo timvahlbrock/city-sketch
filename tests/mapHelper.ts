@@ -1,30 +1,48 @@
-import { Map as LeafletMap } from "leaflet";
+import { Layer, Map as LeafletMap } from "leaflet";
 import { Page } from "@playwright/test";
 
 export interface IMapHelper {
   withMap<T>(callback: (map: LeafletMap) => T): Promise<T>;
+  findLayer(filter: (layer: Layer) => boolean): Promise<Layer>;
 }
 
 export async function installMapHelper(page: Page) {
   page.on("load", () => {
     page.evaluate(() => {
-      const MapHelper = class implements IMapHelper {
+      class MapHelper implements IMapHelper {
         private leafletMap: LeafletMap | null = null;
 
         private mapWaiters = new Set<(mal: LeafletMap) => void>();
 
+        private layers: Layer[] = [];
+
+        private layerQueries = new Set<(layer: Layer) => boolean>();
+
         public constructor() {
-          let map: LeafletMap | null = null;
-          const setMap = this.setMap.bind(this);
-          Object.defineProperty(window, "leafletMap", {
-            get() {
-              return map;
-            },
-            set(value: LeafletMap) {
-              map = value;
-              setMap(value);
-            },
+          this.mapWaiters.add((map) => {
+            map.on("layeradd", (event) => {
+              this.layers.push(event.layer);
+              for (const query of this.layerQueries) {
+                const result = query(event.layer);
+                if (result) {
+                  this.layerQueries.delete(query);
+                }
+              }
+            });
+            map.on("layerremove", (event) => {
+              const index = this.layers.indexOf(event.layer);
+              if (index !== -1) {
+                this.layers.splice(index, 1);
+              } else {
+                console.warn(
+                  "Removed layer not found in layers array",
+                  event.layer,
+                );
+              }
+            });
           });
+
+          this.proxyLeafletMapProp();
         }
 
         public withMap<T>(callback: (map: LeafletMap) => T): Promise<T> {
@@ -40,6 +58,39 @@ export async function installMapHelper(page: Page) {
           });
         }
 
+        public findLayer(filter: (layer: Layer) => boolean): Promise<Layer> {
+          for (const layer of this.layers) {
+            if (filter(layer)) {
+              return Promise.resolve(layer);
+            }
+          }
+
+          return new Promise((res) => {
+            const query = (layer: Layer) => {
+              const result = filter(layer);
+              if (result) {
+                res(layer);
+              }
+              return result;
+            };
+            this.layerQueries.add(query);
+          });
+        }
+
+        private proxyLeafletMapProp() {
+          let map: LeafletMap | null = null;
+          const setMap = this.setMap.bind(this);
+          Object.defineProperty(window, "leafletMap", {
+            get() {
+              return map;
+            },
+            set(value: LeafletMap) {
+              map = value;
+              setMap(value);
+            },
+          });
+        }
+
         private setMap(map: LeafletMap) {
           this.leafletMap = map;
           for (const waiter of this.mapWaiters) {
@@ -47,7 +98,7 @@ export async function installMapHelper(page: Page) {
             this.mapWaiters.delete(waiter);
           }
         }
-      };
+      }
 
       if (!window.mapHelper) {
         window.mapHelper = new MapHelper();
