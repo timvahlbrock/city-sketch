@@ -2,7 +2,7 @@ import { Map as LeafletMap } from "leaflet";
 import { Page } from "@playwright/test";
 
 export interface IMapHelper {
-  withMap<T>(callback: (map: LeafletMap) => T): Promise<T | null>;
+  withMap<T>(callback: (map: LeafletMap) => T): Promise<T>;
 }
 
 export async function installMapHelper(page: Page) {
@@ -27,7 +27,7 @@ export async function installMapHelper(page: Page) {
           });
         }
 
-        public withMap<T>(callback: (map: LeafletMap) => T): Promise<T | null> {
+        public withMap<T>(callback: (map: LeafletMap) => T): Promise<T> {
           if (this.leafletMap) {
             return Promise.resolve(callback(this.leafletMap));
           }

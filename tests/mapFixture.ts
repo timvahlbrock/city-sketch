@@ -13,30 +13,24 @@ export class MapFixture {
     this.ready = installMapHelper(page);
   }
 
-  public async getBounds(options: { timeout?: number } = {}): Promise<{
+  public async getBounds(): Promise<{
     east: number;
     west: number;
     center: SimpleLatLng;
   }> {
-    return this.retryUntilTimeout(async () => {
-      const bounds = await this.page.evaluate(() => {
-        return window.mapHelper.withMap((map) => {
-          const bounds = map.getBounds();
-          return {
-            east: bounds.getEast(),
-            west: bounds.getWest(),
-            center: {
-              lat: bounds.getCenter().lat,
-              lng: bounds.getCenter().lng,
-            },
-          };
-        });
+    return this.page.evaluate(() => {
+      return window.mapHelper.withMap((map) => {
+        const bounds = map.getBounds();
+        return {
+          east: bounds.getEast(),
+          west: bounds.getWest(),
+          center: {
+            lat: bounds.getCenter().lat,
+            lng: bounds.getCenter().lng,
+          },
+        };
       });
-
-      if (bounds) {
-        return bounds;
-      }
-    }, options.timeout);
+    });
   }
 
   public async findMarkerAt(
