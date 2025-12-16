@@ -1,6 +1,6 @@
 import { Page } from "@playwright/test";
-import { Layer } from "leaflet";
 import { installMapHelper } from "@/tests/mapHelper";
+import { LatLng } from "leaflet";
 
 interface SimpleLatLng {
   lat: number;
@@ -65,47 +65,29 @@ export class MapFixture {
     pointsToGoThrough: SimpleLatLng[],
     options: {
       maxDistance?: number;
-      timeout?: number;
     } = {},
   ): Promise<SimpleLatLng[]> {
-    const { maxDistance = 10, timeout } = options;
+    const { maxDistance = 10 } = options;
 
-    return this.retryUntilTimeout(async () => {
-      const line = await this.page.evaluate(
-        ({ pointsToGoThrough, maxDistance }) => {
-          const layers: Layer[] = [];
-          window.leafletMap?.eachLayer((layer) => layers.push(layer));
-          for (const layer of layers) {
-            if (!isPolyline(layer)) continue;
+    return this.page.evaluate(
+      async ({ pointsToGoThrough, maxDistance }) => {
+        const polyline = await window.mapHelper.findPolyline((polyline) => {
+          const polylineLatLngs = polyline.getLatLngs().flat(2);
+          return pointsToGoThrough.every((point) =>
+            polylineLatLngs.find(
+              (latLng) =>
+                window.leafletMap!.distance(point, latLng) < maxDistance,
+            ),
+          );
+        });
 
-            const polylineLatLngs = layer.getLatLngs().flat(2);
-            const everyPasses = pointsToGoThrough.every((point) =>
-              polylineLatLngs.find(
-                (latLng) =>
-                  window.leafletMap!.distance(point, latLng) < maxDistance,
-              ),
-            );
-            if (everyPasses) {
-              return {
-                latLng: polylineLatLngs,
-              };
-            }
-          }
-
-          function isPolyline(layer: Layer): layer is L.Polyline {
-            return typeof (layer as L.Polyline).getLatLngs === "function";
-          }
-        },
-        { pointsToGoThrough, maxDistance },
-      );
-
-      if (line) {
-        return line.latLng.map((latLng: L.LatLng) => ({
-          lat: latLng.lat,
-          lng: latLng.lng,
+        return polyline.getLatLngs().map((latLng) => ({
+          lat: (latLng as LatLng).lat,
+          lng: (latLng as LatLng).lng,
         }));
-      }
-    }, timeout);
+      },
+      { pointsToGoThrough, maxDistance },
+    );
   }
 
   private async retryUntilTimeout<T>(

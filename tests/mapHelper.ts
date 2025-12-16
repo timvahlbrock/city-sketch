@@ -1,10 +1,11 @@
-import { Layer, Map as LeafletMap, Marker } from "leaflet";
+import { Layer, Map as LeafletMap, Marker, Polyline } from "leaflet";
 import { Page } from "@playwright/test";
 
 export interface IMapHelper {
   withMap<T>(callback: (map: LeafletMap) => T): Promise<T>;
   findLayer(filter: (layer: Layer) => boolean): Promise<Layer>;
   findMarker(filter: (layer: Marker) => boolean): Promise<Marker>;
+  findPolyline(filter: (layer: Polyline) => boolean): Promise<Polyline>;
 }
 
 export async function installMapHelper(page: Page) {
@@ -86,6 +87,19 @@ export async function installMapHelper(page: Page) {
             if (!isMarker(layer)) return false;
             return filter(layer);
           }) as Promise<Marker>;
+        }
+
+        public findPolyline(
+          filter: (layer: Polyline) => boolean,
+        ): Promise<Polyline> {
+          function isPolyline(layer: Layer): layer is Polyline {
+            return typeof (layer as Polyline).getLatLngs === "function";
+          }
+
+          return this.findLayer((layer) => {
+            if (!isPolyline(layer)) return false;
+            return filter(layer);
+          }) as Promise<Polyline>;
         }
 
         private proxyLeafletMapProp() {
