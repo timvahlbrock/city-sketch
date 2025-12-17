@@ -51,7 +51,7 @@ export class MapFixture {
             targetLatLng,
             markerLatLng,
           );
-          return distance < maxDistance;
+          return distance <= maxDistance;
         });
 
         const markerLatLng = marker.getLatLng();
@@ -79,7 +79,7 @@ export class MapFixture {
           return pointsToGoThrough.every((point) =>
             polylineLatLngs.find(
               (latLng) =>
-                window.leafletMap!.distance(point, latLng) < maxDistance,
+                window.leafletMap!.distance(point, latLng) <= maxDistance,
             ),
           );
         });
