@@ -61,6 +61,11 @@ test("deleting a node", async ({ page, map }) => {
 
   await page.mouse.move(markerXy.x, markerXy.y);
   await page.mouse.click(markerXy.x, markerXy.y);
-
   await page.getByText("Delete", { exact: true }).click();
+
+  // somehow the deletion is never visible in the playwright context, but the deletion is applied after a reload
+  await page.reload();
+  await page.waitForTimeout(3000);
+
+  await map.noMarkerAt(mapBounds.center);
 });

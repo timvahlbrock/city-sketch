@@ -6,6 +6,7 @@ export interface IMapHelper {
   findLayer(filter: (layer: Layer) => boolean): Promise<Layer>;
   findMarker(filter: (layer: Marker) => boolean): Promise<Marker>;
   findPolyline(filter: (layer: Polyline) => boolean): Promise<Polyline>;
+  waitFor(condition: (layers: Layer[]) => boolean): Promise<void>;
 }
 
 export async function installMapHelper(page: Page) {
@@ -16,31 +17,17 @@ export async function installMapHelper(page: Page) {
 
         private mapWaiters = new Set<(mal: LeafletMap) => void>();
 
-        private layers: Layer[] = [];
-
-        private layerQueries = new Set<(layer: Layer) => boolean>();
+        private layerListeners = new Set<(layer: Layer[]) => boolean>();
 
         public constructor() {
           this.mapWaiters.add((map) => {
-            map.on("layeradd", (event) => {
-              this.layers.push(event.layer);
-              for (const query of this.layerQueries) {
-                const result = query(event.layer);
-                if (result) {
-                  this.layerQueries.delete(query);
-                }
-              }
+            // we do get the added or removed layer passed here, but the number of layers got out of sync anyway
+            // so instead we just refetch the layers when an event is fired
+            map.on("layeradd", () => {
+              this.runLayerListeners();
             });
-            map.on("layerremove", (event) => {
-              const index = this.layers.indexOf(event.layer);
-              if (index !== -1) {
-                this.layers.splice(index, 1);
-              } else {
-                console.warn(
-                  "Removed layer not found in layers array",
-                  event.layer,
-                );
-              }
+            map.on("layerremove", () => {
+              this.runLayerListeners();
             });
           });
 
@@ -61,21 +48,16 @@ export async function installMapHelper(page: Page) {
         }
 
         public findLayer(filter: (layer: Layer) => boolean): Promise<Layer> {
-          for (const layer of this.layers) {
-            if (filter(layer)) {
-              return Promise.resolve(layer);
-            }
-          }
-
           return new Promise((res) => {
-            const query = (layer: Layer) => {
-              const result = filter(layer);
-              if (result) {
-                res(layer);
+            this.waitFor((layers) => {
+              for (const layer of layers) {
+                if (filter(layer)) {
+                  res(layer);
+                  return true;
+                }
               }
-              return result;
-            };
-            this.layerQueries.add(query);
+              return false;
+            });
           });
         }
 
@@ -100,6 +82,40 @@ export async function installMapHelper(page: Page) {
             if (!isPolyline(layer)) return false;
             return filter(layer);
           }) as Promise<Polyline>;
+        }
+
+        public waitFor(condition: (layers: Layer[]) => boolean): Promise<void> {
+          if (condition(this.getLayers())) {
+            return Promise.resolve();
+          }
+
+          return new Promise((res) => {
+            const query = (layers: Layer[]) => {
+              const result = condition(layers);
+              if (result) {
+                res();
+              }
+              return result;
+            };
+            this.layerListeners.add(query);
+          });
+        }
+
+        private getLayers() {
+          const layers: Layer[] = [];
+          this.leafletMap?.eachLayer((layer) => layers.push(layer));
+          return layers;
+        }
+
+        private runLayerListeners() {
+          const layers = this.getLayers();
+          for (const query of this.layerListeners) {
+            const result = query(layers);
+            if (result) {
+              this.layerListeners.delete(query);
+              break;
+            }
+          }
         }
 
         private checkProxyLeafletMapProp() {

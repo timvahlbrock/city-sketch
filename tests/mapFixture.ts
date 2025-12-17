@@ -1,5 +1,6 @@
 import { Page } from "@playwright/test";
 import { installMapHelper } from "@/tests/mapHelper";
+import { Marker } from "leaflet";
 
 interface SimpleLatLng {
   lat: number;
@@ -61,6 +62,39 @@ export class MapFixture {
         };
       },
       { targetLatLng, maxDistance },
+    );
+  }
+
+  public async noMarkerAt(
+    targetLatLng: SimpleLatLng,
+    options: {
+      maxDistance?: number;
+    } = {},
+  ) {
+    const { maxDistance = 10 } = options;
+    await this.page.evaluate(
+      async ({ targetLatLng, maxDistance }) => {
+        return window.mapHelper.waitFor((layers) => {
+          const nativeLayers = [];
+          window.leafletMap?.eachLayer((layer) => nativeLayers.push(layer));
+          return layers.every((layer) => {
+            if (typeof (layer as Marker).getLatLng !== "function") {
+              return true;
+            }
+
+            const distance = window.leafletMap!.distance(
+              (layer as Marker).getLatLng(),
+              targetLatLng,
+            );
+
+            return distance > maxDistance;
+          });
+        });
+      },
+      {
+        targetLatLng,
+        maxDistance,
+      },
     );
   }
 

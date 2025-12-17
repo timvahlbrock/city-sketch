@@ -65,4 +65,6 @@ test("deleting a section", async ({ page, map }) => {
   ).toBeVisible();
   await page.getByRole("button").getByText("Delete", { exact: true }).click();
   await expect(dialog).toBeHidden();
+
+  await map.noMarkerAt(mapBounds.center);
 });
