@@ -4,6 +4,10 @@ export default defineConfig({
   test: {
     environment: "happy-dom",
     exclude: ["./e2e", "node_modules"],
-    coverage: process.env.CI ? {} : undefined,
+    coverage: {
+      include: ["./convex"],
+      enabled: !!process.env.CI,
+      exclude: ["**generated**", "*.config.ts", "auth.ts"],
+    },
   },
 });
