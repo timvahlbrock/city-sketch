@@ -3,7 +3,9 @@ import { convexTest } from "convex-test";
 import schema from "./schema";
 import { api } from "./_generated/api";
 
-async function createAnonymousIdentify(t: ReturnType<typeof convexTest>) {
+async function createAnonymousIdentity(
+  t: ReturnType<typeof convexTest> = convexTest(schema, modules),
+) {
   const anonymousUser = await t.run((ctx) =>
     ctx.db.insert("users", {
       isAnonymous: true,
@@ -16,13 +18,25 @@ async function createAnonymousIdentify(t: ReturnType<typeof convexTest>) {
 
 describe("Sketches API", () => {
   describe("create", () => {
-    it("allows users to create a sketch", async () => {
-      const t = convexTest(schema, modules);
-      const asAnonymousUser = await createAnonymousIdentify(t);
+    it("anonymous users can create a sketch", async () => {
+      const asAnonymousUser = await createAnonymousIdentity();
 
       const sketchId = await asAnonymousUser.mutation(api.sketches.create);
 
       expect(sketchId).toBeDefined();
+    });
+  });
+
+  describe("get", () => {
+    it("anonymous users can read a sketch", async () => {
+      const asAnonymousUser = await createAnonymousIdentity();
+      const sketchId = await asAnonymousUser.mutation(api.sketches.create);
+
+      const sketch = await asAnonymousUser.query(api.sketches.get, {
+        sketchId,
+      });
+
+      expect(sketch).toBeDefined();
     });
   });
 });
