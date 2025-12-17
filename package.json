@@ -10,6 +10,7 @@
     "format:ci": "prettier --check .",
     "format": "prettier --write .",
     "start": "next start",
+    "test": "vitest",
     "convex": "convex dev"
   },
   "dependencies": {
