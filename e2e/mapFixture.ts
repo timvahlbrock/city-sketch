@@ -1,5 +1,5 @@
 import { Page } from "@playwright/test";
-import { installMapHelper } from "@/tests/mapHelper";
+import { installMapHelper } from "@/e2e/mapHelper";
 import { Marker } from "leaflet";
 
 interface SimpleLatLng {

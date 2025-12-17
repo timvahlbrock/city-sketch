@@ -1,5 +1,5 @@
 import { test as base } from "@playwright/test";
-import { MapFixture } from "@/tests/mapFixture";
+import { MapFixture } from "@/e2e/mapFixture";
 
 interface Fixtures {
   map: MapFixture;

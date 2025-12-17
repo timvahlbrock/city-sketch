@@ -1,4 +1,4 @@
-import { IMapHelper } from "@/tests/mapHelper";
+import { IMapHelper } from "@/e2e/mapHelper";
 
 declare global {
   interface Window {

@@ -1,9 +1,10 @@
-import { mutation, query } from "@/convex/_generated/server";
+import { mutation, query } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { getUserIdOrThrow, notEmpty } from "./helpers";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const create = mutation({
+  args: {},
   handler: async (ctx) => {
     return ctx.db.insert("sketches", {
       title: "Your new Sketch",
@@ -48,6 +49,7 @@ export const patch = mutation({
 });
 
 export const getAll = query({
+  args: {},
   handler: (ctx) => {
     return ctx.db.query("sketches").collect();
   },
