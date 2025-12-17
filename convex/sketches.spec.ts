@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { convexTest } from "convex-test";
 import schema from "./schema";
 import { api } from "./_generated/api";
+import { convexErrorWithCode } from "../convexErrorMatcher";
 
 async function createAnonymousIdentity(
   t: ReturnType<typeof convexTest> = convexTest(schema, modules),
@@ -37,6 +38,38 @@ describe("Sketches API", () => {
       });
 
       expect(sketch).toBeDefined();
+    });
+  });
+
+  describe("patch", () => {
+    it("anonymous users can update their sketch", async () => {
+      const asAnonymousUser = await createAnonymousIdentity();
+      const sketchId = await asAnonymousUser.mutation(api.sketches.create);
+
+      await asAnonymousUser.mutation(api.sketches.patch, {
+        sketchId,
+        sketch: {
+          title: "Updated title",
+          description: "Updated description",
+          implementationState: "done",
+        },
+      });
+    });
+
+    it("users cannot update other users sketches", async () => {
+      const t = convexTest(schema, modules);
+      const asAnonymousUser = await createAnonymousIdentity(t);
+      const asOtherAnonymousUser = await createAnonymousIdentity(t);
+      const sketchId = await asAnonymousUser.mutation(api.sketches.create);
+
+      await expect(
+        asOtherAnonymousUser.mutation(api.sketches.patch, {
+          sketchId,
+          sketch: {
+            title: "Stolen Sketch",
+          },
+        }),
+      ).rejects.toThrowError(convexErrorWithCode(404));
     });
   });
 });
