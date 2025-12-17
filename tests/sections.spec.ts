@@ -2,7 +2,6 @@ import { expect } from "@playwright/test";
 import { test } from "./fixtures";
 
 test("adding a section", async ({ page, map }) => {
-  console.log("test");
   await page.goto("/");
   await page.getByTestId("create-sketch-button").click();
   await page.getByTestId("add-section-button").click();

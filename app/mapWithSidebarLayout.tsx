@@ -30,10 +30,6 @@ export default function MapWithSidebarLayout({
 
   const [map, setMap] = useState<LeafletMap | null>(null);
 
-  useEffect(() => {
-    console.log("mapRef", map);
-  }, [map]);
-
   const isAuthenticated = useAuthToken() !== null;
 
   return (
