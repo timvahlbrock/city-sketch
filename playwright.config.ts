@@ -31,7 +31,7 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
   },
-  timeout: 10000,
+  timeout: process.env.CI ? 10000 : 30000, // local tests might be slower as they run an on unoptimized build that is compiled on demand
 
   /* Configure projects for major browsers */
   projects: [
